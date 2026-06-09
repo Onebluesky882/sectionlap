@@ -15,7 +15,7 @@
 
 **Domain:** modules/[name]
 **Agent:** [assigned agent]
-**Status:** PENDING | IN PROGRESS | COMPLETE | BLOCKED
+**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
 
 **Acceptance Criteria:**
 - [ ] Criterion 1
