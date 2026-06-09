@@ -18,6 +18,132 @@ Agents implement assigned work only.
 
 ⸻
 
+Conductor / Orchestrator
+
+Model Configuration
+
+```
+Model:         claude-opus-4-8
+thinking:      { type: "adaptive" }
+output_config: { effort: "xhigh" }
+```
+
+Use xhigh effort for planning and gate validation decisions.
+Use adaptive thinking — the conductor must reason about pipeline state.
+
+Sub-Agent Model Configuration (default)
+
+```
+Model:         claude-opus-4-8
+thinking:      { type: "adaptive" }
+output_config: { effort: "high" }
+```
+
+Downgrade to claude-sonnet-4-6 + effort: "high" only for simple,
+well-scoped tasks that require no architectural judgment.
+
+⸻
+
+Conductor Flow
+
+Each stage = one workspace (branch) = one PR = one merge into main.
+
+The next stage MUST NOT start until the previous stage is merged into main.
+This guarantees each workspace starts clean from main.
+
+Steps:
+
+1. Read tasks/stage-[N]/gate-out.md from the completed stage
+2. Validate all gate criteria (see Gate Validation Rules below)
+3. If REJECT: write rejection reason; halt; do not advance
+4. If PASS: write tasks/stage-[N]/merge-approval.md
+5. Wait for PR to merge into main
+6. After merge confirmed: write tasks/stage-[N+1]/dispatch-in.md
+
+Gate Validation Rules
+
+PASS only when ALL of the following are true:
+
+* gate-out.md Status = PASS
+* gate-out.md Ready For Next Stage = YES
+* All acceptance criteria in PIPELINE.md are checked off
+* No Known Issues that block the next stage
+
+If any check fails → Status = REJECT. Do not advance.
+
+⸻
+
+Conductor Output — merge-approval.md
+
+After gate validation passes, write:
+
+tasks/stage-[N]/merge-approval.md
+
+Format:
+
+Stage: [N]
+Domain: [module/domain]
+Branch: feature/[domain]
+Status: APPROVED
+
+PR Title: feat([domain]): [one-line description]
+
+PR Description:
+## What
+[What was implemented — from gate-out.md Summary]
+
+## Files Changed
+[List from gate-out.md Modified Files]
+
+## Tests
+[List from gate-out.md Tests]
+
+## Acceptance Criteria
+[Checked list from PIPELINE.md — all must be checked]
+
+Merge Strategy: squash
+Base Branch: main
+Ready to Merge: YES
+
+⸻
+
+Conductor Output — dispatch-in.md
+
+Only after merge-approval.md is confirmed merged, create:
+
+tasks/stage-[N+1]/dispatch-in.md
+
+Format:
+
+Stage: [N+1]
+Domain: [module/domain]
+Status: ASSIGNED
+Model: claude-opus-4-8
+
+Workspace: branch from main (after stage-[N] merged)
+
+Context Files:
+- PROJECT.md
+- PIPELINE.md (Stage [N+1])
+- ARCHITECTURE.md
+- CONTRACTS.md
+- DECISIONS.md
+
+Task:
+[Clear description of what the agent must implement]
+
+Gate-In Verified: YES
+Prior Gate-Out: tasks/stage-[N]/gate-out.md
+Prior Merge: tasks/stage-[N]/merge-approval.md
+
+Constraints:
+- Branch from main only — do NOT branch from feature/[prior-domain]
+- STOP after assigned work is complete
+- Do NOT merge to dev/main directly
+- Create PR targeting main via feature/[domain]
+
+⸻
+
 Required Reading
 
 Before starting any task, read:

@@ -24,8 +24,14 @@
 **Gate-In Requirements:**
 <!-- What must be true before this stage can start -->
 
-**Gate-Out:**
-<!-- Link to gate-out.md when complete -->
+**Dispatch-In:** `tasks/stage-1/dispatch-in.md`
+<!-- Conductor writes this AFTER prior stage merges to main -->
+
+**Gate-Out:** `tasks/stage-1/gate-out.md`
+<!-- Agent writes this when stage is complete -->
+
+**Merge-Approval:** `tasks/stage-1/merge-approval.md`
+<!-- Conductor writes this after gate validation passes; triggers PR merge -->
 
 ⸻
 

@@ -20,4 +20,8 @@ After reading all files:
 
 - Identify current stage
 
-- Wait for Gate-in
+- Read your dispatch-in.md: `tasks/stage-[N]/dispatch-in.md`
+
+- Branch from main: `git checkout -b feature/[domain]`
+
+- Do NOT start until dispatch-in.md exists and Gate-In Verified = YES
