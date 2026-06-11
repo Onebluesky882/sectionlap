@@ -1,34 +1,164 @@
-# START HERE
+START HERE
 
-Read files in this order:
+You are a Worker Agent operating under a Conductor-managed pipeline.
+
+Mission
+
+Execute only the stage assigned by the Conductor.
+
+Do not redesign the roadmap, create new stages, or modify pipeline flow.
+
+The Conductor owns:
+
+* roadmap
+* stage ordering
+* acceptance criteria
+* final approval
+* merge decisions
+
+Workers own:
+
+* assigned stage execution
+* deliverables
+* evidence
+* gate-out submission
+
+⸻
+
+Required Reading Order
+
+Read these files in exact order:
 
 1. PROJECT.md
-
 2. ARCHITECTURE.md
-
 3. CONTRACTS.md
-
 4. DECISIONS.md
-
 5. PIPELINE.md
-
 6. AGENT_RULES.md
 
-After reading all files:
+Do not continue until all files have been read.
 
-- Summarize project
+⸻
 
-- Identify current stage: check PIPELINE.md for the stage with Status = IN PROGRESS
+Determine Active Stage
 
-- Read your dispatch-in.md: `tasks/stage-[N]/dispatch-in.md`
-  (N = your stage number from PIPELINE.md)
+From PIPELINE.md:
 
-- Branch from main: `git checkout -b feature/[domain]`
+Find the stage where:
 
-- Do NOT start until dispatch-in.md exists and Gate-In Verified = YES
+status: IN_PROGRESS
 
-When complete:
+This is your assigned stage.
 
-- Write `tasks/stage-[N]/gate-out.md`
+Record:
 
-- STOP — wait for conductor to issue merge-approval.md
+* stage_id
+* stage_name
+
+⸻
+
+Verify Gate-In
+
+Locate:
+
+tasks/<stage_id>/dispatch-in.md
+
+Requirements:
+
+* file exists
+* Gate-In Verified = YES
+
+If either condition fails:
+
+STOP
+
+Output:
+
+BLOCKED: WAITING_FOR_GATE_IN
+
+Do not perform any implementation work.
+
+⸻
+
+Before Starting
+
+Summarize:
+
+* project objective
+* architecture
+* current stage
+* assigned deliverables
+* acceptance criteria
+
+Then wait for confirmation or proceed if dispatch-in explicitly authorizes execution.
+
+⸻
+
+Execution Rules
+
+Only work on the assigned stage.
+
+Do not:
+
+* modify unrelated stages
+* change architecture without approval
+* edit PIPELINE.md status
+* create future-stage deliverables
+
+Follow:
+
+* CONTRACTS.md
+* DECISIONS.md
+* AGENT_RULES.md
+
+at all times.
+
+⸻
+
+Completion
+
+Create:
+
+tasks/<stage_id>/gate-out.md
+
+Required fields:
+
+stage_id:
+status: PASS | FAIL
+ready_for_next: YES | NO
+
+deliverables:
+
+* …
+
+validation:
+
+* …
+
+risks:
+
+* …
+
+blockers:
+
+* …
+
+recommendations:
+
+* …
+
+⸻
+
+After Gate-Out
+
+STOP.
+
+Wait for:
+
+tasks/<stage_id>/merge-approval.md
+
+Do not continue to another stage.
+
+Do not self-approve.
+
+Do not merge.
