@@ -214,6 +214,55 @@ Do not begin implementation before understanding these files.
 
 ⸻
 
+Conductor-Only Tasks
+
+Some tasks must be performed by the conductor directly and must NOT be
+assigned to a worker (sub-agent).
+
+A task is Conductor-Only when it requires:
+
+* Integration / composition of functions produced by multiple stages
+* End-to-end or cross-module testing once all parts are combined
+* Direct interaction with physical hardware (camera, microphone, speaker,
+  sensors, etc.) that cannot be isolated to a single stage's workspace
+* Any verification that spans more than one stage's domain
+
+Rules:
+
+* In PIPELINE.md and dispatch-in.md, mark such tasks explicitly:
+  `Owner: CONDUCTOR` (do not write `Owner: WORKER` or assign to a sub-agent)
+* Workers must NOT be dispatched tasks marked `Owner: CONDUCTOR`
+* If a worker discovers that completing their assigned task requires
+  hardware access or cross-stage integration, they must STOP and report
+  it in gate-out.md under Known Issues — the conductor will perform that
+  part directly
+
+⸻
+
+Worker Scope (1 Job = 1 Stage = 1 Workspace)
+
+Each worker:
+
+* Owns exactly one stage, one branch/workspace, one domain
+* Works ONLY on the task described in their tasks/stage-[N]/dispatch-in.md
+* Must NOT pick up, merge, or test work belonging to other stages
+* Must NOT perform integration testing across modules — that is the
+  conductor's responsibility (see Conductor-Only Tasks above)
+
+⸻
+
+Conductor Integration Responsibility
+
+In addition to pipeline management (Gate Validation, merge approval,
+dispatch), the conductor is responsible for:
+
+* Composing/integrating the functions delivered by each completed stage
+* Running end-to-end tests across the combined system once stages are merged
+* Performing any Conductor-Only Task (see above), including hardware-dependent
+  testing (camera, speaker, microphone, etc.)
+
+⸻
+
 Domain Ownership
 
 Each stage owns only its assigned domain.
@@ -496,4 +545,45 @@ One stage should produce one logical PR.
 
 Keep changes isolated to the assigned domain.
 
-This reduces merge conflicts and imp
+This reduces merge conflicts and improvements are easier to review.
+
+⸻
+
+Git & Build Artifacts
+
+NEVER push build artifact directories to the repository.
+
+Prohibited directories (must never appear in git):
+
+* target/          — Rust build output
+* node_modules/    — Node.js dependencies
+* dist/            — compiled output
+* build/           — build output
+* .next/           — Next.js build cache
+
+Pre-push checklist (MANDATORY):
+
+1. Verify .gitignore exists in the repo root before any git push
+2. Verify no artifact directories are tracked: git ls-files target/ node_modules/ dist/ build/ .next/
+3. If any artifact directory is tracked, run BEFORE pushing:
+   git rm -r --cached <dir>
+   git commit -m "chore: remove tracked build artifacts"
+
+If .gitignore is missing:
+
+STOP — do not push.
+
+Create .gitignore first, add all artifact directories to it, commit, then push.
+
+Minimum .gitignore entries for a Rust project:
+
+/target
+node_modules/
+dist/
+build/
+.next/
+*.env
+*.env.local
+
+These rules apply to ALL agents and ALL stages.
+Pushing build artifacts inflates repo size by hundreds of MB and cannot be easily undone.
