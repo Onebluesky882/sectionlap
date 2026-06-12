@@ -205,10 +205,10 @@ Required Reading
 Before starting any task, read:
 
 1. PROJECT.md
-2. PIPELINE.md
-3. ARCHITECTURE.md
-4. CONTRACTS.md
-5. DECISIONS.md
+2. ARCHITECTURE.md
+3. CONTRACTS.md
+4. DECISIONS.md
+5. PIPELINE.md
 
 Do not begin implementation before understanding these files.
 
@@ -271,23 +271,15 @@ Examples:
 
 Stage 1
 Domain:
-modules/hotkey
+modules/[name-1]
 
 Stage 2
 Domain:
-modules/audio
+modules/[name-2]
 
 Stage 3
 Domain:
-modules/vad
-
-Stage 4
-Domain:
-modules/transcribe
-
-Stage 5
-Domain:
-modules/clipboard
+modules/[name-3]
 
 Do not modify another stage’s implementation.
 
@@ -354,9 +346,9 @@ Example:
 
 Modified Files:
 
-* modules/transcribe/mod.rs
-* modules/transcribe/client.rs
-* tests/transcribe_test.rs
+* modules/[name]/mod.rs
+* modules/[name]/client.rs
+* tests/[name]_test.rs
 
 ⸻
 
@@ -368,11 +360,9 @@ feature/
 
 Examples:
 
-feature/hotkey
-feature/audio
-feature/vad
-feature/transcribe
-feature/clipboard
+feature/[name-1]
+feature/[name-2]
+feature/[name-3]
 
 Never merge directly into:
 
@@ -560,11 +550,14 @@ Prohibited directories (must never appear in git):
 * dist/            — compiled output
 * build/           — build output
 * .next/           — Next.js build cache
+* __pycache__/     — Python bytecode cache
+* .venv/ / venv/   — Python virtual environments
+* vendor/          — Go/PHP vendored dependencies
 
 Pre-push checklist (MANDATORY):
 
 1. Verify .gitignore exists in the repo root before any git push
-2. Verify no artifact directories are tracked: git ls-files target/ node_modules/ dist/ build/ .next/
+2. Verify no artifact directories are tracked: git ls-files target/ node_modules/ dist/ build/ .next/ __pycache__/ .venv/ venv/ vendor/
 3. If any artifact directory is tracked, run BEFORE pushing:
    git rm -r --cached <dir>
    git commit -m "chore: remove tracked build artifacts"
@@ -573,15 +566,19 @@ If .gitignore is missing:
 
 STOP — do not push.
 
-Create .gitignore first, add all artifact directories to it, commit, then push.
+Create .gitignore first, add the artifact directories relevant to this
+project's stack, commit, then push.
 
-Minimum .gitignore entries for a Rust project:
+Minimum .gitignore entries (uncomment/adapt to your stack):
 
 /target
 node_modules/
 dist/
 build/
 .next/
+__pycache__/
+.venv/
+vendor/
 *.env
 *.env.local
 
