@@ -32,7 +32,7 @@
 **Gate-In Requirements:**
 - None (Stage 1 starts immediately)
 
-**Dispatch-In:** `tasks/stage-1-dispatch-in.md`
+**Dispatch-In:** `tasks/state-1-desktop-app.md`
 <!-- Conductor writes this AFTER prior stage merges to main -->
 
 **Gate-Out:** `tasks/stage-1-gate-out.md`
@@ -58,7 +58,7 @@
 **Gate-In Requirements:**
 - Stage 1 merged to main (Wails app shell exists)
 
-**Dispatch-In:** `tasks/stage-2-dispatch-in.md`
+**Dispatch-In:** `tasks/state-2-live-class.md`
 
 **Gate-Out:** `tasks/stage-2-gate-out.md`
 
@@ -83,7 +83,7 @@
 **Gate-In Requirements:**
 - Stage 1 merged to main
 
-**Dispatch-In:** `tasks/stage-3-dispatch-in.md`
+**Dispatch-In:** `tasks/state-3-booking-logic.md`
 
 **Gate-Out:** `tasks/stage-3-gate-out.md`
 
@@ -108,7 +108,7 @@
 **Gate-In Requirements:**
 - Stage 1 merged to main (Wails app shell exists)
 
-**Dispatch-In:** `tasks/stage-4-dispatch-in.md`
+**Dispatch-In:** `tasks/state-4-sync-service.md`
 
 **Gate-Out:** `tasks/stage-4-gate-out.md`
 
@@ -133,7 +133,7 @@
 - Stage 3 merged to main (mock logic contracts available)
 - Stage 4 merged to main (sync service + protocol available)
 
-**Dispatch-In:** `tasks/stage-5-dispatch-in.md`
+**Dispatch-In:** `tasks/state-5-mobile-app.md`
 
 **Gate-Out:** `tasks/stage-5-gate-out.md`
 
@@ -158,7 +158,7 @@
 - Stage 3 merged to main (contracts defined)
 - Stage 5 merged to main (both clients exist to migrate)
 
-**Dispatch-In:** `tasks/stage-6-dispatch-in.md`
+**Dispatch-In:** `tasks/state-6-backend.md`
 
 **Gate-Out:** `tasks/stage-6-gate-out.md`
 

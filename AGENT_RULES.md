@@ -72,7 +72,7 @@ Steps:
 5. Write tasks/stage-[N]-merge-approval.md
 6. Wait for PR (feature/[domain]) to squash-merge into main
 7. After merge confirmed: update PIPELINE.md — set Stage [N+1] Status = IN PROGRESS
-8. Write tasks/stage-[N+1]-dispatch-in.md
+8. Write tasks/state-[N+1]-<domain>.md
 
 Gate Validation Rules
 
@@ -103,7 +103,7 @@ Sub-agents must NOT write to PIPELINE.md.
 
 PENDING → IN PROGRESS
   Condition: prior stage Status = COMPLETE and PR merged to main
-  Action:    conductor writes tasks/stage-[N]-dispatch-in.md
+  Action:    conductor writes tasks/state-[N]-<domain>.md
   Exception: Stage 1 starts as IN PROGRESS immediately (no prior stage)
 
 IN PROGRESS → COMPLETE
@@ -116,7 +116,7 @@ IN PROGRESS → BLOCKED
 
 BLOCKED → IN PROGRESS
   Condition: human resolves blocking issue and explicitly approves re-dispatch
-  Action:    conductor re-writes tasks/stage-[N]-dispatch-in.md with updated context
+  Action:    conductor re-writes tasks/state-[N]-<domain>.md with updated context
 
 Immutability Rules
 
@@ -179,7 +179,7 @@ Conductor Output — dispatch-in.md
 
 Only after merge-approval.md is confirmed merged, create:
 
-tasks/stage-[N+1]-dispatch-in.md
+tasks/state-[N+1]-<domain>.md
 
 Format:
 
@@ -256,7 +256,7 @@ Worker Scope (1 Job = 1 Stage = 1 Workspace)
 Each worker:
 
 * Owns exactly one stage, one branch/workspace, one domain
-* Works ONLY on the task described in their tasks/stage-[N]-dispatch-in.md
+* Works ONLY on the task described in their tasks/state-[N]-<domain>.md
 * Must NOT pick up, merge, or test work belonging to other stages
 * Must NOT perform integration testing across modules — that is the
   conductor's responsibility (see Conductor-Only Tasks above)
