@@ -15,7 +15,7 @@
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
-(2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to main.
+(2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to dev.
 
 ⸻
 
@@ -39,7 +39,7 @@ and are dispatched in parallel with it. Their integration counterparts
 - None (Stage 1 starts immediately)
 
 **Dispatch-In:** `tasks/state-1-desktop-app.md`
-<!-- Conductor writes this AFTER prior stage merges to main -->
+<!-- Conductor writes this AFTER prior stage merges to dev -->
 
 **Gate-Out:** `gate-out/state-1-desktop-app.md`
 <!-- Agent writes this when stage is complete -->
@@ -82,8 +82,8 @@ and are dispatched in parallel with it. Their integration counterparts
 - [ ] Join/leave room works with mic/cam from the Wails app
 
 **Gate-In Requirements:**
-- Stage 1 merged to main (Wails app shell exists)
-- Stage 2a merged to main (Jitsi instance + config available)
+- Stage 1 merged to dev (Wails app shell exists)
+- Stage 2a merged to dev (Jitsi instance + config available)
 
 **Dispatch-In:** `tasks/state-2b-jitsi-embed.md`
 
@@ -108,7 +108,7 @@ and are dispatched in parallel with it. Their integration counterparts
 - [ ] Logic interfaces documented for future backend replacement (input/output shapes)
 
 **Gate-In Requirements:**
-- Stage 1 merged to main
+- Stage 1 merged to dev
 
 **Dispatch-In:** `tasks/state-3-booking-logic.md`
 
@@ -153,8 +153,8 @@ and are dispatched in parallel with it. Their integration counterparts
 - [ ] Whiteboard and document-highlight usable from within the Wails app
 
 **Gate-In Requirements:**
-- Stage 1 merged to main (Wails app shell exists)
-- Stage 4a merged to main (sync service + protocol available)
+- Stage 1 merged to dev (Wails app shell exists)
+- Stage 4a merged to dev (sync service + protocol available)
 
 **Dispatch-In:** `tasks/state-4b-sync-integration.md`
 
@@ -178,8 +178,8 @@ and are dispatched in parallel with it. Their integration counterparts
 - [ ] Real-time sync verified between Wails and Expo clients
 
 **Gate-In Requirements:**
-- Stage 3 merged to main (mock logic contracts available)
-- Stage 4a merged to main (sync service + protocol available)
+- Stage 3 merged to dev (mock logic contracts available)
+- Stage 4a merged to dev (sync service + protocol available)
 
 **Dispatch-In:** `tasks/state-5-mobile-app.md`
 
@@ -203,8 +203,8 @@ and are dispatched in parallel with it. Their integration counterparts
 - [ ] Jitsi room provisioning tied to enrollment (access granted only to paid students)
 
 **Gate-In Requirements:**
-- Stage 3 merged to main (contracts defined)
-- Stage 5 merged to main (both clients exist to migrate)
+- Stage 3 merged to dev (contracts defined)
+- Stage 5 merged to dev (both clients exist to migrate)
 
 **Dispatch-In:** `tasks/state-6-backend.md`
 
