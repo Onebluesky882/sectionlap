@@ -5,7 +5,7 @@
 | Stage | Domain | Status |
 |-------|--------|--------|
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
-| 2a | Jitsi Meet Self-host (infra) | IN PROGRESS |
+| 2a | Jitsi Meet Self-host (infra) | COMPLETE |
 | 2b | Jitsi Embed in Wails (integration) | PENDING |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
 | 4a | Sync Service (Yjs infra) | IN PROGRESS |
@@ -53,12 +53,12 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/live-class
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Jitsi Meet running locally via docker-compose
-- [ ] Setup/run instructions documented
-- [ ] Local Jitsi room URL/config documented for Stage 2b to consume
+- [x] Jitsi Meet running locally via docker-compose
+- [x] Setup/run instructions documented
+- [x] Local Jitsi room URL/config documented for Stage 2b to consume
 
 **Gate-In Requirements:**
 - None — runs in parallel with Stage 1, no dependency
