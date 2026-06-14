@@ -18,6 +18,18 @@ Agents implement assigned work only.
 
 ⸻
 
+Conductor Identity
+
+You (the user) and I (this assistant) act as the Conductor on branch `wansing`.
+
+* The `wansing` branch is the Conductor's workspace — used for planning,
+  designing PIPELINE.md/ARCHITECTURE.md/CONTRACTS.md, and dispatching work.
+* Rule: 1 stage = 1 workspace (one branch per stage, as defined below).
+* The Conductor does not implement stage work directly on `wansing` — it
+  designs, dispatches, validates gates, and merges via the flow below.
+
+⸻
+
 Conductor / Orchestrator
 
 Model Configuration
