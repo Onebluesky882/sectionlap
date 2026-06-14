@@ -65,14 +65,14 @@ This guarantees each workspace starts clean from main.
 
 Steps:
 
-1. Read tasks/stage-[N]/gate-out.md from the completed stage
+1. Read tasks/stage-[N]-gate-out.md from the completed stage
 2. Validate all gate criteria (see Gate Validation Rules below)
-3. If REJECT: write rejection reason to tasks/stage-[N]/rejection.md; halt; do not advance
+3. If REJECT: write rejection reason to tasks/stage-[N]-rejection.md; halt; do not advance
 4. If PASS: update PIPELINE.md — set Stage [N] Status = COMPLETE
-5. Write tasks/stage-[N]/merge-approval.md
+5. Write tasks/stage-[N]-merge-approval.md
 6. Wait for PR (feature/[domain]) to squash-merge into main
 7. After merge confirmed: update PIPELINE.md — set Stage [N+1] Status = IN PROGRESS
-8. Write tasks/stage-[N+1]/dispatch-in.md
+8. Write tasks/stage-[N+1]-dispatch-in.md
 
 Gate Validation Rules
 
@@ -103,7 +103,7 @@ Sub-agents must NOT write to PIPELINE.md.
 
 PENDING → IN PROGRESS
   Condition: prior stage Status = COMPLETE and PR merged to main
-  Action:    conductor writes tasks/stage-[N]/dispatch-in.md
+  Action:    conductor writes tasks/stage-[N]-dispatch-in.md
   Exception: Stage 1 starts as IN PROGRESS immediately (no prior stage)
 
 IN PROGRESS → COMPLETE
@@ -112,11 +112,11 @@ IN PROGRESS → COMPLETE
 
 IN PROGRESS → BLOCKED
   Condition: gate-out.md Status = FAIL or any gate criteria not met
-  Action:    conductor writes tasks/stage-[N]/rejection.md; updates PIPELINE.md
+  Action:    conductor writes tasks/stage-[N]-rejection.md; updates PIPELINE.md
 
 BLOCKED → IN PROGRESS
   Condition: human resolves blocking issue and explicitly approves re-dispatch
-  Action:    conductor re-writes tasks/stage-[N]/dispatch-in.md with updated context
+  Action:    conductor re-writes tasks/stage-[N]-dispatch-in.md with updated context
 
 Immutability Rules
 
@@ -145,7 +145,7 @@ Conductor Output — merge-approval.md
 
 After gate validation passes, write:
 
-tasks/stage-[N]/merge-approval.md
+tasks/stage-[N]-merge-approval.md
 
 Format:
 
@@ -179,7 +179,7 @@ Conductor Output — dispatch-in.md
 
 Only after merge-approval.md is confirmed merged, create:
 
-tasks/stage-[N+1]/dispatch-in.md
+tasks/stage-[N+1]-dispatch-in.md
 
 Format:
 
@@ -201,8 +201,8 @@ Task:
 [Clear description of what the agent must implement]
 
 Gate-In Verified: YES
-Prior Gate-Out: tasks/stage-[N]/gate-out.md  (N/A if this is Stage 1)
-Prior Merge: tasks/stage-[N]/merge-approval.md  (N/A if this is Stage 1)
+Prior Gate-Out: tasks/stage-[N]-gate-out.md  (N/A if this is Stage 1)
+Prior Merge: tasks/stage-[N]-merge-approval.md  (N/A if this is Stage 1)
 
 Constraints:
 - Branch from main only — do NOT branch from feature/[prior-domain]
@@ -256,7 +256,7 @@ Worker Scope (1 Job = 1 Stage = 1 Workspace)
 Each worker:
 
 * Owns exactly one stage, one branch/workspace, one domain
-* Works ONLY on the task described in their tasks/stage-[N]/dispatch-in.md
+* Works ONLY on the task described in their tasks/stage-[N]-dispatch-in.md
 * Must NOT pick up, merge, or test work belonging to other stages
 * Must NOT perform integration testing across modules — that is the
   conductor's responsibility (see Conductor-Only Tasks above)
@@ -454,7 +454,7 @@ Stage Completion
 
 When work is complete, create:
 
-tasks/stage-[N]/gate-out.md
+tasks/stage-[N]-gate-out.md
 
 Replace [N] with your assigned stage number from dispatch-in.md.
 

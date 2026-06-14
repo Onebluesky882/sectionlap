@@ -32,13 +32,13 @@
 **Gate-In Requirements:**
 - None (Stage 1 starts immediately)
 
-**Dispatch-In:** `tasks/stage-1/dispatch-in.md`
+**Dispatch-In:** `tasks/stage-1-dispatch-in.md`
 <!-- Conductor writes this AFTER prior stage merges to main -->
 
-**Gate-Out:** `tasks/stage-1/gate-out.md`
+**Gate-Out:** `tasks/stage-1-gate-out.md`
 <!-- Agent writes this when stage is complete -->
 
-**Merge-Approval:** `tasks/stage-1/merge-approval.md`
+**Merge-Approval:** `tasks/stage-1-merge-approval.md`
 <!-- Conductor writes this after gate validation passes; triggers PR merge -->
 
 ⸻
@@ -58,11 +58,11 @@
 **Gate-In Requirements:**
 - Stage 1 merged to main (Wails app shell exists)
 
-**Dispatch-In:** `tasks/stage-2/dispatch-in.md`
+**Dispatch-In:** `tasks/stage-2-dispatch-in.md`
 
-**Gate-Out:** `tasks/stage-2/gate-out.md`
+**Gate-Out:** `tasks/stage-2-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-2/merge-approval.md`
+**Merge-Approval:** `tasks/stage-2-merge-approval.md`
 
 ⸻
 
@@ -83,11 +83,11 @@
 **Gate-In Requirements:**
 - Stage 1 merged to main
 
-**Dispatch-In:** `tasks/stage-3/dispatch-in.md`
+**Dispatch-In:** `tasks/stage-3-dispatch-in.md`
 
-**Gate-Out:** `tasks/stage-3/gate-out.md`
+**Gate-Out:** `tasks/stage-3-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-3/merge-approval.md`
+**Merge-Approval:** `tasks/stage-3-merge-approval.md`
 
 ⸻
 
@@ -108,11 +108,11 @@
 **Gate-In Requirements:**
 - Stage 1 merged to main (Wails app shell exists)
 
-**Dispatch-In:** `tasks/stage-4/dispatch-in.md`
+**Dispatch-In:** `tasks/stage-4-dispatch-in.md`
 
-**Gate-Out:** `tasks/stage-4/gate-out.md`
+**Gate-Out:** `tasks/stage-4-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-4/merge-approval.md`
+**Merge-Approval:** `tasks/stage-4-merge-approval.md`
 
 ⸻
 
@@ -133,11 +133,11 @@
 - Stage 3 merged to main (mock logic contracts available)
 - Stage 4 merged to main (sync service + protocol available)
 
-**Dispatch-In:** `tasks/stage-5/dispatch-in.md`
+**Dispatch-In:** `tasks/stage-5-dispatch-in.md`
 
-**Gate-Out:** `tasks/stage-5/gate-out.md`
+**Gate-Out:** `tasks/stage-5-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-5/merge-approval.md`
+**Merge-Approval:** `tasks/stage-5-merge-approval.md`
 
 ⸻
 
@@ -158,11 +158,11 @@
 - Stage 3 merged to main (contracts defined)
 - Stage 5 merged to main (both clients exist to migrate)
 
-**Dispatch-In:** `tasks/stage-6/dispatch-in.md`
+**Dispatch-In:** `tasks/stage-6-dispatch-in.md`
 
-**Gate-Out:** `tasks/stage-6/gate-out.md`
+**Gate-Out:** `tasks/stage-6-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-6/merge-approval.md`
+**Merge-Approval:** `tasks/stage-6-merge-approval.md`
 
 ⸻
 
