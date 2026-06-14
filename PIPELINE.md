@@ -4,7 +4,7 @@
 
 | Stage | Domain | Status |
 |-------|--------|--------|
-| 1 | Frontend Shell + Mock Data (Wails) | IN PROGRESS |
+| 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | IN PROGRESS |
 | 2b | Jitsi Embed in Wails (integration) | PENDING |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
@@ -25,15 +25,15 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Wails app runs on Windows and macOS
-- [ ] Section list screen (browse available sections)
-- [ ] Section detail screen
-- [ ] Booking/checkout screen (UI only, no real payment)
-- [ ] Teacher dashboard screen (post/edit sections)
-- [ ] All data sourced from local mock JSON (no backend/db)
+- [x] Wails app runs on Windows and macOS
+- [x] Section list screen (browse available sections)
+- [x] Section detail screen
+- [x] Booking/checkout screen (UI only, no real payment)
+- [x] Teacher dashboard screen (post/edit sections)
+- [x] All data sourced from local mock JSON (no backend/db)
 
 **Gate-In Requirements:**
 - None (Stage 1 starts immediately)
