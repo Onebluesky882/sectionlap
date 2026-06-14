@@ -4,7 +4,7 @@
 
 | Stage | Domain | Status |
 |-------|--------|--------|
-| 1 | Frontend Shell + Mock Data (Wails) | PENDING |
+| 1 | Frontend Shell + Mock Data (Wails) | IN PROGRESS |
 | 2 | Jitsi Meet Self-host + Embed | PENDING |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
 | 4 | Sync Service (Yjs Whiteboard & Document Highlight) | PENDING |
@@ -19,7 +19,7 @@
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
 - [ ] Wails app runs on Windows and macOS
