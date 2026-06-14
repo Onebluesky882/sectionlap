@@ -1,13 +1,13 @@
-Stage: 4
+Stage: 4a
 Domain: modules/sync-service
-Status: PENDING
+Status: ASSIGNED
 Model: claude-opus-4-8
 
-Workspace: branch from main (after Stage 1 merged)
+Workspace: branch from main (no dependency — parallel with Stage 1)
 
 Context Files:
 - PROJECT.md
-- PIPELINE.md (Stage 4)
+- PIPELINE.md (Stage 4a)
 - ARCHITECTURE.md
 - CONTRACTS.md
 - DECISIONS.md
@@ -18,16 +18,19 @@ Build the real-time sync service using Yjs + y-websocket:
 - Collaborative whiteboard: drawing surface synced in real-time across clients
 - Document highlight: load PDF/image and sync annotation/highlight layers
   in real-time
-- Integrate the Wails app (Stage 1) as a client of this sync service
-- Document the shared protocol/contract for Expo (Stage 5) to reuse
+- Document the shared protocol/contract for Wails (Stage 4b) and Expo
+  (Stage 5) to reuse
 - Document setup/run instructions
 
-Gate-In Verified: NO
-Prior Gate-Out: tasks/stage-1-gate-out.md (pending)
-Prior Merge: tasks/stage-1-merge-approval.md (pending)
+Do not touch modules/desktop-app or modules/mobile-app — this stage is
+the standalone sync server only.
+
+Gate-In Verified: YES (no prior stage dependency)
+Prior Gate-Out: N/A
+Prior Merge: N/A
 
 Constraints:
-- Branch from main only — do NOT branch from feature/desktop-app
+- Branch from main only
 - STOP after assigned work is complete
 - Do NOT merge to dev/main directly
-- Create PR targeting main via feature/sync-service
+- Create PR targeting main via feature/sync-service-infra

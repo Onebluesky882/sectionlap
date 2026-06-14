@@ -5,11 +5,17 @@
 | Stage | Domain | Status |
 |-------|--------|--------|
 | 1 | Frontend Shell + Mock Data (Wails) | IN PROGRESS |
-| 2 | Jitsi Meet Self-host + Embed | PENDING |
+| 2a | Jitsi Meet Self-host (infra) | IN PROGRESS |
+| 2b | Jitsi Embed in Wails (integration) | PENDING |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
-| 4 | Sync Service (Yjs Whiteboard & Document Highlight) | PENDING |
+| 4a | Sync Service (Yjs infra) | IN PROGRESS |
+| 4b | Sync Service Integration (Wails) | PENDING |
 | 5 | Expo App (Student / Teacher) | PENDING |
 | 6 | Backend (Replace Mock Booking/Payment/Enrollment) | PENDING |
+
+**Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
+and are dispatched in parallel with it. Their integration counterparts
+(2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to main.
 
 ⸻
 
@@ -43,26 +49,47 @@
 
 ⸻
 
-### Stage 2 — Jitsi Meet Self-host + Embed
+### Stage 2a — Jitsi Meet Self-host (infra)
 
 **Domain:** modules/live-class
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
 - [ ] Jitsi Meet running locally via docker-compose
+- [ ] Setup/run instructions documented
+- [ ] Local Jitsi room URL/config documented for Stage 2b to consume
+
+**Gate-In Requirements:**
+- None — runs in parallel with Stage 1, no dependency
+
+**Dispatch-In:** `tasks/state-2a-jitsi-infra.md`
+
+**Gate-Out:** `tasks/stage-2a-gate-out.md`
+
+**Merge-Approval:** `tasks/stage-2a-merge-approval.md`
+
+⸻
+
+### Stage 2b — Jitsi Embed in Wails (integration)
+
+**Domain:** modules/desktop-app
+**Agent:** [assigned agent]
+**Status:** `PENDING`
+
+**Acceptance Criteria:**
 - [ ] "Live Class" screen in Wails app embeds local Jitsi room (webview/iframe)
 - [ ] Join/leave room works with mic/cam from the Wails app
-- [ ] Setup/run instructions documented
 
 **Gate-In Requirements:**
 - Stage 1 merged to main (Wails app shell exists)
+- Stage 2a merged to main (Jitsi instance + config available)
 
-**Dispatch-In:** `tasks/state-2-live-class.md`
+**Dispatch-In:** `tasks/state-2b-jitsi-embed.md`
 
-**Gate-Out:** `tasks/stage-2-gate-out.md`
+**Gate-Out:** `tasks/stage-2b-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-2-merge-approval.md`
+**Merge-Approval:** `tasks/stage-2b-merge-approval.md`
 
 ⸻
 
@@ -91,28 +118,49 @@
 
 ⸻
 
-### Stage 4 — Sync Service (Yjs Whiteboard & Document Highlight)
+### Stage 4a — Sync Service (Yjs infra)
 
 **Domain:** modules/sync-service
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
 - [ ] WebSocket sync server running locally (Yjs + y-websocket)
 - [ ] Whiteboard: collaborative drawing surface, real-time sync across connected clients
 - [ ] Document highlight: load PDF/image, draw/highlight annotations synced in real-time
-- [ ] Wails app integrated as a client connecting to the sync service
-- [ ] Shared protocol/contract documented for Expo (Stage 5) to reuse
+- [ ] Shared protocol/contract documented for Wails (Stage 4b) and Expo (Stage 5) to reuse
 - [ ] Setup/run instructions documented
 
 **Gate-In Requirements:**
+- None — runs in parallel with Stage 1, no dependency
+
+**Dispatch-In:** `tasks/state-4a-sync-infra.md`
+
+**Gate-Out:** `tasks/stage-4a-gate-out.md`
+
+**Merge-Approval:** `tasks/stage-4a-merge-approval.md`
+
+⸻
+
+### Stage 4b — Sync Service Integration (Wails)
+
+**Domain:** modules/desktop-app
+**Agent:** [assigned agent]
+**Status:** `PENDING`
+
+**Acceptance Criteria:**
+- [ ] Wails app integrated as a client connecting to the sync service
+- [ ] Whiteboard and document-highlight usable from within the Wails app
+
+**Gate-In Requirements:**
 - Stage 1 merged to main (Wails app shell exists)
+- Stage 4a merged to main (sync service + protocol available)
 
-**Dispatch-In:** `tasks/state-4-sync-service.md`
+**Dispatch-In:** `tasks/state-4b-sync-integration.md`
 
-**Gate-Out:** `tasks/stage-4-gate-out.md`
+**Gate-Out:** `tasks/stage-4b-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-4-merge-approval.md`
+**Merge-Approval:** `tasks/stage-4b-merge-approval.md`
 
 ⸻
 
@@ -126,12 +174,12 @@
 - [ ] Expo app runs on Android and iPad
 - [ ] Student/Teacher flows mirrored from Wails (section list, booking, dashboard) using mock logic from Stage 3
 - [ ] Live class via Jitsi React Native SDK
-- [ ] Whiteboard & document-highlight connected to the same Sync Service from Stage 4
+- [ ] Whiteboard & document-highlight connected to the same Sync Service from Stage 4a
 - [ ] Real-time sync verified between Wails and Expo clients
 
 **Gate-In Requirements:**
 - Stage 3 merged to main (mock logic contracts available)
-- Stage 4 merged to main (sync service + protocol available)
+- Stage 4a merged to main (sync service + protocol available)
 
 **Dispatch-In:** `tasks/state-5-mobile-app.md`
 
