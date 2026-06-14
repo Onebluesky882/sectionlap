@@ -65,11 +65,11 @@ This guarantees each workspace starts clean from main.
 
 Steps:
 
-1. Read tasks/stage-[N]-gate-out.md from the completed stage
+1. Read gate-out/state-[N]-<domain>.md from the completed stage
 2. Validate all gate criteria (see Gate Validation Rules below)
-3. If REJECT: write rejection reason to tasks/stage-[N]-rejection.md; halt; do not advance
+3. If REJECT: write rejection reason to rejection/state-[N]-<domain>.md; halt; do not advance
 4. If PASS: update PIPELINE.md — set Stage [N] Status = COMPLETE
-5. Write tasks/stage-[N]-merge-approval.md
+5. Write merge-approval/state-[N]-<domain>.md
 6. Wait for PR (feature/[domain]) to squash-merge into main
 7. After merge confirmed: update PIPELINE.md — set Stage [N+1] Status = IN PROGRESS
 8. Write tasks/state-[N+1]-<domain>.md
@@ -112,7 +112,7 @@ IN PROGRESS → COMPLETE
 
 IN PROGRESS → BLOCKED
   Condition: gate-out.md Status = FAIL or any gate criteria not met
-  Action:    conductor writes tasks/stage-[N]-rejection.md; updates PIPELINE.md
+  Action:    conductor writes rejection/state-[N]-<domain>.md; updates PIPELINE.md
 
 BLOCKED → IN PROGRESS
   Condition: human resolves blocking issue and explicitly approves re-dispatch
@@ -145,7 +145,7 @@ Conductor Output — merge-approval.md
 
 After gate validation passes, write:
 
-tasks/stage-[N]-merge-approval.md
+merge-approval/state-[N]-<domain>.md
 
 Format:
 
@@ -201,8 +201,8 @@ Task:
 [Clear description of what the agent must implement]
 
 Gate-In Verified: YES
-Prior Gate-Out: tasks/stage-[N]-gate-out.md  (N/A if this is Stage 1)
-Prior Merge: tasks/stage-[N]-merge-approval.md  (N/A if this is Stage 1)
+Prior Gate-Out: gate-out/state-[N]-<domain>.md  (N/A if this is Stage 1)
+Prior Merge: merge-approval/state-[N]-<domain>.md  (N/A if this is Stage 1)
 
 Constraints:
 - Branch from main only — do NOT branch from feature/[prior-domain]
@@ -454,7 +454,7 @@ Stage Completion
 
 When work is complete, create:
 
-tasks/stage-[N]-gate-out.md
+gate-out/state-[N]-<domain>.md
 
 Replace [N] with your assigned stage number from dispatch-in.md.
 

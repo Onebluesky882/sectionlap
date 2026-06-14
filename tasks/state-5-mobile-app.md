@@ -3,7 +3,7 @@ Domain: modules/mobile-app
 Status: PENDING
 Model: claude-opus-4-8
 
-Workspace: branch from main (after Stage 3 and Stage 4 merged)
+Workspace: branch from main (after Stage 3 and Stage 4a merged)
 
 Context Files:
 - PROJECT.md
@@ -19,12 +19,12 @@ Build the Expo app (Android + iPad):
   mock booking/payment/enrollment logic contracts from Stage 3
 - Integrate live class via Jitsi React Native SDK
 - Connect whiteboard & document-highlight to the same Sync Service
-  (Stage 4), using its documented protocol
+  (Stage 4a), using its documented protocol
 - Verify real-time sync works between a Wails client and an Expo client
 
 Gate-In Verified: NO
-Prior Gate-Out: tasks/stage-3-gate-out.md, tasks/stage-4-gate-out.md (pending)
-Prior Merge: tasks/stage-3-merge-approval.md, tasks/stage-4-merge-approval.md (pending)
+Prior Gate-Out: tasks/state-3-booking-logic-gate-out.md, tasks/state-4a-sync-infra-gate-out.md (pending)
+Prior Merge: tasks/state-3-booking-logic-merge-approval.md, tasks/state-4a-sync-infra-merge-approval.md (pending)
 
 Constraints:
 - Branch from main only
