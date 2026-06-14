@@ -23,8 +23,8 @@ logic introduced in Stage 3:
 - Provision Jitsi room access tied to enrollment status (paid students only)
 
 Gate-In Verified: NO
-Prior Gate-Out: tasks/stage-3-gate-out.md, tasks/stage-5-gate-out.md (pending)
-Prior Merge: tasks/stage-3-merge-approval.md, tasks/stage-5-merge-approval.md (pending)
+Prior Gate-Out: tasks/state-3-booking-logic-gate-out.md, tasks/state-5-mobile-app-gate-out.md (pending)
+Prior Merge: tasks/state-3-booking-logic-merge-approval.md, tasks/state-5-mobile-app-merge-approval.md (pending)
 
 Constraints:
 - Branch from main only

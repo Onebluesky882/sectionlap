@@ -41,10 +41,10 @@ and are dispatched in parallel with it. Their integration counterparts
 **Dispatch-In:** `tasks/state-1-desktop-app.md`
 <!-- Conductor writes this AFTER prior stage merges to main -->
 
-**Gate-Out:** `tasks/stage-1-gate-out.md`
+**Gate-Out:** `tasks/state-1-desktop-app-gate-out.md`
 <!-- Agent writes this when stage is complete -->
 
-**Merge-Approval:** `tasks/stage-1-merge-approval.md`
+**Merge-Approval:** `tasks/state-1-desktop-app-merge-approval.md`
 <!-- Conductor writes this after gate validation passes; triggers PR merge -->
 
 ⸻
@@ -65,9 +65,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-2a-jitsi-infra.md`
 
-**Gate-Out:** `tasks/stage-2a-gate-out.md`
+**Gate-Out:** `tasks/state-2a-jitsi-infra-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-2a-merge-approval.md`
+**Merge-Approval:** `tasks/state-2a-jitsi-infra-merge-approval.md`
 
 ⸻
 
@@ -87,9 +87,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-2b-jitsi-embed.md`
 
-**Gate-Out:** `tasks/stage-2b-gate-out.md`
+**Gate-Out:** `tasks/state-2b-jitsi-embed-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-2b-merge-approval.md`
+**Merge-Approval:** `tasks/state-2b-jitsi-embed-merge-approval.md`
 
 ⸻
 
@@ -112,9 +112,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-3-booking-logic.md`
 
-**Gate-Out:** `tasks/stage-3-gate-out.md`
+**Gate-Out:** `tasks/state-3-booking-logic-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-3-merge-approval.md`
+**Merge-Approval:** `tasks/state-3-booking-logic-merge-approval.md`
 
 ⸻
 
@@ -136,9 +136,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-4a-sync-infra.md`
 
-**Gate-Out:** `tasks/stage-4a-gate-out.md`
+**Gate-Out:** `tasks/state-4a-sync-infra-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-4a-merge-approval.md`
+**Merge-Approval:** `tasks/state-4a-sync-infra-merge-approval.md`
 
 ⸻
 
@@ -158,9 +158,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-4b-sync-integration.md`
 
-**Gate-Out:** `tasks/stage-4b-gate-out.md`
+**Gate-Out:** `tasks/state-4b-sync-integration-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-4b-merge-approval.md`
+**Merge-Approval:** `tasks/state-4b-sync-integration-merge-approval.md`
 
 ⸻
 
@@ -183,9 +183,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-5-mobile-app.md`
 
-**Gate-Out:** `tasks/stage-5-gate-out.md`
+**Gate-Out:** `tasks/state-5-mobile-app-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-5-merge-approval.md`
+**Merge-Approval:** `tasks/state-5-mobile-app-merge-approval.md`
 
 ⸻
 
@@ -208,9 +208,9 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Dispatch-In:** `tasks/state-6-backend.md`
 
-**Gate-Out:** `tasks/stage-6-gate-out.md`
+**Gate-Out:** `tasks/state-6-backend-gate-out.md`
 
-**Merge-Approval:** `tasks/stage-6-merge-approval.md`
+**Merge-Approval:** `tasks/state-6-backend-merge-approval.md`
 
 ⸻
 

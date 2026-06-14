@@ -23,8 +23,8 @@ Build the Expo app (Android + iPad):
 - Verify real-time sync works between a Wails client and an Expo client
 
 Gate-In Verified: NO
-Prior Gate-Out: tasks/stage-3-gate-out.md, tasks/stage-4a-gate-out.md (pending)
-Prior Merge: tasks/stage-3-merge-approval.md, tasks/stage-4a-merge-approval.md (pending)
+Prior Gate-Out: tasks/state-3-booking-logic-gate-out.md, tasks/state-4a-sync-infra-gate-out.md (pending)
+Prior Merge: tasks/state-3-booking-logic-merge-approval.md, tasks/state-4a-sync-infra-merge-approval.md (pending)
 
 Constraints:
 - Branch from main only

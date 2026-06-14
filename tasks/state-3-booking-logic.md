@@ -25,8 +25,8 @@ still entirely local (no backend/API):
   Stage 6 (backend) can implement the same contracts
 
 Gate-In Verified: NO
-Prior Gate-Out: tasks/stage-1-gate-out.md (pending)
-Prior Merge: tasks/stage-1-merge-approval.md (pending)
+Prior Gate-Out: tasks/state-1-desktop-app-gate-out.md (pending)
+Prior Merge: tasks/state-1-desktop-app-merge-approval.md (pending)
 
 Constraints:
 - Branch from main only — do NOT branch from feature/desktop-app
