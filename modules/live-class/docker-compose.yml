@@ -1,0 +1,135 @@
+services:
+  prosody:
+    image: jitsi/prosody:stable-9646
+    container_name: jitsi-prosody
+    restart: unless-stopped
+    expose:
+      - "5222"
+      - "5347"
+      - "5280"
+    volumes:
+      - ${CONFIG}/prosody/config:/config:Z
+      - ${CONFIG}/prosody/prosody-plugins-custom:/prosody-plugins-custom:Z
+    environment:
+      - AUTH_TYPE
+      - ENABLE_AUTH
+      - ENABLE_GUESTS
+      - GLOBAL_MODULES
+      - GLOBAL_CONFIG
+      - PUBLIC_URL
+      - TZ
+      - JVB_AUTH_USER
+      - JVB_AUTH_PASSWORD
+      - JICOFO_COMPONENT_SECRET
+      - JICOFO_AUTH_USER
+      - JICOFO_AUTH_PASSWORD
+      - XMPP_DOMAIN
+      - XMPP_AUTH_DOMAIN
+      - XMPP_GUEST_DOMAIN
+      - XMPP_MUC_DOMAIN
+      - XMPP_INTERNAL_MUC_DOMAIN
+      - XMPP_MODULES
+      - XMPP_MUC_MODULES
+      - XMPP_INTERNAL_MUC_MODULES
+      - XMPP_RECORDER_DOMAIN
+      - XMPP_CROSS_DOMAIN
+      - LOG_LEVEL
+    networks:
+      meet.jitsi:
+        aliases:
+          - xmpp.meet.jitsi
+
+  web:
+    image: jitsi/web:stable-9646
+    container_name: jitsi-web
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8000}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - ${CONFIG}/web:/config:Z
+      - ${CONFIG}/web/letsencrypt:/etc/letsencrypt:Z
+      - ${CONFIG}/transcripts:/usr/share/jitsi-meet/transcripts:Z
+    environment:
+      - ENABLE_AUTH
+      - ENABLE_GUESTS
+      - ENABLE_LETSENCRYPT
+      - ENABLE_HTTP_REDIRECT
+      - DISABLE_HTTPS
+      - LETSENCRYPT_DOMAIN
+      - LETSENCRYPT_EMAIL
+      - PUBLIC_URL
+      - TZ
+      - XMPP_DOMAIN
+      - XMPP_AUTH_DOMAIN
+      - XMPP_BOSH_URL_BASE
+      - XMPP_GUEST_DOMAIN
+      - XMPP_MUC_DOMAIN
+      - XMPP_RECORDER_DOMAIN
+      - JVB_TCP_PORT
+      - JVB_TCP_MAPPED_PORT
+      - TZ
+    depends_on:
+      - prosody
+    networks:
+      meet.jitsi:
+        aliases:
+          - meet.jitsi
+
+  jicofo:
+    image: jitsi/jicofo:stable-9646
+    container_name: jitsi-jicofo
+    restart: unless-stopped
+    volumes:
+      - ${CONFIG}/jicofo:/config:Z
+    environment:
+      - AUTH_TYPE
+      - XMPP_DOMAIN
+      - XMPP_AUTH_DOMAIN
+      - XMPP_INTERNAL_MUC_DOMAIN
+      - JICOFO_COMPONENT_SECRET
+      - JICOFO_AUTH_USER
+      - JICOFO_AUTH_PASSWORD
+      - JVB_BREWERY_MUC
+      - JIGASI_BREWERY_MUC
+      - JIBRI_BREWERY_MUC
+      - JIBRI_PENDING_TIMEOUT
+      - TZ
+    depends_on:
+      - prosody
+    networks:
+      meet.jitsi:
+
+  jvb:
+    image: jitsi/jvb:stable-9646
+    container_name: jitsi-jvb
+    restart: unless-stopped
+    ports:
+      - "${JVB_TCP_PORT:-4443}:4443/tcp"
+      - "${JVB_UDP_PORT:-10000}:10000/udp"
+    volumes:
+      - ${CONFIG}/jvb:/config:Z
+    environment:
+      - DOCKER_HOST_ADDRESS
+      - XMPP_AUTH_DOMAIN
+      - XMPP_INTERNAL_MUC_DOMAIN
+      - XMPP_SERVER
+      - JVB_AUTH_USER
+      - JVB_AUTH_PASSWORD
+      - JVB_BREWERY_MUC
+      - JVB_PORT
+      - JVB_TCP_HARVESTER_DISABLED
+      - JVB_TCP_PORT
+      - JVB_TCP_MAPPED_PORT
+      - JVB_STUN_SERVERS
+      - JVB_ENABLE_APIS
+      - PUBLIC_URL
+      - TZ
+    depends_on:
+      - prosody
+      - jicofo
+    networks:
+      meet.jitsi:
+
+networks:
+  meet.jitsi:
