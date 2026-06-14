@@ -6,7 +6,7 @@
 |-------|--------|--------|
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
-| 2b | Jitsi Embed in Wails (integration) | PENDING |
+| 2b | Jitsi Embed in Wails (integration) | IN PROGRESS |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
 | 4a | Sync Service (Yjs infra) | IN PROGRESS |
 | 4b | Sync Service Integration (Wails) | PENDING |
@@ -75,7 +75,7 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `PENDING`
+**Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
 - [ ] "Live Class" screen in Wails app embeds local Jitsi room (webview/iframe)
