@@ -27,8 +27,15 @@ export function SectionDetailPage() {
 
         {booking?.status === "paid" ? (
           <div className="enrolled-banner">
-            ✅ Enrolled — content unlock and live class access coming in a
-            later stage.
+            ✅ Enrolled — content unlock coming in a later stage.
+            <div>
+              <button
+                className="btn btn-primary"
+                onClick={() => navigate(`/sections/${section.id}/live-class`)}
+              >
+                Join Live Class
+              </button>
+            </div>
           </div>
         ) : (
           <button

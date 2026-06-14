@@ -161,6 +161,23 @@
   padding: 0.75rem 1rem;
   background-color: rgba(76, 175, 80, 0.2);
   border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.live-class-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+}
+
+.jitsi-container {
+  flex: 1;
+  min-height: 480px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: rgba(38, 50, 68, 1);
 }
 
 .checkout-summary {
