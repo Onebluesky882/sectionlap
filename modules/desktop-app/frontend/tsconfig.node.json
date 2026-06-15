@@ -1,9 +1,15 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
     "composite": true,
     "ignoreDeprecations": "6.0",
+    "moduleResolution": "bundler",
     "module": "ESNext",
-    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true
   },
   "include": [

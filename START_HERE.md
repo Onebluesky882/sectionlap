@@ -23,6 +23,16 @@ Workers own:
 * evidence
 * gate-out submission
 
+Do not:
+
+* redesign the roadmap
+* modify architecture
+* modify contracts
+* modify security policies
+* create new stages
+* change stage ordering
+* self-approve work
+* merge code
 ⸻
 
 Required Reading Order
@@ -30,12 +40,14 @@ Required Reading Order
 Read these files in exact order:
 
 1. PROJECT.md
-2. ARCHITECTURE.md
-3. CONTRACTS.md
-4. DECISIONS.md
-5. PIPELINE.md
-6. AGENT_RULES.md
-7. CONDUCTOR.md      
+2. ROADMAP.md
+3. ARCHITECTURE.md
+4. CONTRACTS.md
+5. DECISIONS.md
+6. SECURITY_RULES.md
+7. AGENT_RULES.md
+8. PIPELINE.md
+9. CONDUCTOR.md   
 
 Do not continue until all files have been read.
 

@@ -9,10 +9,14 @@ Every agent is a worker, not the owner of the project.
 The orchestrator controls:
 
 * PROJECT.md
+* ROADMAP.md
 * PIPELINE.md
-* DECISIONS.md
 * ARCHITECTURE.md
 * CONTRACTS.md
+* DECISIONS.md
+* SECURITY_RULES.md
+* AGENT_RULES.md
+* CONDUCTOR.md
 
 Agents implement assigned work only.
 
@@ -621,8 +625,76 @@ Only the Conductor may modify ROADMAP.md.
 
 Technology Stack Authority
 
-DECISIONS.md is the source of truth for technology selection.
+DECISIONS.md is the authoritative source for all technology decisions.
 
-Using alternative frameworks, libraries, ORMs, databases, authentication providers, build tools, styling systems, or state management solutions is prohibited unless explicitly approved by the Conductor.
+Workers must follow all approved technologies defined in DECISIONS.md.
+
+Workers may NOT:
+
+* replace approved technologies
+* introduce alternative frameworks
+* substitute approved libraries
+* replace approved infrastructure components
+* change implementation technologies
+* introduce competing solutions alongside approved technologies
+
+without explicit Conductor approval.
+
+If a required technology is not defined in DECISIONS.md:
+
+STOP.
+
+Request clarification from the Conductor before implementation.
+
+Any implementation that differs from DECISIONS.md is considered non-compliant.
 
 Technology non-compliance automatically fails gate validation.
+
+Result:
+
+Status: FAIL
+
+Ready For Next Stage: NO
+
+⸻
+
+Technology Freshness Compliance
+
+Workers must use the latest stable version of all approved technologies unless DECISIONS.md explicitly specifies a required version.
+
+Workers may NOT:
+
+* use deprecated releases
+* use unsupported releases
+* use end-of-life releases
+* use archived project templates
+* bootstrap new projects from outdated templates
+* intentionally select older major versions
+
+When creating a new project, workers must use:
+
+* the latest official project generator
+* the latest official scaffold
+* the latest supported template
+
+provided by the technology owner.
+
+Workers must verify the current stable version before creating a new project.
+
+If the latest stable version is incompatible with an approved project dependency or platform:
+
+STOP.
+
+Report the issue as:
+
+Version Conflict
+
+and wait for Conductor guidance.
+
+Technology freshness non-compliance automatically fails gate validation.
+
+Result:
+
+Status: FAIL
+
+Ready For Next Stage: NO
