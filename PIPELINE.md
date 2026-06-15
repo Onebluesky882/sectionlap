@@ -137,11 +137,11 @@ Currently:
 **Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
-- [ ] WebSocket sync server running locally (Yjs + y-websocket)
-- [ ] Whiteboard: collaborative drawing surface, real-time sync across connected clients
-- [ ] Document highlight: load PDF/image, draw/highlight annotations synced in real-time
-- [ ] Shared protocol/contract documented for Wails (Stage 4b) and Expo (Stage 5) to reuse
-- [ ] Setup/run instructions documented
+- [x] WebSocket sync server running locally (Yjs + y-websocket)
+- [x] Whiteboard: collaborative drawing surface, real-time sync across connected clients
+- [x] Document highlight: load PDF/image, draw/highlight annotations synced in real-time
+- [x] Shared protocol/contract documented for Wails (Stage 4b) and Expo (Stage 5) to reuse
+- [x] Setup/run instructions documented
 
 **Gate-In Requirements:**
 - None — runs in parallel with Stage 1, no dependency
