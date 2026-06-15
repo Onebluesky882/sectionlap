@@ -1,10 +1,24 @@
 import { useSectionForm } from "../hooks/useSectionForm";
 import { SectionCard } from "../components/SectionCard";
 import { SectionForm } from "../components/SectionForm";
+import { useAppStore } from "../store/useAppStore";
 
 export function TeacherDashboardPage() {
+  const currentUser = useAppStore((state) => state.currentUser);
+  const bookings = useAppStore((state) => state.bookings);
   const { sections, editingId, values, setValues, startCreate, startEdit, cancel, submit } =
     useSectionForm();
+
+  if (currentUser.role !== "teacher") {
+    return (
+      <div className="page">
+        <h1>Teacher Dashboard</h1>
+        <div className="note">
+          Switch to the teacher role (top right) to manage your sections.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page">
@@ -35,6 +49,11 @@ export function TeacherDashboardPage() {
             section={section}
             actionLabel="Edit"
             onAction={() => startEdit(section)}
+            enrolledCount={
+              bookings.filter(
+                (b) => b.sectionId === section.id && b.status !== "failed"
+              ).length
+            }
           />
         ))}
       </div>

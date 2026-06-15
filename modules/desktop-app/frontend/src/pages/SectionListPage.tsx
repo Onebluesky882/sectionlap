@@ -4,6 +4,7 @@ import { SectionCard } from "../components/SectionCard";
 
 export function SectionListPage() {
   const sections = useAppStore((state) => state.sections);
+  const bookings = useAppStore((state) => state.bookings);
   const navigate = useNavigate();
 
   return (
@@ -19,6 +20,11 @@ export function SectionListPage() {
             section={section}
             actionLabel="View Details"
             onAction={() => navigate(`/sections/${section.id}`)}
+            enrolledCount={
+              bookings.filter(
+                (b) => b.sectionId === section.id && b.status !== "failed"
+              ).length
+            }
           />
         ))}
       </div>
