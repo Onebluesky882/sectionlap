@@ -35,3 +35,11 @@ export interface CreateBookingResult {
   booking: BookingRecord | null;
   error: BookingError | null;
 }
+
+// Shared with the sync-service (Stage 4a) whiteboard and document-highlight
+// rooms — see modules/sync-service/README.md.
+export interface Stroke {
+  color: string;
+  width: number;
+  points: { x: number; y: number }[];
+}
