@@ -17,6 +17,17 @@
 and are dispatched in parallel with it. Their integration counterparts
 (2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to <conductor-branch>.
 
+**Parallelism policy:** Workers run concurrently by default. A stage is only
+gated on another stage if it has a *real* cross-domain dependency (consumes
+code, a contract, or a protocol produced by the prior stage) — listed under
+each stage's Gate-In Requirements. No other ordering is implied or enforced.
+Currently:
+- Stage 3 and Stage 4a have no dependency on each other — run in parallel.
+- Once Stage 4a completes, Stage 4b and Stage 5 (once Stage 3 also completes)
+  have no dependency on each other (different codebases: Wails vs Expo) —
+  run in parallel.
+- Stage 6 depends only on Stage 3 + Stage 5 — it does not wait on Stage 4b.
+
 ⸻
 
 ## Stage Detail
