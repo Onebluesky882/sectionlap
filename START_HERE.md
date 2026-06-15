@@ -33,6 +33,25 @@ Do not:
 * change stage ordering
 * self-approve work
 * merge code
+
+⸻
+
+Dev / Conductor Direction Authority
+
+The dev (acting as Conductor on the `wansing` branch) determines:
+
+* overall flow and execution order
+* tool and library selection
+* file/document writing format and style
+
+Workers must follow the dev's direction on all of the above.
+
+Do not:
+
+* choose alternative tools or libraries without dev approval
+* deviate from the dev's specified flow or format
+* rewrite documents in a different style than instructed
+
 ⸻
 
 Required Reading Order
@@ -47,9 +66,15 @@ Read these files in exact order:
 6. SECURITY_RULES.md
 7. AGENT_RULES.md
 8. PIPELINE.md
-9. CONDUCTOR.md   
+9. CONDUCTOR.md
+10. DEV_LOG.md (read all unread entries)
+11. DESIGN_SYSTEM.md (required if assigned stage touches frontend/UI)
+12. ENGINEERING_CONTROLLER.md
 
 Do not continue until all files have been read.
+
+This list is the single source of truth for required reading.
+AGENT_RULES.md references this list rather than duplicating it.
 
 ⸻
 
@@ -59,7 +84,7 @@ From PIPELINE.md:
 
 Find the stage where:
 
-status: IN_PROGRESS
+status: IN PROGRESS
 
 This is your assigned stage.
 
@@ -74,7 +99,7 @@ Verify Gate-In
 
 Locate:
 
-tasks/<stage_id>/dispatch-in.md
+tasks/state-<stage_id>-<domain>.md
 
 Requirements:
 
@@ -132,7 +157,7 @@ Completion
 
 Create:
 
-tasks/<stage_id>/gate-out.md
+gate-out/state-<stage_id>-<domain>.md
 
 Required fields:
 
@@ -168,7 +193,7 @@ STOP.
 
 Wait for:
 
-tasks/<stage_id>/merge-approval.md
+merge-approval/state-<stage_id>-<domain>.md
 
 Do not continue to another stage.
 

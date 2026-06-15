@@ -187,7 +187,7 @@ Verify:
 
 Create:
 
-tasks/state-[N]-.md
+tasks/state-[N]-<domain>.md
 
 Required:
 
@@ -249,43 +249,22 @@ Workers must never self-resolve governance issues.
 
 Dependency Approval
 
-Workers should prefer existing dependencies.
+See AGENT_RULES.md "Dependency Rules" and DECISIONS.md 011 for the worker-
+facing rule (document package/version/reason in gate-out.md).
 
-If a dependency is required:
-
-Worker must document:
-
-* package
-* version
-* reason
-
-The Conductor reviews during gate validation.
-
-The Conductor may:
-
-* approve
-* reject
-* request alternative
+The Conductor reviews documented dependencies during gate validation and
+may approve, reject, or request an alternative.
 
 ⸻
 
 Architecture Governance
 
-ARCHITECTURE.md is authoritative.
+ARCHITECTURE.md is authoritative. See AGENT_RULES.md "Architecture Rules"
+for the worker-facing restriction (no moving modules, renaming domains, or
+redesigning workflows without explicit instruction).
 
-Workers may not:
-
-* move modules
-* rename domains
-* redesign workflows
-
-Architecture changes require:
-
-* rationale
-* impact analysis
-* decision record
-
-Only the Conductor may approve.
+Architecture changes require rationale, impact analysis, and a decision
+record. Only the Conductor may approve.
 
 ⸻
 
@@ -309,29 +288,12 @@ Only the Conductor may approve contract modifications.
 
 Decision Governance
 
-DECISIONS.md is authoritative.
+DECISIONS.md is authoritative and binding. See AGENT_RULES.md "Decision
+Rules" for the worker-facing restriction (no substituting approved
+technologies).
 
-Technology decisions are binding.
-
-Examples:
-
-If DECISIONS.md specifies:
-
-Drizzle
-
-Do not switch to Prisma.
-
-If DECISIONS.md specifies:
-
-Better Auth
-
-Do not switch to Auth.js.
-
-Decision changes require:
-
-* decision record
-* migration impact analysis
-* conductor approval
+Decision changes require a decision record, migration impact analysis, and
+Conductor approval.
 
 ⸻
 
@@ -353,7 +315,7 @@ REJECT
 
 Create:
 
-rejection/state-[N]-.md
+rejection/state-[N]-<domain>.md
 
 Stage Status:
 
@@ -395,19 +357,10 @@ Conductor owns:
 
 Conductor-Only Tasks
 
-Must never be assigned to workers:
-
-* integration
-* composition
-* release validation
-* cross-domain testing
-* hardware testing
-* end-to-end testing
-* production verification
-
-Owner:
-
-CONDUCTOR
+See AGENT_RULES.md "Conductor-Only Tasks" for the full definition and
+rules (integration, composition, end-to-end/cross-domain testing, hardware
+testing, release/production verification — marked `Owner: CONDUCTOR`,
+never dispatched to workers).
 
 ⸻
 
@@ -540,6 +493,32 @@ No worker activity permitted during recovery.
 
 ⸻
 
+Dev Direct Change Log
+
+The dev participates directly on the `wansing` branch as Conductor.
+
+Any direct change the dev makes to governance/direction documents
+(PROJECT.md, ROADMAP.md, PIPELINE.md, ARCHITECTURE.md, CONTRACTS.md,
+DECISIONS.md, AGENT_RULES.md, CONDUCTOR.md, DESIGN_SYSTEM.md,
+ENGINEERING_CONTROLLER.md, START_HERE.md) must be recorded in:
+
+DEV_LOG.md
+
+Each entry must record:
+
+* date
+* file(s) changed
+* what changed
+* why
+* impact on workers (if any)
+
+Workers must read DEV_LOG.md for unread entries before starting assigned
+work, to stay aligned with the dev's current direction.
+
+DEV_LOG.md is append-only. Do not edit or remove past entries.
+
+⸻
+
 Audit Trail
 
 The Conductor maintains:
@@ -588,46 +567,17 @@ Security concerns block approval.
 
 Build Artifact Enforcement
 
-Before merge:
-
-Verify:
-
-.gitignore exists
-
-Verify no tracked artifacts:
-
-* target/
-* node_modules/
-* dist/
-* build/
-* .next/
-* pycache/
-* .venv/
-* venv/
-* vendor/
-
-Reject approval if violations exist.
+See AGENT_RULES.md "Git & Build Artifacts" for the full pre-push checklist
+and prohibited directory list. Before merge, the Conductor verifies the
+checklist was followed and rejects approval if violations exist.
 
 ⸻
 
 Multi-Agent Compatibility
 
-Assume future contributors:
-
-* GPT
-* Claude
-* Gemini
-* Codex
-* Other agents
-
-All instructions must be:
-
-* deterministic
-* explicit
-* reviewable
-* reproducible
-
-Avoid hidden assumptions.
+See AGENT_RULES.md "Multi-Model Compatibility" — the same deterministic,
+explicit, reviewable, reproducible standard applies to all
+Conductor-authored instructions and artifacts.
 
 ⸻
 

@@ -17,15 +17,16 @@ mobile.
 - **Mobile app:** Expo (React Native) — Android, iPad
 - **Live video:** Jitsi Meet (self-hosted via docker-compose)
 - **Real-time collaboration:** Yjs + y-websocket (whiteboard, document highlight)
-- **Backend (Stage 6):** TBD — API + DB to replace mock booking/payment/enrollment logic
+- **Backend (Stage 6):** Go + Fiber v3 + PostgreSQL + Bun ORM + go-better-auth
+  — API + DB to replace mock booking/payment/enrollment logic (see DECISIONS.md)
 - **Payment (Stage 6):** TBD provider
 
 ## Team / Agents
 - Conductor: user + assistant, branch `wansing`
-- Stage agents: assigned per `tasks/stage-[N]/dispatch-in.md` (see PIPELINE.md)
+- Stage agents: assigned per `tasks/state-[N]-<domain>.md` (see PIPELINE.md)
 
 ## Current Stage
-Stage 1 — Frontend Shell + Mock Data (Wails)
+Stage 4b — Sync Service Integration (Wails)
 
 ⸻
 

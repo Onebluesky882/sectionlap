@@ -38,25 +38,8 @@ Conductor / Orchestrator
 
 Model Configuration
 
-```
-Model:         claude-opus-4-8
-thinking:      { type: "adaptive" }
-output_config: { effort: "xhigh" }
-```
-
-Use xhigh effort for planning and gate validation decisions.
-Use adaptive thinking — the conductor must reason about pipeline state.
-
-Sub-Agent Model Configuration (default)
-
-```
-Model:         claude-opus-4-8
-thinking:      { type: "adaptive" }
-output_config: { effort: "high" }
-```
-
-Downgrade to claude-sonnet-4-6 + effort: "high" only for simple,
-well-scoped tasks that require no architectural judgment.
+See CONDUCTOR.md → "Model Selection Policy" for Conductor and worker model
+configuration. Workers may not change model selection.
 
 ⸻
 
@@ -218,13 +201,8 @@ Constraints:
 
 Required Reading
 
-Before starting any task, read:
-
-1. PROJECT.md
-2. ARCHITECTURE.md
-3. CONTRACTS.md
-4. DECISIONS.md
-5. PIPELINE.md
+See START_HERE.md → "Required Reading Order" for the full, authoritative
+list and order of files to read before starting any task.
 
 Do not begin implementation before understanding these files.
 
@@ -384,8 +362,31 @@ Never merge directly into:
 
 * dev
 * main
+* wansing
 
 Create PR only.
+
+⸻
+
+Main Branch Merge Authority
+
+Only the dev (human Conductor) may execute the PR merge into `main`.
+
+Agents (including the Conductor AI) may:
+
+* create PRs
+* validate gates
+* write merge-approval/state-[N]-<domain>.md marking a PR "Ready to Merge"
+
+Agents may NOT:
+
+* run `git merge`, `git push` to `main`, or click "Merge" on a PR targeting `main`
+* create, rename, delete, or re-point the `main` branch
+
+`main` is owned exclusively by the dev.
+
+The Conductor AI's role ends at "Ready to Merge: YES" — the dev performs
+the actual merge into `main`.
 
 ⸻
 

@@ -169,6 +169,3 @@ Summary for consumers (Stage 4b desktop-app, Stage 5 mobile-app):
   (no persistence in Stage 4a); document state is lost when the server
   restarts or all clients for a room disconnect.
 
-⸻
-
-<!-- Add one section per module -->

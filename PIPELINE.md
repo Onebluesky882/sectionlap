@@ -17,7 +17,7 @@
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
-(2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to <conductor-branch>.
+(2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to wansing.
 
 **Parallelism policy:** Workers run concurrently by default. A stage is only
 gated on another stage if it has a *real* cross-domain dependency (consumes
@@ -55,7 +55,7 @@ Currently:
 - None (Stage 1 starts immediately)
 
 **Dispatch-In:** `tasks/state-1-desktop-app.md`
-<!-- Conductor writes this AFTER prior stage PR is merged to <conductor-branch> -->
+<!-- Conductor writes this AFTER prior stage PR is merged to wansing -->
 
 **Gate-Out:** `gate-out/state-1-desktop-app.md`
 <!-- Agent writes this when stage is complete -->
@@ -99,8 +99,8 @@ Currently:
       end-to-end mic/cam verification pending Docker availability — see gate-out)
 
 **Gate-In Requirements:**
-- Stage 1 merged to <conductor-branch> (Wails app shell exists)
-- Stage 2a merged to <conductor-branch> (Jitsi instance + config available)
+- Stage 1 merged to wansing (Wails app shell exists)
+- Stage 2a merged to wansing (Jitsi instance + config available)
 
 **Dispatch-In:** `tasks/state-2b-jitsi-embed.md`
 
@@ -125,7 +125,7 @@ Currently:
 - [x] Logic interfaces documented for future backend replacement (input/output shapes)
 
 **Gate-In Requirements:**
-- Stage 1 merged to <conductor-branch>
+- Stage 1 merged to wansing
 
 **Dispatch-In:** `tasks/state-3-booking-logic.md`
 
@@ -170,8 +170,8 @@ Currently:
 - [ ] Whiteboard and document-highlight usable from within the Wails app
 
 **Gate-In Requirements:**
-- Stage 1 merged to <conductor-branch> (Wails app shell exists)
-- Stage 4a merged to <conductor-branch> (sync service + protocol available)
+- Stage 1 merged to wansing (Wails app shell exists)
+- Stage 4a merged to wansing (sync service + protocol available)
 
 **Dispatch-In:** `tasks/state-4b-sync-integration.md`
 
@@ -195,8 +195,8 @@ Currently:
 - [ ] Real-time sync verified between Wails and Expo clients
 
 **Gate-In Requirements:**
-- Stage 3 merged to <conductor-branch> (mock logic contracts available)
-- Stage 4a merged to <conductor-branch> (sync service + protocol available)
+- Stage 3 merged to wansing (mock logic contracts available)
+- Stage 4a merged to wansing (sync service + protocol available)
 
 **Dispatch-In:** `tasks/state-5-mobile-app.md`
 
@@ -226,7 +226,7 @@ Currently:
 - [ ] Auth/session contract documented in CONTRACTS.md for Stage 6b/6c to consume
 
 **Gate-In Requirements:**
-- Stage 3 merged to <conductor-branch> (contracts defined)
+- Stage 3 merged to wansing (contracts defined)
 
 **Dispatch-In:** `tasks/state-6a-backend-core.md`
 
@@ -247,8 +247,8 @@ Currently:
 - [ ] Teacher/student login flow wired to go-better-auth via Stage 6a API
 
 **Gate-In Requirements:**
-- Stage 3 merged to <conductor-branch> (mock logic to replace)
-- Stage 6a merged to <conductor-branch> (backend API + auth available)
+- Stage 3 merged to wansing (mock logic to replace)
+- Stage 6a merged to wansing (backend API + auth available)
 
 **Dispatch-In:** `tasks/state-6b-wails-auth-integration.md`
 
@@ -269,8 +269,8 @@ Currently:
 - [ ] Teacher/student login flow wired to go-better-auth via Stage 6a API
 
 **Gate-In Requirements:**
-- Stage 5 merged to <conductor-branch> (mobile app exists, mock logic to replace)
-- Stage 6a merged to <conductor-branch> (backend API + auth available)
+- Stage 5 merged to wansing (mobile app exists, mock logic to replace)
+- Stage 6a merged to wansing (backend API + auth available)
 
 **Dispatch-In:** `tasks/state-6c-mobile-auth-integration.md`
 
