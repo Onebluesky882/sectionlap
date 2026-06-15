@@ -9,6 +9,7 @@ export interface SectionFormValues {
   teacher: string;
   category: string;
   durationMinutes: string;
+  capacity: string;
 }
 
 export const EMPTY_FORM: SectionFormValues = {
@@ -18,6 +19,7 @@ export const EMPTY_FORM: SectionFormValues = {
   teacher: "",
   category: "",
   durationMinutes: "",
+  capacity: "",
 };
 
 function toFormValues(section: Section): SectionFormValues {
@@ -28,6 +30,7 @@ function toFormValues(section: Section): SectionFormValues {
     teacher: section.teacher,
     category: section.category,
     durationMinutes: String(section.durationMinutes),
+    capacity: String(section.capacity),
   };
 }
 
@@ -41,16 +44,22 @@ function slugify(title: string): string {
 }
 
 export function useSectionForm() {
-  const sections = useAppStore((state) => state.sections);
+  const currentUser = useAppStore((state) => state.currentUser);
+  const sections = useAppStore((state) =>
+    state.sections.filter((s) => s.teacherId === currentUser.id)
+  );
   const addSection = useAppStore((state) => state.addSection);
   const updateSection = useAppStore((state) => state.updateSection);
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [values, setValues] = useState<SectionFormValues>(EMPTY_FORM);
+  const [values, setValues] = useState<SectionFormValues>({
+    ...EMPTY_FORM,
+    teacher: currentUser.name,
+  });
 
   function startCreate() {
     setEditingId("new");
-    setValues(EMPTY_FORM);
+    setValues({ ...EMPTY_FORM, teacher: currentUser.name });
   }
 
   function startEdit(section: Section) {
@@ -60,7 +69,7 @@ export function useSectionForm() {
 
   function cancel() {
     setEditingId(null);
-    setValues(EMPTY_FORM);
+    setValues({ ...EMPTY_FORM, teacher: currentUser.name });
   }
 
   function submit() {
@@ -72,8 +81,10 @@ export function useSectionForm() {
       description: values.description,
       price: Number(values.price) || 0,
       teacher: values.teacher,
+      teacherId: currentUser.id,
       category: values.category,
       durationMinutes: Number(values.durationMinutes) || 0,
+      capacity: Number(values.capacity) || 0,
     };
 
     if (editingId === "new") {
@@ -84,5 +95,15 @@ export function useSectionForm() {
     cancel();
   }
 
-  return { sections, editingId, values, setValues, startCreate, startEdit, cancel, submit };
+  return {
+    sections,
+    currentUser,
+    editingId,
+    values,
+    setValues,
+    startCreate,
+    startEdit,
+    cancel,
+    submit,
+  };
 }

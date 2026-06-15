@@ -76,6 +76,18 @@ export function SectionForm({ mode, values, onChange, onSubmit, onCancel }: Prop
           />
         </label>
       </div>
+      <div className="form-row">
+        <label>
+          Capacity (seats)
+          <input
+            required
+            type="number"
+            min="1"
+            value={values.capacity}
+            onChange={(e) => onChange({ ...values, capacity: e.target.value })}
+          />
+        </label>
+      </div>
       <div className="form-actions">
         <button type="submit" className="btn btn-primary">
           Save
