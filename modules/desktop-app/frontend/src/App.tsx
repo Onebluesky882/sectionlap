@@ -5,6 +5,7 @@ import { SectionListPage } from "./pages/SectionListPage";
 import { SectionDetailPage } from "./pages/SectionDetailPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { TeacherDashboardPage } from "./pages/TeacherDashboardPage";
+import { MyEnrollmentsPage } from "./pages/MyEnrollmentsPage";
 import { LiveClassPage } from "./pages/LiveClassPage";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="sections/:sectionId/checkout" element={<CheckoutPage />} />
           <Route path="sections/:sectionId/live-class" element={<LiveClassPage />} />
           <Route path="dashboard" element={<TeacherDashboardPage />} />
+          <Route path="my-enrollments" element={<MyEnrollmentsPage />} />
         </Route>
       </Routes>
     </HashRouter>

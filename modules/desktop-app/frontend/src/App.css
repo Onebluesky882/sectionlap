@@ -201,6 +201,17 @@
   margin-top: 1rem;
 }
 
+.card-seats {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.navbar-role {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 .section-form {
   background-color: rgba(38, 50, 68, 1);
   border-radius: 10px;
