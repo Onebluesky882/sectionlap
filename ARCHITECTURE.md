@@ -38,10 +38,14 @@ shared by both clients.
 - Live class via Jitsi React Native SDK
 
 ### modules/backend
-- Stage 6 only — replaces mock booking/payment/enrollment with real API + DB
+- Stage 6a — replaces mock booking/payment/enrollment with real API + DB
+- Tech stack: Fiber v3 (Go web framework), PostgreSQL, Bun ORM
+  (uptrace/bun — https://bun.uptrace.dev/)
+- Auth: github.com/m-t-a97/go-better-auth (teacher/student roles)
 - Implements the contracts defined during Stage 3 (see CONTRACTS.md)
 - Ties Jitsi room access to enrollment status (paid students only)
-- Handles teacher/student auth
+- Stage 6b (desktop-app) and Stage 6c (mobile-app) integrate independently
+  against this backend's API — see ADR 001
 
 ## Data Flow
 

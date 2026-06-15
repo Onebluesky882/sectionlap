@@ -11,7 +11,9 @@
 | 4a | Sync Service (Yjs infra) | IN PROGRESS |
 | 4b | Sync Service Integration (Wails) | PENDING |
 | 5 | Expo App (Student / Teacher) | PENDING |
-| 6 | Backend (Replace Mock Booking/Payment/Enrollment) | PENDING |
+| 6a | Backend Core (API + DB + Auth) | PENDING |
+| 6b | Wails Backend Integration | PENDING |
+| 6c | Expo Backend Integration | PENDING |
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
@@ -26,7 +28,10 @@ Currently:
 - Once Stage 4a completes, Stage 4b and Stage 5 (once Stage 3 also completes)
   have no dependency on each other (different codebases: Wails vs Expo) —
   run in parallel.
-- Stage 6 depends only on Stage 3 + Stage 5 — it does not wait on Stage 4b.
+- Stage 6a depends only on Stage 3 — it does not wait on Stage 5 or 4b.
+- Stage 6b and Stage 6c both depend only on Stage 6a (+ their own prior
+  stage: 6b on Stage 3, 6c on Stage 5) — they have no dependency on each
+  other and run in parallel.
 
 ⸻
 
@@ -201,28 +206,77 @@ Currently:
 
 ⸻
 
-### Stage 6 — Backend (Replace Mock Booking/Payment/Enrollment)
+### Stage 6a — Backend Core (API + DB + Auth)
 
 **Domain:** modules/backend
 **Agent:** [assigned agent]
 **Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
 
+**Tech Stack:**
+- Database: PostgreSQL
+- Web framework: Fiber v3 (Go)
+- ORM: Bun (uptrace/bun)
+- Auth: github.com/m-t-a97/go-better-auth (teacher/student roles)
+
 **Acceptance Criteria:**
-- [ ] Real API + DB implementing the booking/payment/enrollment contracts from Stage 3
-- [ ] Auth for teacher/student roles
-- [ ] Wails app switched from mock logic to real API calls
-- [ ] Expo app switched from mock logic to real API calls
+- [ ] Real API + DB (PostgreSQL via Bun) implementing the booking/payment/enrollment contracts from Stage 3
+- [ ] Fiber v3 HTTP server exposing the API
+- [ ] Auth for teacher/student roles via go-better-auth
 - [ ] Jitsi room provisioning tied to enrollment (access granted only to paid students)
+- [ ] Auth/session contract documented in CONTRACTS.md for Stage 6b/6c to consume
 
 **Gate-In Requirements:**
 - Stage 3 merged to <conductor-branch> (contracts defined)
-- Stage 5 merged to <conductor-branch> (both clients exist to migrate)
 
-**Dispatch-In:** `tasks/state-6-backend.md`
+**Dispatch-In:** `tasks/state-6a-backend-core.md`
 
-**Gate-Out:** `gate-out/state-6-backend.md`
+**Gate-Out:** `gate-out/state-6a-backend-core.md`
 
-**Merge-Approval:** `merge-approval/state-6-backend.md`
+**Merge-Approval:** `merge-approval/state-6a-backend-core.md`
+
+⸻
+
+### Stage 6b — Wails Backend Integration
+
+**Domain:** modules/desktop-app
+**Agent:** [assigned agent]
+**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+
+**Acceptance Criteria:**
+- [ ] Wails app switched from mock logic (Stage 3) to real API calls against Stage 6a
+- [ ] Teacher/student login flow wired to go-better-auth via Stage 6a API
+
+**Gate-In Requirements:**
+- Stage 3 merged to <conductor-branch> (mock logic to replace)
+- Stage 6a merged to <conductor-branch> (backend API + auth available)
+
+**Dispatch-In:** `tasks/state-6b-wails-auth-integration.md`
+
+**Gate-Out:** `gate-out/state-6b-wails-auth-integration.md`
+
+**Merge-Approval:** `merge-approval/state-6b-wails-auth-integration.md`
+
+⸻
+
+### Stage 6c — Expo Backend Integration
+
+**Domain:** modules/mobile-app
+**Agent:** [assigned agent]
+**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+
+**Acceptance Criteria:**
+- [ ] Expo app switched from mock logic (Stage 5) to real API calls against Stage 6a
+- [ ] Teacher/student login flow wired to go-better-auth via Stage 6a API
+
+**Gate-In Requirements:**
+- Stage 5 merged to <conductor-branch> (mobile app exists, mock logic to replace)
+- Stage 6a merged to <conductor-branch> (backend API + auth available)
+
+**Dispatch-In:** `tasks/state-6c-mobile-auth-integration.md`
+
+**Gate-Out:** `gate-out/state-6c-mobile-auth-integration.md`
+
+**Merge-Approval:** `merge-approval/state-6c-mobile-auth-integration.md`
 
 ⸻
 
