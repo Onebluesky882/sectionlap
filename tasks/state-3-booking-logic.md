@@ -1,9 +1,9 @@
 Stage: 3
 Domain: modules/desktop-app
-Status: PENDING
+Status: READY
 Model: claude-opus-4-8
 
-Workspace: branch from main (after Stage 1 merged)
+Workspace: branch from wansing (Stage 1 merged to wansing)
 
 Context Files:
 - PROJECT.md
@@ -24,12 +24,12 @@ still entirely local (no backend/API):
 - Document the input/output shapes of this logic in CONTRACTS.md so
   Stage 6 (backend) can implement the same contracts
 
-Gate-In Verified: NO
-Prior Gate-Out: tasks/state-1-desktop-app-gate-out.md (pending)
-Prior Merge: tasks/state-1-desktop-app-merge-approval.md (pending)
+Gate-In Verified: YES
+Prior Gate-Out: gate-out/state-1-desktop-app.md
+Prior Merge: merge-approval/state-1-desktop-app.md
 
 Constraints:
-- Branch from main only — do NOT branch from feature/desktop-app
+- Branch from wansing only — do NOT branch from feature/desktop-app
 - STOP after assigned work is complete
-- Do NOT merge to dev/main directly
-- Create PR targeting main via feature/booking-logic
+- Do NOT merge to wansing/main directly
+- Create PR targeting wansing via feature/booking-logic

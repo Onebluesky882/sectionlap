@@ -7,7 +7,7 @@
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
 | 2b | Jitsi Embed in Wails (integration) | COMPLETE |
-| 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
+| 3 | Mock Logic (Booking / Payment / Enrollment) | IN PROGRESS |
 | 4a | Sync Service (Yjs infra) | IN PROGRESS |
 | 4b | Sync Service Integration (Wails) | PENDING |
 | 5 | Expo App (Student / Teacher) | PENDING |
@@ -98,7 +98,7 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
 - [ ] Booking logic: prevent double-booking, check section capacity (mock data)
