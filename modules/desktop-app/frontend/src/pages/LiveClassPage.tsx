@@ -3,6 +3,10 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { useSection } from "../hooks/useSection";
 import { useJitsiExternalApi, type JitsiMeetExternalApi } from "../hooks/useJitsiExternalApi";
 import { JITSI_BASE_URL } from "../config";
+import { WhiteboardPanel } from "../components/WhiteboardPanel";
+import { DocumentHighlightPanel } from "../components/DocumentHighlightPanel";
+
+type Tab = "video" | "whiteboard" | "highlight";
 
 export function LiveClassPage() {
   const { sectionId = "" } = useParams();
@@ -11,6 +15,7 @@ export function LiveClassPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<JitsiMeetExternalApi | null>(null);
   const [status, setStatus] = useState<"connecting" | "joined" | "left">("connecting");
+  const [tab, setTab] = useState<Tab>("video");
 
   useEffect(() => {
     if (!ready || !section || !containerRef.current) return;
@@ -62,7 +67,32 @@ export function LiveClassPage() {
       )}
       {!ready && !error && <div className="note">Connecting to live class…</div>}
 
-      <div ref={containerRef} className="jitsi-container" />
+      <div className="tab-bar">
+        <button
+          className={tab === "video" ? "btn tab-button active" : "btn tab-button"}
+          onClick={() => setTab("video")}
+        >
+          Video Call
+        </button>
+        <button
+          className={tab === "whiteboard" ? "btn tab-button active" : "btn tab-button"}
+          onClick={() => setTab("whiteboard")}
+        >
+          Whiteboard
+        </button>
+        <button
+          className={tab === "highlight" ? "btn tab-button active" : "btn tab-button"}
+          onClick={() => setTab("highlight")}
+        >
+          Document Highlight
+        </button>
+      </div>
+
+      <div className="jitsi-container" style={{ display: tab === "video" ? "block" : "none" }}>
+        <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+      </div>
+      {tab === "whiteboard" && <WhiteboardPanel sectionSessionId={section.id} />}
+      {tab === "highlight" && <DocumentHighlightPanel sectionSessionId={section.id} />}
     </div>
   );
 }
