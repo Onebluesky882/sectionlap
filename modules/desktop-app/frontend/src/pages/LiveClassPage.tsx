@@ -5,6 +5,7 @@ import { useJitsiExternalApi, type JitsiMeetExternalApi } from "../hooks/useJits
 import { JITSI_BASE_URL } from "../config";
 import { WhiteboardPanel } from "../components/WhiteboardPanel";
 import { DocumentHighlightPanel } from "../components/DocumentHighlightPanel";
+import { Button } from "../components/ui/button";
 
 type Tab = "video" | "whiteboard" | "highlight";
 
@@ -50,45 +51,48 @@ export function LiveClassPage() {
   }
 
   return (
-    <div className="page live-class-page">
-      <Link className="btn btn-link" to={`/sections/${sectionId}`}>
-        ← Back to {section.title}
-      </Link>
-      <h1>Live Class — {section.title}</h1>
+    <div className="flex flex-col gap-2">
+      <Button variant="link" asChild className="mb-4 px-0 self-start">
+        <Link to={`/sections/${sectionId}`}>← Back to {section.title}</Link>
+      </Button>
+      <h1 className="text-2xl font-semibold">Live Class — {section.title}</h1>
 
       {status === "left" && (
-        <div className="note">You left the call. Reopen this page to rejoin.</div>
+        <div className="text-muted-foreground text-sm mt-4">You left the call. Reopen this page to rejoin.</div>
       )}
       {error && (
-        <div className="note">
+        <div className="text-muted-foreground text-sm mt-4">
           Could not load Jitsi from {JITSI_BASE_URL}. Make sure the local
           Jitsi stack (modules/live-class) is running.
         </div>
       )}
-      {!ready && !error && <div className="note">Connecting to live class…</div>}
+      {!ready && !error && <div className="text-muted-foreground text-sm mt-4">Connecting to live class…</div>}
 
-      <div className="tab-bar">
-        <button
-          className={tab === "video" ? "btn tab-button active" : "btn tab-button"}
+      <div className="flex gap-2 my-3">
+        <Button
+          variant={tab === "video" ? "secondary" : "outline"}
           onClick={() => setTab("video")}
         >
           Video Call
-        </button>
-        <button
-          className={tab === "whiteboard" ? "btn tab-button active" : "btn tab-button"}
+        </Button>
+        <Button
+          variant={tab === "whiteboard" ? "secondary" : "outline"}
           onClick={() => setTab("whiteboard")}
         >
           Whiteboard
-        </button>
-        <button
-          className={tab === "highlight" ? "btn tab-button active" : "btn tab-button"}
+        </Button>
+        <Button
+          variant={tab === "highlight" ? "secondary" : "outline"}
           onClick={() => setTab("highlight")}
         >
           Document Highlight
-        </button>
+        </Button>
       </div>
 
-      <div className="jitsi-container" style={{ display: tab === "video" ? "block" : "none" }}>
+      <div
+        className="flex-1 min-h-[480px] rounded-lg overflow-hidden bg-card"
+        style={{ display: tab === "video" ? "block" : "none" }}
+      >
         <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
       </div>
       {tab === "whiteboard" && <WhiteboardPanel sectionSessionId={section.id} />}

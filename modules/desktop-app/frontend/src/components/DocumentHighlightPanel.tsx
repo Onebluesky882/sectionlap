@@ -30,17 +30,18 @@ export function DocumentHighlightPanel({ sectionSessionId }: DocumentHighlightPa
   };
 
   return (
-    <div className="sync-panel">
+    <div className="flex flex-col gap-3">
       {status !== "connected" && (
-        <div className="note">
+        <div className="text-muted-foreground text-sm mt-4">
           {status === "connecting"
             ? "Connecting to document highlight…"
             : "Disconnected from sync service. Make sure modules/sync-service is running."}
         </div>
       )}
-      <label className="sync-url-label">
+      <label className="flex flex-col gap-1 max-w-sm text-sm">
         Document URL
         <input
+          className="bg-input/30 border border-border rounded-md text-foreground px-2 py-1.5"
           type="text"
           value={url}
           placeholder="https://example.com/page.png"

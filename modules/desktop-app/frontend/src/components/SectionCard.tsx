@@ -1,4 +1,5 @@
 import type { Section } from "../types";
+import { Button } from "./ui/button";
 
 interface Props {
   section: Section;
@@ -9,22 +10,20 @@ interface Props {
 
 export function SectionCard({ section, actionLabel, onAction, enrolledCount }: Props) {
   return (
-    <div className="card">
-      <div className="card-category">{section.category}</div>
-      <h3>{section.title}</h3>
-      <p className="card-description">{section.description}</p>
-      <div className="card-footer">
-        <span className="price">${section.price}</span>
-        <span className="teacher">by {section.teacher}</span>
+    <div className="bg-card border border-border rounded-lg p-5 flex flex-col gap-2 text-left">
+      <div className="text-xs uppercase tracking-wide text-primary">{section.category}</div>
+      <h3 className="text-lg font-semibold">{section.title}</h3>
+      <p className="text-muted-foreground text-sm grow">{section.description}</p>
+      <div className="flex justify-between text-sm">
+        <span className="font-bold">${section.price}</span>
+        <span className="text-muted-foreground">by {section.teacher}</span>
       </div>
       {enrolledCount !== undefined && (
-        <div className="card-seats">
+        <div className="text-muted-foreground text-xs mb-2">
           {enrolledCount}/{section.capacity} seats booked
         </div>
       )}
-      <button className="btn btn-primary" onClick={onAction}>
-        {actionLabel}
-      </button>
+      <Button onClick={onAction}>{actionLabel}</Button>
     </div>
   );
 }

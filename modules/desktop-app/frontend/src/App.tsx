@@ -1,12 +1,11 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
 import { Layout } from "./components/Layout";
 import { SectionListPage } from "./pages/SectionListPage";
 import { SectionDetailPage } from "./pages/SectionDetailPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
-import { TeacherDashboardPage } from "./pages/TeacherDashboardPage";
 import { MyEnrollmentsPage } from "./pages/MyEnrollmentsPage";
 import { LiveClassPage } from "./pages/LiveClassPage";
+import { TeacherDashboardPage } from "./pages/TeacherDashboardPage";
 
 function App() {
   return (

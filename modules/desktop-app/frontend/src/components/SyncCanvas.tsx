@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type * as Y from "yjs";
 import type { Stroke } from "../types";
+import { Button } from "./ui/button";
 
 const COLORS = ["#1f2733", "#e53935", "#1e88e5", "#43a047", "#fbc02d"];
 
@@ -110,18 +111,22 @@ export function SyncCanvas({ strokes, width, height, backgroundImageUrl }: SyncC
   };
 
   return (
-    <div className="sync-canvas">
-      <div className="sync-canvas-toolbar">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
         {COLORS.map((c) => (
           <button
             key={c}
-            className={c === color ? "sync-color-swatch active" : "sync-color-swatch"}
+            className={
+              c === color
+                ? "w-6 h-6 rounded-full border-2 border-foreground p-0 cursor-pointer"
+                : "w-6 h-6 rounded-full border-2 border-transparent p-0 cursor-pointer"
+            }
             style={{ backgroundColor: c }}
             onClick={() => setColor(c)}
             aria-label={`Color ${c}`}
           />
         ))}
-        <label className="sync-width-label">
+        <label className="flex items-center gap-2">
           Width
           <input
             type="range"
@@ -131,15 +136,15 @@ export function SyncCanvas({ strokes, width, height, backgroundImageUrl }: SyncC
             onChange={(event) => setLineWidth(Number(event.target.value))}
           />
         </label>
-        <button className="btn" onClick={handleClear}>
+        <Button variant="outline" size="sm" onClick={handleClear}>
           Clear
-        </button>
+        </Button>
       </div>
       <canvas
         ref={canvasRef}
         width={width}
         height={height}
-        className="sync-canvas-surface"
+        className="w-full max-w-200 aspect-800/500 rounded-lg bg-white touch-none cursor-crosshair"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

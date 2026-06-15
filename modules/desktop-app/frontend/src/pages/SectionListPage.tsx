@@ -8,12 +8,12 @@ export function SectionListPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="page">
-      <h1>Browse Sections</h1>
-      <p className="subtitle">
+    <div>
+      <h1 className="text-2xl font-semibold">Browse Sections</h1>
+      <p className="text-muted-foreground mb-6">
         Pick the sections you need — pay only for what you use.
       </p>
-      <div className="card-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
         {sections.map((section) => (
           <SectionCard
             key={section.id}

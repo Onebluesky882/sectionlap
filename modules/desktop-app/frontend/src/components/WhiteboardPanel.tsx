@@ -14,9 +14,9 @@ export function WhiteboardPanel({ sectionSessionId }: WhiteboardPanelProps) {
   const strokes = doc?.getArray<Stroke>("strokes");
 
   return (
-    <div className="sync-panel">
+    <div className="flex flex-col gap-3">
       {status !== "connected" && (
-        <div className="note">
+        <div className="text-muted-foreground text-sm mt-4">
           {status === "connecting"
             ? "Connecting to whiteboard…"
             : "Disconnected from sync service. Make sure modules/sync-service is running."}

@@ -18,17 +18,17 @@ export function MyEnrollmentsPage() {
   );
 
   return (
-    <div className="page">
-      <h1>My Enrollments</h1>
-      <p className="subtitle">Sections you've paid for and unlocked.</p>
+    <div>
+      <h1 className="text-2xl font-semibold">My Enrollments</h1>
+      <p className="text-muted-foreground mb-6">Sections you've paid for and unlocked.</p>
 
       {enrolled.length === 0 ? (
-        <div className="note">
+        <div className="text-muted-foreground text-sm mt-4">
           You haven't enrolled in any sections yet. Browse sections to get
           started.
         </div>
       ) : (
-        <div className="card-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
           {enrolled.map((section) => (
             <SectionCard
               key={section.id}
