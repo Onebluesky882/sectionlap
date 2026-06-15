@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SectionLap Sync Demo — Document Highlight</title>
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 1rem; }
+  .stage { position: relative; display: inline-block; border: 1px solid #ccc; }
+  #doc { display: block; max-width: 800px; }
+  #overlay { position: absolute; top: 0; left: 0; touch-action: none; cursor: crosshair; }
+  .bar { margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+  <h2>Document Highlight (room: <span id="room"></span>)</h2>
+  <div class="bar">
+    <label>Room: <input id="roomInput" value="demo-room" /></label>
+    <button id="join">Join</button>
+    <label>Image URL: <input id="imgUrl" value="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png" size="50" /></label>
+    <button id="loadImg">Load</button>
+    <button id="clear">Clear highlights</button>
+  </div>
+  <div class="stage">
+    <img id="doc" />
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <script type="module">
+    import * as Y from 'https://esm.sh/yjs@13.6.18'
+    import { WebsocketProvider } from 'https://esm.sh/y-websocket@1.5.4?deps=yjs@13.6.18'
+
+    const img = document.getElementById('doc')
+    const overlay = document.getElementById('overlay')
+    const ctx = overlay.getContext('2d')
+    const roomInput = document.getElementById('roomInput')
+    const roomLabel = document.getElementById('room')
+
+    let doc, provider, highlights, drawing = false, current = null
+
+    function redraw() {
+      ctx.clearRect(0, 0, overlay.width, overlay.height)
+      highlights.forEach(h => drawHighlight(h))
+    }
+
+    function drawHighlight(h) {
+      if (!h.points || h.points.length < 2) return
+      ctx.beginPath()
+      ctx.strokeStyle = h.color || 'rgba(255,255,0,0.5)'
+      ctx.lineWidth = h.width || 16
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+      ctx.moveTo(h.points[0].x, h.points[0].y)
+      for (let i = 1; i < h.points.length; i++) {
+        ctx.lineTo(h.points[i].x, h.points[i].y)
+      }
+      ctx.stroke()
+    }
+
+    function join(room) {
+      if (provider) provider.destroy()
+      doc = new Y.Doc()
+      provider = new WebsocketProvider('ws://localhost:1234', `highlight-${room}`, doc)
+      highlights = doc.getArray('highlights')
+      const docState = doc.getMap('document')
+      docState.observe(() => {
+        if (docState.get('url') && img.src !== docState.get('url')) {
+          img.src = docState.get('url')
+        }
+      })
+      highlights.observe(redraw)
+      roomLabel.textContent = room
+      redraw()
+    }
+
+    function pos(e) {
+      const rect = overlay.getBoundingClientRect()
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    }
+
+    img.addEventListener('load', () => {
+      overlay.width = img.naturalWidth
+      overlay.height = img.naturalHeight
+      img.width = img.naturalWidth
+      img.height = img.naturalHeight
+      redraw()
+    })
+
+    overlay.addEventListener('mousedown', e => {
+      drawing = true
+      current = { color: 'rgba(255,255,0,0.5)', width: 16, points: [pos(e)] }
+    })
+    overlay.addEventListener('mousemove', e => {
+      if (!drawing) return
+      current.points.push(pos(e))
+      redraw()
+      drawHighlight(current)
+    })
+    window.addEventListener('mouseup', () => {
+      if (!drawing) return
+      drawing = false
+      if (current && current.points.length > 1) {
+        highlights.push([current])
+      }
+      current = null
+    })
+
+    document.getElementById('clear').addEventListener('click', () => {
+      highlights.delete(0, highlights.length)
+    })
+    document.getElementById('join').addEventListener('click', () => join(roomInput.value.trim() || 'demo-room'))
+    document.getElementById('loadImg').addEventListener('click', () => {
+      doc.getMap('document').set('url', document.getElementById('imgUrl').value.trim())
+    })
+
+    join(roomInput.value)
+  </script>
+</body>
+</html>
