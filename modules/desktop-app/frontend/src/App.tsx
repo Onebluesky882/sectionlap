@@ -5,6 +5,7 @@ import { SectionListPage } from "./pages/SectionListPage";
 import { SectionDetailPage } from "./pages/SectionDetailPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { TeacherDashboardPage } from "./pages/TeacherDashboardPage";
+import { LiveClassPage } from "./pages/LiveClassPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route index element={<SectionListPage />} />
           <Route path="sections/:sectionId" element={<SectionDetailPage />} />
           <Route path="sections/:sectionId/checkout" element={<CheckoutPage />} />
+          <Route path="sections/:sectionId/live-class" element={<LiveClassPage />} />
           <Route path="dashboard" element={<TeacherDashboardPage />} />
         </Route>
       </Routes>
