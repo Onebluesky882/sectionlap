@@ -7,9 +7,9 @@
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
 | 2b | Jitsi Embed in Wails (integration) | COMPLETE |
-| 3 | Mock Logic (Booking / Payment / Enrollment) | IN PROGRESS |
-| 4a | Sync Service (Yjs infra) | IN PROGRESS |
-| 4b | Sync Service Integration (Wails) | PENDING |
+| 3 | Mock Logic (Booking / Payment / Enrollment) | COMPLETE |
+| 4a | Sync Service (Yjs infra) | COMPLETE |
+| 4b | Sync Service Integration (Wails) | IN PROGRESS |
 | 5 | Expo App (Student / Teacher) | PENDING |
 | 6a | Backend Core (API + DB + Auth) | PENDING |
 | 6b | Wails Backend Integration | PENDING |
@@ -114,15 +114,15 @@ Currently:
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Booking logic: prevent double-booking, check section capacity (mock data)
-- [ ] Payment logic: simulate transaction states (pending → paid → failed)
-- [ ] Enrollment logic: after "paid", unlock section content + "Join Live Class" button
-- [ ] Role logic: teacher sees own posted sections; student sees only purchased sections
-- [ ] All state persisted in local storage — no API/DB calls
-- [ ] Logic interfaces documented for future backend replacement (input/output shapes)
+- [x] Booking logic: prevent double-booking, check section capacity (mock data)
+- [x] Payment logic: simulate transaction states (pending → paid → failed)
+- [x] Enrollment logic: after "paid", unlock section content + "Join Live Class" button
+- [x] Role logic: teacher sees own posted sections; student sees only purchased sections
+- [x] All state persisted in local storage — no API/DB calls
+- [x] Logic interfaces documented for future backend replacement (input/output shapes)
 
 **Gate-In Requirements:**
 - Stage 1 merged to <conductor-branch>
@@ -139,7 +139,7 @@ Currently:
 
 **Domain:** modules/sync-service
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
 - [x] WebSocket sync server running locally (Yjs + y-websocket)
@@ -163,7 +163,7 @@ Currently:
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `PENDING`
+**Status:** `IN PROGRESS`
 
 **Acceptance Criteria:**
 - [ ] Wails app integrated as a client connecting to the sync service
