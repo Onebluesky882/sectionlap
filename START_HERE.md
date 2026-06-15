@@ -35,6 +35,7 @@ Read these files in exact order:
 4. DECISIONS.md
 5. PIPELINE.md
 6. AGENT_RULES.md
+7. CONDUCTOR.md      
 
 Do not continue until all files have been read.
 
