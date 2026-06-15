@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 
 export function NavBar() {
@@ -7,7 +7,7 @@ export function NavBar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-brand">SectionLap</div>
+      <div className="navbar-brand"><Link to={'/'}>SectionLap</Link> </div>
       <div className="navbar-links">
         <NavLink
           to="/"
