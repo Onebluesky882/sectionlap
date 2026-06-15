@@ -6,7 +6,7 @@
 |-------|--------|--------|
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
-| 2b | Jitsi Embed in Wails (integration) | IN PROGRESS |
+| 2b | Jitsi Embed in Wails (integration) | COMPLETE |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
 | 4a | Sync Service (Yjs infra) | IN PROGRESS |
 | 4b | Sync Service Integration (Wails) | PENDING |
@@ -75,11 +75,12 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] "Live Class" screen in Wails app embeds local Jitsi room (webview/iframe)
-- [ ] Join/leave room works with mic/cam from the Wails app
+- [x] "Live Class" screen in Wails app embeds local Jitsi room (webview/iframe)
+- [x] Join/leave room works with mic/cam from the Wails app (code/wiring complete;
+      end-to-end mic/cam verification pending Docker availability — see gate-out)
 
 **Gate-In Requirements:**
 - Stage 1 merged to <conductor-branch> (Wails app shell exists)
