@@ -11,7 +11,7 @@
 | 4a | Sync Service (Yjs infra) | COMPLETE |
 | 4b | Sync Service Integration (Wails) | IN PROGRESS |
 | 5 | Expo App (Student / Teacher) | PENDING |
-| 6a | Backend Core (API + DB + Auth) | PENDING |
+| 6a | Backend Core (API + DB + Auth) | IN PROGRESS |
 | 6b | Wails Backend Integration | PENDING |
 | 6c | Expo Backend Integration | PENDING |
 
@@ -210,7 +210,7 @@ Currently:
 
 **Domain:** modules/backend
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `IN PROGRESS`
 
 **Tech Stack:**
 - Database: PostgreSQL

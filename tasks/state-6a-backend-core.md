@@ -1,6 +1,6 @@
 Stage: 6a
 Domain: modules/backend
-Status: PENDING
+Status: IN PROGRESS
 Model: claude-opus-4-8
 
 Workspace: branch from wansing (after Stage 3 merged)
@@ -28,9 +28,9 @@ logic introduced in Stage 3:
 - Document setup/run instructions (DB migrations, env vars) in
   modules/backend/README.md
 
-Gate-In Verified: NO
-Prior Gate-Out: gate-out/state-3-booking-logic.md (pending)
-Prior Merge: merge-approval/state-3-booking-logic.md (pending)
+Gate-In Verified: YES
+Prior Gate-Out: gate-out/state-3-booking-logic.md
+Prior Merge: merge-approval/state-3-booking-logic.md
 
 Constraints:
 - Branch from wansing only
