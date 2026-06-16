@@ -38,18 +38,19 @@ Do not:
 
 Dev / Conductor Direction Authority
 
-The dev (acting as Conductor on the `wansing` branch) determines:
+The Dev has final authority over this project (Dev > Conductor > Workers).
+See DEV.md for the full Dev authority definition and operating rules.
+
+Workers must follow the Dev's direction on:
 
 * overall flow and execution order
 * tool and library selection
 * file/document writing format and style
 
-Workers must follow the dev's direction on all of the above.
-
 Do not:
 
-* choose alternative tools or libraries without dev approval
-* deviate from the dev's specified flow or format
+* choose alternative tools or libraries without Dev approval
+* deviate from the Dev's specified flow or format
 * rewrite documents in a different style than instructed
 
 ⸻
@@ -58,23 +59,26 @@ Required Reading Order
 
 Read these files in exact order:
 
-1. PROJECT.md
-2. ROADMAP.md
-3. ARCHITECTURE.md
-4. CONTRACTS.md
-5. DECISIONS.md
-6. SECURITY_RULES.md
-7. AGENT_RULES.md
-8. PIPELINE.md
-9. CONDUCTOR.md
-10. DEV_LOG.md (read all unread entries)
-11. DESIGN_SYSTEM.md (required if assigned stage touches frontend/UI)
-12. ENGINEERING_CONTROLLER.md
+0.  GOVERNANCE_CORE.md (ownership table + authority order — read first)
+1.  PROJECT.md
+2.  ROADMAP.md
+3.  ARCHITECTURE.md
+4.  CONTRACTS.md
+5.  DECISIONS.md
+6.  SECURITY_RULES.md
+7.  AGENT_RULES.md
+8.  PIPELINE.md
+9.  CONDUCTOR.md
+10. DEV.md
+11. DEV_LOG.md (read all unread entries)
+12. DESIGN_SYSTEM.md (required if assigned stage touches frontend/UI)
+13. ENGINEERING_CONTROLLER.md
 
 Do not continue until all files have been read.
 
 This list is the single source of truth for required reading.
-AGENT_RULES.md references this list rather than duplicating it.
+AGENT_RULES.md, SECURITY_RULES.md, and GOVERNANCE_CORE.md reference this
+list rather than duplicating it.
 
 ⸻
 

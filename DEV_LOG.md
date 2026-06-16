@@ -357,3 +357,51 @@ Impact on workers:
   AGENT_RULES.md "Roadmap Protection". Re-read ROADMAP.md; it is shorter.
 * This concludes the current governance refactor pass (DECISIONS.md,
   SECURITY_RULES.md, AGENT_RULES.md/CONDUCTOR.md, ROADMAP.md).
+
+⸻
+
+2026-06-16 (10)
+
+Files changed:
+
+* DEV.md (new)
+* GOVERNANCE_CORE.md (new)
+* START_HERE.md
+
+What changed:
+
+* DEV.md (new): defines the Dev's role, authority, and operating rules —
+  Dev identity, Authority Order (Dev > Conductor > Workers), Dev
+  Capabilities (what the Dev may do directly), Dev Direct Edit Rule
+  (every direct governance edit must be logged in DEV_LOG.md), Dev
+  Direction Authority (workers/Conductor must follow Dev on flow/tools/
+  format), Branch Authority (wansing + main merge), and Final Authority
+  statement. This is new content not previously in any file.
+* GOVERNANCE_CORE.md (new): slim shared reference — Authority Order,
+  Governance File Ownership table (new content: maps every governance file
+  to its Owner, Dev-edit rights, Conductor-edit rights, and worker access),
+  pointer to START_HERE.md for Required Reading Order, and Default
+  Violation Rule. Read-first doc (position 0 in reading order).
+* START_HERE.md "Required Reading Order": extended from 12 items (1-12)
+  to 14 items (0-13) — added GOVERNANCE_CORE.md at position 0 and DEV.md
+  at position 10; renumbered DEV_LOG.md→11, DESIGN_SYSTEM.md→12,
+  ENGINEERING_CONTROLLER.md→13.
+* START_HERE.md "Dev / Conductor Direction Authority": condensed to a
+  one-line summary pointing to DEV.md for the full definition.
+
+Why:
+
+Governance structure (who owns what, who may edit what, authority order)
+was implied across multiple files but never stated explicitly in one
+authoritative table. Workers had no single place to look up "can I edit
+this file?" or "who ranks higher?". DEV.md and GOVERNANCE_CORE.md provide
+that reference. GOVERNANCE_CORE.md at position 0 ensures workers have the
+full ownership picture before reading any specific governance document.
+
+Impact on workers:
+
+* Before starting any assigned task, read GOVERNANCE_CORE.md first (item 0),
+  then DEV.md (item 10) — new required reading.
+* The Governance File Ownership table in GOVERNANCE_CORE.md is the single
+  source of truth for which files are read-only vs. editable by which role.
+* No existing rules changed — only new authoritative content added.
