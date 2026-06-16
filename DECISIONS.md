@@ -35,8 +35,15 @@ Conductor approval to use. Any deviation fails Technology Compliance
 
 002 — Mobile Application Stack (Date: YYYY-MM-DD)
 
-* Approved: Expo, React Native, NativeWind, TypeScript, Expo Router, pnpm
-* Prohibited: Flutter, Ionic, Cordova, Capacitor, Xamarin
+* Approved: Expo, React Native, NativeWind, TypeScript, Expo Router, Zustand, pnpm
+* Prohibited: Flutter, Ionic, Cordova, Capacitor, Xamarin · Redux, MobX,
+  Recoil, Jotai (state) · React Navigation (use Expo Router instead)
+
+  Required project structure:
+  app/              Expo Router pages (route files only — no logic)
+  components/       Pure presentational components (no store access)
+  hooks/            Custom hooks — all store access and side-effects here
+  stores/           Zustand stores
 
 003 — Desktop Application Stack (Date: YYYY-MM-DD)
 
