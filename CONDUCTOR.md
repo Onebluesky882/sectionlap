@@ -295,6 +295,7 @@ PASS only when:
 * tests executed
 * acceptance criteria complete
 * no blocking issues
+* all dependencies use latest stable version (no pinned old versions unless DECISIONS.md requires it)
 
 Any failure:
 
