@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useSection } from "../hooks/useSection";
 import { useJitsiExternalApi, type JitsiMeetExternalApi } from "../hooks/useJitsiExternalApi";
-import { JITSI_BASE_URL } from "../config";
+import { JITSI_BASE_URL, DEFAULT_RTMP_STREAM_KEY } from "../config";
 import { WhiteboardPanel } from "../components/WhiteboardPanel";
 import { DocumentHighlightPanel } from "../components/DocumentHighlightPanel";
 import { Button } from "../components/ui/button";
+import { useAppStore } from "../store/useAppStore";
 
 type Tab = "video" | "whiteboard" | "highlight";
+type StreamStatus = "idle" | "live";
+
+const inputClass =
+  "bg-input/30 border border-border rounded-md text-foreground px-2 py-2 text-sm";
 
 export function LiveClassPage() {
   const { sectionId = "" } = useParams();
@@ -17,6 +22,9 @@ export function LiveClassPage() {
   const apiRef = useRef<JitsiMeetExternalApi | null>(null);
   const [status, setStatus] = useState<"connecting" | "joined" | "left">("connecting");
   const [tab, setTab] = useState<Tab>("video");
+  const [streamStatus, setStreamStatus] = useState<StreamStatus>("idle");
+  const [rtmpKey, setRtmpKey] = useState(DEFAULT_RTMP_STREAM_KEY);
+  const isTeacher = useAppStore((s) => s.currentUser?.role === "teacher");
 
   useEffect(() => {
     if (!ready || !section || !containerRef.current) return;
@@ -35,12 +43,32 @@ export function LiveClassPage() {
 
     api.addEventListener("videoConferenceJoined", () => setStatus("joined"));
     api.addEventListener("videoConferenceLeft", () => setStatus("left"));
+    api.addEventListener("recordingStatusChanged", (event: unknown) => {
+      const e = event as { on: boolean; mode: string };
+      if (e.mode === "stream") {
+        setStreamStatus(e.on ? "live" : "idle");
+      }
+    });
 
     return () => {
       api.dispose();
       apiRef.current = null;
+      setStreamStatus("idle");
     };
   }, [ready, section]);
+
+  function handleStartStream() {
+    if (!apiRef.current || !rtmpKey.trim()) return;
+    apiRef.current.executeCommand("startRecording", {
+      mode: "stream",
+      rtmpStreamKey: rtmpKey.trim(),
+    });
+  }
+
+  function handleStopStream() {
+    if (!apiRef.current) return;
+    apiRef.current.executeCommand("stopRecording", "stream");
+  }
 
   if (!section) {
     return <Navigate to="/" replace />;
@@ -88,6 +116,43 @@ export function LiveClassPage() {
           Document Highlight
         </Button>
       </div>
+
+      {isTeacher && tab === "video" && (
+        <div className="flex flex-col gap-2 p-4 rounded-lg border border-border bg-card">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-foreground">Live Stream</span>
+            {streamStatus === "live" && (
+              <span className="text-sm font-medium text-destructive">● LIVE</span>
+            )}
+            {streamStatus === "idle" && (
+              <span className="text-sm text-muted-foreground">Idle</span>
+            )}
+          </div>
+          {streamStatus === "idle" && (
+            <div className="flex gap-2 items-center">
+              <input
+                className={inputClass + " flex-1"}
+                type="text"
+                placeholder="Paste RTMP stream key (e.g. YouTube Live key)"
+                value={rtmpKey}
+                onChange={(e) => setRtmpKey(e.target.value)}
+                aria-label="RTMP stream key"
+              />
+              <Button
+                onClick={handleStartStream}
+                disabled={!rtmpKey.trim() || status !== "joined"}
+              >
+                Start Live Stream
+              </Button>
+            </div>
+          )}
+          {streamStatus === "live" && (
+            <Button variant="outline" onClick={handleStopStream}>
+              Stop Live Stream
+            </Button>
+          )}
+        </div>
+      )}
 
       <div
         className="flex-1 min-h-[480px] rounded-lg overflow-hidden bg-card"
