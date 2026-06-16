@@ -7,6 +7,7 @@
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
 | 2b | Jitsi Embed in Wails (integration) | COMPLETE |
+| 2c | Jitsi Live Stream (Jibri + RTMP out) | IN PROGRESS |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | COMPLETE |
 | 4a | Sync Service (Yjs infra) | COMPLETE |
 | 4b | Sync Service Integration (Wails) | IN PROGRESS |
@@ -107,6 +108,30 @@ Currently:
 **Gate-Out:** `gate-out/state-2b-jitsi-embed.md`
 
 **Merge-Approval:** `merge-approval/state-2b-jitsi-embed.md`
+
+⸻
+
+### Stage 2c — Jitsi Live Stream (Jibri + RTMP out)
+
+**Domain:** modules/live-class, modules/desktop-app
+**Agent:** [assigned agent]
+**Status:** `IN PROGRESS`
+
+**Acceptance Criteria:**
+- [ ] Jibri service added to docker-compose and starts successfully
+- [ ] Teacher can start/stop live stream from the Wails Live Class screen (RTMP URL configurable)
+- [ ] Stream reaches RTMP endpoint (YouTube Live or local RTMP server for local test)
+- [ ] Setup/run instructions updated in modules/live-class/README.md
+
+**Gate-In Requirements:**
+- Stage 2a merged to wansing (Jitsi docker-compose exists)
+- Stage 2b merged to wansing (Live Class screen + IFrame API wired)
+
+**Dispatch-In:** `tasks/state-2c-jitsi-livestream.md`
+
+**Gate-Out:** `gate-out/state-2c-jitsi-livestream.md`
+
+**Merge-Approval:** `merge-approval/state-2c-jitsi-livestream.md`
 
 ⸻
 
