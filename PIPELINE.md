@@ -235,20 +235,20 @@ Currently:
 
 **Domain:** modules/backend
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Tech Stack:**
 - Database: PostgreSQL
 - Web framework: Fiber v3 (Go)
 - ORM: Bun (uptrace/bun)
-- Auth: github.com/m-t-a97/go-better-auth (teacher/student roles)
+- Auth: github.com/Authula/authula v1.11.0 (go-better-auth, teacher/student roles)
 
 **Acceptance Criteria:**
-- [ ] Real API + DB (PostgreSQL via Bun) implementing the booking/payment/enrollment contracts from Stage 3
-- [ ] Fiber v3 HTTP server exposing the API
-- [ ] Auth for teacher/student roles via go-better-auth
-- [ ] Jitsi room provisioning tied to enrollment (access granted only to paid students)
-- [ ] Auth/session contract documented in CONTRACTS.md for Stage 6b/6c to consume
+- [x] Real API + DB (PostgreSQL via Bun) implementing the booking/payment/enrollment contracts from Stage 3
+- [x] Fiber v3 HTTP server exposing the API
+- [x] Auth for teacher/student roles via go-better-auth
+- [x] Jitsi room provisioning tied to enrollment (access granted only to paid students)
+- [x] Auth/session contract documented in CONTRACTS.md for Stage 6b/6c to consume
 
 **Gate-In Requirements:**
 - Stage 3 merged to wansing (contracts defined)

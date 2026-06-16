@@ -161,10 +161,11 @@ Done
 * [x] Stage 4a — Sync Service (Yjs infra)
 * [x] Stage 4b — Sync Service Integration (Wails)
 * [x] Stage 5 — Expo App (Student / Teacher)
+* [x] Stage 6a — Backend Core (API + DB + Auth)
 
 In Progress
 
-* [ ] Stage 6a — Backend Core (API + DB + Auth)
+* (none — awaiting dispatch of Stage 6b / 6c)
 
 Next Up
 

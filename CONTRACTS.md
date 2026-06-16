@@ -143,6 +143,78 @@ with real API calls against the same shapes; the store interface
 
 ⸻
 
+## Module: Backend API (Stage 6a)
+
+Source: `modules/backend/`
+Auth library: go-better-auth (module path: `github.com/Authula/authula` v1.11.0)
+Session storage: PostgreSQL (`sessions` table via Bun ORM)
+
+### Session / Token Shape
+
+After signup or signin:
+```json
+{
+  "data": {
+    "token": "<opaque-session-token>",
+    "user": { "id": "string", "name": "string", "email": "string", "role": "teacher" | "student" }
+  },
+  "error": null,
+  "status": "success"
+}
+```
+
+Token is an opaque random string (not JWT). Send via header: `Authorization: Bearer <token>`
+Also accepted: `sectionlap_session` cookie.
+
+### Auth Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/signup` | — | Register (body: `name`, `email`, `password`, `role`) |
+| POST | `/api/auth/signin` | — | Login (body: `email`, `password`) |
+| POST | `/api/auth/signout` | Bearer | Invalidate session |
+| GET | `/api/auth/me` | Bearer | Get current user + role |
+
+### Sections Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/sections` | — | List all sections |
+| POST | `/api/sections` | Bearer (teacher) | Create section |
+| PUT | `/api/sections/:id` | Bearer (teacher, owner) | Update section |
+| GET | `/api/sections/:id/jitsi-token` | Bearer (teacher or paid student) | Get Jitsi JWT |
+
+Jitsi token response: `{ "data": { "token": "<jitsi-jwt>", "roomId": "section-<sectionId>" } }`
+
+### Bookings Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/bookings` | Bearer | Create booking (body: `sectionId`) |
+| GET | `/api/bookings` | Bearer | List user's bookings |
+| POST | `/api/bookings/:id/pay` | Bearer | `pending` → `paid` |
+| POST | `/api/bookings/:id/fail` | Bearer | `pending` → `failed` |
+| POST | `/api/bookings/:id/retry` | Bearer | `failed` → `pending` |
+
+### Standard Response Format
+
+Success: `{ "data": <payload>, "error": null, "status": "success" }`
+Error: `{ "data": null, "error": "message", "status": "error" }`
+Business errors (booking): HTTP 409 with `error: "ALREADY_BOOKED"` or `"CAPACITY_FULL"`
+
+### Jitsi JWT Format
+
+HS256, keyed with `JITSI_APP_SECRET`, 4h expiry:
+```json
+{
+  "iss": "<JITSI_APP_ID>", "sub": "<JITSI_DOMAIN>", "aud": "jitsi",
+  "room": "section-<sectionId>",
+  "context": { "user": { "id": "...", "name": "...", "role": "teacher" | "student" } }
+}
+```
+
+⸻
+
 ## Module: sync-service (Stage 4a)
 
 See `modules/sync-service/README.md` for full protocol documentation.

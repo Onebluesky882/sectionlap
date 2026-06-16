@@ -136,3 +136,42 @@ Impact on workers:
 
 * No pending stages depend on 2c as a gate-in requirement.
 * breakdown_feature.md is Dev-only planning reference — workers do not need to read it.
+
+⸻
+
+2026-06-16 (18)
+
+Files changed:
+
+* PIPELINE.md
+* PROJECT.md
+* ROADMAP.md
+* CONTRACTS.md
+* DECISIONS.md
+
+What changed:
+
+* PIPELINE.md Stage 6a: Status → `COMPLETE`; all 5 acceptance criteria ticked;
+  auth library path corrected to `github.com/Authula/authula`.
+* PROJECT.md "Current Stage": updated to Stage 6b / 6c.
+* ROADMAP.md: moved Stage 6a to "Done"; "In Progress" now empty (awaiting 6b/6c dispatch).
+* CONTRACTS.md: merged API_CONTRACT.md content from modules/backend/ into a new
+  "Module: Backend API (Stage 6a)" section — auth endpoints, session shape,
+  sections/bookings endpoints, Jitsi JWT format, standard response format.
+* DECISIONS.md 007: clarified that go-better-auth and github.com/Authula/authula
+  are the same library (GitHub slug vs Go module path). Removed "Authula" from
+  Prohibited list since it refers to the same approved library.
+
+Why:
+
+PR #10 feat(backend): Stage 6a merged to wansing. gate-out PASS.
+CONTRACTS.md update was a known issue from gate-out — required before 6b/6c dispatch.
+DECISIONS.md 007 clarification prevents future workers from incorrectly rejecting
+the only approved auth library due to a module path mismatch.
+
+Impact on workers:
+
+* Stage 6b and 6c Gate-In requirements are now fully satisfied — both can be dispatched.
+* Workers implementing 6b/6c must read CONTRACTS.md "Module: Backend API (Stage 6a)"
+  for the auth/session contract, endpoint list, and response shapes.
+* Auth import path: `github.com/Authula/authula` (not m-t-a97/go-better-auth).

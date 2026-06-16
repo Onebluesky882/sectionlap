@@ -69,9 +69,10 @@ Conductor approval to use. Any deviation fails Technology Compliance
 
 007 — Authentication (Date: YYYY-MM-DD)
 
-* Approved: go-better-auth (https://github.com/m-t-a97/go-better-auth),
-  teacher/student roles
-* Prohibited: Authula, Auth.js, Clerk, Supabase Auth, Firebase Auth, Keycloak
+* Approved: go-better-auth — Go module path `github.com/Authula/authula` v1.11.0+
+  (GitHub repo: m-t-a97/go-better-auth; the module path differs from the repo slug —
+  use `github.com/Authula/authula` in go.mod). teacher/student roles.
+* Prohibited: Auth.js, Clerk, Supabase Auth, Firebase Auth, Keycloak
 
 008 — Package Manager (Date: YYYY-MM-DD)
 

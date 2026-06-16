@@ -26,7 +26,7 @@ mobile.
 - Stage agents: assigned per `tasks/state-[N]-<domain>.md` (see PIPELINE.md)
 
 ## Current Stage
-Stage 4b — Sync Service Integration (Wails) / Stage 6a — Backend Core (active in parallel)
+Stage 6b — Wails Backend Integration / Stage 6c — Expo Backend Integration
 
 ⸻
 
