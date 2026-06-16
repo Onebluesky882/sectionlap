@@ -1,0 +1,39 @@
+{
+  "name": "mobile-app",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "expo": "~56.0.12",
+    "expo-router": "~5.0.7",
+    "expo-status-bar": "~56.0.4",
+    "nativewind": "^4.1.23",
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-gesture-handler": "~2.24.0",
+    "react-native-reanimated": "~3.17.5",
+    "react-native-safe-area-context": "^5.4.0",
+    "react-native-screens": "^4.10.0",
+    "react-native-svg": "^15.11.2",
+    "react-native-webview": "^13.13.5",
+    "tailwindcss": "^3.4.17",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.31",
+    "zustand": "^5.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.0",
+    "@types/node": "^25.9.3",
+    "@types/react": "~19.2.2",
+    "react-native-svg-transformer": "^1.5.0",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit"
+  },
+  "private": true
+}
