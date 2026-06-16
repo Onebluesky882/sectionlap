@@ -11,6 +11,9 @@ importers:
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
+      '@wails/runtime':
+        specifier: ^1.3.20
+        version: 1.3.20
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -26,6 +29,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.3.1
+      react-call:
+        specifier: ^2.0.1
+        version: 2.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vite@8.0.16(@types/node@25.9.3)(jiti@2.7.0))
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
@@ -1262,6 +1268,9 @@ packages:
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^3.0.0
+
+  '@wails/runtime@1.3.20':
+    resolution: {integrity: sha512-CGX//m90re65ovCGqFMdABhQCdzH8pmHlCHallzRaAt432ClPtGO0MZBoHasE+HZYcYodZKKnzHgn8sssLswtw==}
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -2731,6 +2740,18 @@ packages:
   raw-body@3.0.2:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
+
+  react-call@2.0.1:
+    resolution: {integrity: sha512-MHlsewuJBHKCiJzfHwNXkOn/nBVo3FZjUmNXvWsSFG9FBJ3uwr5M5KRqh38RiqRAb+SUbUwDO2RtU6rGQhu6qg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+      vite: '>=8'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      vite:
+        optional: true
 
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
@@ -4633,6 +4654,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@wails/runtime@1.3.20': {}
+
   accepts@1.3.8:
     dependencies:
       mime-types: 2.1.35
@@ -6171,6 +6194,13 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.2
       unpipe: 1.0.0
+
+  react-call@2.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vite@8.0.16(@types/node@25.9.3)(jiti@2.7.0)):
+    dependencies:
+      react: 18.3.1
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
+      vite: 8.0.16(@types/node@25.9.3)(jiti@2.7.0)
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:

@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { BookingRecord, CreateBookingResult, Section, User } from "../types";
+import type { BookingRecord, CreateBookingResult, Section, User, UserRole } from "../types";
 import { mockSections } from "../data/mockSections";
 import { MOCK_STUDENT, MOCK_TEACHER } from "../data/mockUsers";
 
 interface AppStore {
   sections: Section[];
   bookings: BookingRecord[];
-  currentUser: User;
+  currentUser: User | null;
+  users: User[];
   addSection: (section: Section) => void;
   updateSection: (section: Section) => void;
   createBooking: (sectionId: string) => CreateBookingResult;
@@ -15,6 +16,9 @@ interface AppStore {
   failBooking: (bookingId: string) => void;
   retryBooking: (bookingId: string) => void;
   switchRole: () => void;
+  login: (userId: string) => boolean;
+  signup: (name: string, role: UserRole) => User;
+  logout: () => void;
 }
 
 /**
@@ -30,7 +34,8 @@ export const useAppStore = create<AppStore>()(
     (set, get) => ({
       sections: mockSections,
       bookings: [],
-      currentUser: MOCK_STUDENT,
+      currentUser: null,
+      users: [MOCK_STUDENT, MOCK_TEACHER],
 
       addSection: (section) =>
         set((state) => ({ sections: [...state.sections, section] })),
@@ -44,6 +49,9 @@ export const useAppStore = create<AppStore>()(
 
       createBooking: (sectionId) => {
         const state = get();
+        if (!state.currentUser) {
+          return { booking: null, error: "NOT_AUTHENTICATED" as any };
+        }
         const studentId = state.currentUser.id;
 
         const existing = state.bookings.find(
@@ -101,20 +109,52 @@ export const useAppStore = create<AppStore>()(
         })),
 
       switchRole: () =>
+        set((state) => {
+          if (!state.currentUser) return {};
+          return {
+            currentUser:
+              state.currentUser.role === "teacher"
+                ? state.users.find((u) => u.role === "student") || MOCK_STUDENT
+                : state.users.find((u) => u.role === "teacher") || MOCK_TEACHER,
+          };
+        }),
+
+      login: (userId) => {
+        const state = get();
+        const user = state.users.find((u) => u.id === userId);
+        if (user) {
+          set({ currentUser: user });
+          return true;
+        }
+        return false;
+      },
+
+      signup: (name, role) => {
+        const newUser: User = {
+          id: `user-${role}-${Date.now()}`,
+          name,
+          role,
+        };
         set((state) => ({
-          currentUser:
-            state.currentUser.role === "teacher" ? MOCK_STUDENT : MOCK_TEACHER,
-        })),
+          users: [...state.users, newUser],
+          currentUser: newUser,
+        }));
+        return newUser;
+      },
+
+      logout: () => set({ currentUser: null }),
     }),
     {
       name: "sectionlap-store",
-      version: 2,
-      // Stage 1 persisted state used a different Section/BookingRecord shape
-      // (no teacherId/capacity/studentId). Discard it rather than risk
-      // crashes on the new shape — this is local mock data only.
+      version: 3,
       migrate: (_persisted, version) => {
-        if (version < 2) {
-          return { sections: mockSections, bookings: [], currentUser: MOCK_STUDENT };
+        if (version < 3) {
+          return {
+            sections: mockSections,
+            bookings: [],
+            currentUser: null,
+            users: [MOCK_STUDENT, MOCK_TEACHER],
+          };
         }
         return _persisted as AppStore;
       },

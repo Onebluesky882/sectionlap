@@ -467,3 +467,46 @@ Impact on workers:
 * The Governance File Ownership table in GOVERNANCE_CORE.md is the single
   source of truth for which files are read-only vs. editable by which role.
 * No existing rules changed — only new authoritative content added.
+
+⸻
+
+2026-06-16 (12)
+
+Files changed:
+
+* GOVERNANCE_CORE.md
+* DEV_LOG.md
+
+What changed:
+
+* GOVERNANCE_CORE.md: Added Planning.md to the Governance File Ownership table. Specified owner as Dev, with Dev edits = Yes, Conductor edits = No, and Workers = Read-only.
+
+Why:
+
+The Dev requested that Planning.md be a read-only document for AI agents (Conductor and Workers), used exclusively by the Dev for planning.
+
+Impact on workers:
+
+* Planning.md is now read-only for both Conductor and Worker agents. AI agents must not write to or edit Planning.md.
+
+⸻
+
+2026-06-16 (13)
+
+Files changed:
+
+* modules/desktop-app/frontend/src/pages/AuthPage.tsx
+
+What changed:
+
+* AuthPage.tsx: Dev manually formatted and cleaned up template class string indentations and syntax inside JSX elements (line spacing, tabs, and backtick blocks).
+
+Why:
+
+Formatting and style consistency during developer's manual code review.
+
+Impact on workers:
+
+* No functional changes to the page. Code behavior remains exactly as specified in previous commits.
+
+

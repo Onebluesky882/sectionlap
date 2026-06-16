@@ -2,6 +2,7 @@ import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useSection } from "../hooks/useSection";
 import { useAppStore } from "../store/useAppStore";
 import { Button } from "../components/ui/button";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 export function SectionDetailPage() {
   const { sectionId = "" } = useParams();
@@ -17,6 +18,18 @@ export function SectionDetailPage() {
     (b) => b.sectionId === section.id && b.status !== "failed"
   ).length;
   const isFull = !booking && activeCount >= section.capacity;
+
+  const handleBookClick = async () => {
+    const confirmed = await ConfirmModal.call({
+      title: "Enrollment Booking Confirmation",
+      message: `Would you like to proceed to checkout and book "${section.title}" for $${section.price}?`,
+      confirmText: "Proceed to Checkout",
+      cancelText: "Cancel",
+    });
+    if (confirmed) {
+      navigate(`/sections/${section.id}/checkout`);
+    }
+  };
 
   return (
     <div>
@@ -48,7 +61,7 @@ export function SectionDetailPage() {
         ) : isFull ? (
           <div className="text-muted-foreground text-sm mt-4">This section is full.</div>
         ) : (
-          <Button onClick={() => navigate(`/sections/${section.id}/checkout`)}>
+          <Button onClick={handleBookClick}>
             Book this Section
           </Button>
         )}
