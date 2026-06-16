@@ -355,8 +355,70 @@ Impact on workers:
 
 * No rule changed — ROADMAP.md remains read-only for workers per
   AGENT_RULES.md "Roadmap Protection". Re-read ROADMAP.md; it is shorter.
-* This concludes the current governance refactor pass (DECISIONS.md,
+* This concludes the governance refactor pass 1 (DECISIONS.md,
   SECURITY_RULES.md, AGENT_RULES.md/CONDUCTOR.md, ROADMAP.md).
+
+⸻
+
+2026-06-16 (11)
+
+Files changed:
+
+* AGENT_RULES.md
+* CONDUCTOR.md
+
+What changed:
+
+* AGENT_RULES.md: second refactor pass. 700 → 388 lines (~45% reduction).
+  Removed or condensed:
+  - "Conductor Flow": cut the 8-step conductor process (conductor-internal,
+    not worker-facing) — kept only the gate validation rules workers must
+    satisfy; added pointer to CONDUCTOR.md for the conductor process.
+  - "Pipeline State Rules": condensed State Transitions from verbose
+    4-block format to a compact 4-line table; removed multi-line
+    Immutability Rules elaboration.
+  - "Conductor Output — merge-approval.md": removed the full PR description
+    template (conductor writes, not workers); kept the file path + essential
+    fields workers need to recognize.
+  - "Conductor Output — dispatch-in.md": removed the full template
+    (conductor writes, workers receive); kept pointer to CONDUCTOR.md.
+  - "Conductor Identity": condensed from 9 lines to 5; added pointers to
+    CONDUCTOR.md and DEV.md.
+  - "Conductor Integration Responsibility": merged into "Conductor-Only
+    Tasks" (same content, two sections).
+  - "Domain Ownership": removed verbose example block (3 identical stage
+    patterns) — rule stated in one line.
+  - "Decision Rules": removed stale technology examples (Drizzle/Prisma,
+    Better Auth/Auth.js — not this project's stack); rule stated once.
+  - "Technology Stack Authority": condensed from 33 lines to 6; pointer to
+    DECISIONS.md.
+  - "Technology Freshness Compliance": condensed from 39 lines to 14.
+  - "Roadmap Protection": condensed from 17 lines to 3.
+  - "Main Branch Merge Authority": condensed to 5 lines; pointer to DEV.md.
+  - "Multi-Model Compatibility", "Merge Optimization": condensed to 2 lines
+    each.
+* CONDUCTOR.md: 599 → 570 lines.
+  - "Repository Ownership": replaced 15-line file list with a pointer to
+    GOVERNANCE_CORE.md ownership table (now the authoritative source).
+  - "Dev Direct Change Log": replaced 23-line rule restatement with a
+    4-line pointer to DEV.md (now the authoritative source for this rule).
+
+Why:
+
+Governance refactor pass 2. AGENT_RULES.md contained significant content
+that is conductor-internal (the 8-step flow, full output templates,
+pipeline state transition detail) — workers don't execute these steps, they
+only produce gate-out.md and consume dispatch-in.md. Removing the conductor
+process from the worker rulebook reduces reading cost while keeping the
+worker-specific rules intact.
+
+Impact on workers:
+
+* Same worker rules apply — format of gate-out.md unchanged, branch rules
+  unchanged, tech stack/security rules unchanged.
+* Conductor Flow detail now in CONDUCTOR.md only — workers read gate
+  validation rules (what makes a stage PASS) but not the conductor's steps.
+* Re-read AGENT_RULES.md; it is substantially shorter.
 
 ⸻
 

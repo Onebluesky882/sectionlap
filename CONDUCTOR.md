@@ -42,21 +42,8 @@ Workers must not advance pipeline state.
 
 Repository Ownership
 
-Conductor-owned files:
-
-* PROJECT.md
-* PIPELINE.md
-* ARCHITECTURE.md
-* CONTRACTS.md
-* DECISIONS.md
-* CONDUCTOR.md
-
-Worker-owned files:
-
-* assigned module/domain
-* assigned tests
-* assigned documentation
-* gate-out artifacts
+See GOVERNANCE_CORE.md → "Governance File Ownership" for the full
+ownership table (Conductor-owned, Dev-owned, worker read-only files).
 
 ⸻
 
@@ -495,27 +482,11 @@ No worker activity permitted during recovery.
 
 Dev Direct Change Log
 
-The dev participates directly on the `wansing` branch as Conductor.
-
-Any direct change the dev makes to governance/direction documents
-(PROJECT.md, ROADMAP.md, PIPELINE.md, ARCHITECTURE.md, CONTRACTS.md,
-DECISIONS.md, AGENT_RULES.md, CONDUCTOR.md, DESIGN_SYSTEM.md,
-ENGINEERING_CONTROLLER.md, START_HERE.md) must be recorded in:
-
-DEV_LOG.md
-
-Each entry must record:
-
-* date
-* file(s) changed
-* what changed
-* why
-* impact on workers (if any)
+See DEV.md → "Dev Direct Edit Rule" for the full rule on logging direct
+Dev edits to governance files in DEV_LOG.md.
 
 Workers must read DEV_LOG.md for unread entries before starting assigned
-work, to stay aligned with the dev's current direction.
-
-DEV_LOG.md is append-only. Do not edit or remove past entries.
+work. DEV_LOG.md is append-only.
 
 ⸻
 
