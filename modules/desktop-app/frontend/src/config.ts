@@ -9,3 +9,9 @@ export const JITSI_BASE_URL =
 // Override with VITE_SYNC_BASE_URL if the server runs on a different host/port.
 export const SYNC_BASE_URL =
   import.meta.env.VITE_SYNC_BASE_URL ?? "ws://localhost:1234";
+
+// RTMP stream key for Jibri live streaming (Stage 2c).
+// Set VITE_RTMP_STREAM_KEY at build time to pre-fill the teacher's key input.
+// If empty, the teacher must paste their RTMP key at runtime before going live.
+export const DEFAULT_RTMP_STREAM_KEY =
+  import.meta.env.VITE_RTMP_STREAM_KEY ?? "";
