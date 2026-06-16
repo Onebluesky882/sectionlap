@@ -374,8 +374,23 @@ Conductor clarification before implementation.
 
 Technology Freshness Compliance
 
+Workers may NOT rely on memory or training data for version numbers.
+Training data is stale. Always query the registry before installing.
+
+Required check before installing any package:
+
+  pnpm view <package> version          # latest stable
+  pnpm view <package> dist-tags        # see all dist-tags including latest
+
+For Go modules:
+
+  go list -m -versions <module>        # all published versions
+
+Skipping these checks and installing a version from memory = Status: FAIL.
+
 Use the latest stable version of all approved technologies unless
-DECISIONS.md explicitly specifies a required version.
+DECISIONS.md → "012 — Version Policy" → Pinned Versions explicitly
+overrides it.
 
 Do not use deprecated, unsupported, end-of-life, or archived releases.
 

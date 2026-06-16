@@ -93,6 +93,22 @@ Conductor approval to use. Any deviation fails Technology Compliance
   package name, version, reason.
 * Undocumented dependencies fail gate validation.
 
+012 — Version Policy (Date: 2026-06-16)
+
+Default rule: install @latest stable. Workers must query the registry
+(see AGENT_RULES.md → "Technology Freshness Compliance") and must not
+rely on memory or training data for version numbers.
+
+Pinned Versions
+
+Entries below override the @latest default. Only the Conductor may add
+or remove pins. Workers must use the pinned version exactly.
+
+  (none — add pins here when required)
+
+Format for new pins:
+  package@X.Y.Z — reason — added YYYY-MM-DD
+
 ⸻
 
 Technology Compliance
