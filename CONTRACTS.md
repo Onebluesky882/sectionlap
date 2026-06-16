@@ -148,10 +148,20 @@ with real API calls against the same shapes; the store interface
 See `modules/sync-service/README.md` for full protocol documentation.
 Summary for consumers (Stage 4b desktop-app, Stage 5 mobile-app):
 
+### sectionSessionId
+
+```ts
+type SectionSessionId = string; // always equals Section.id from Stage 3
+```
+
+`sectionSessionId` is `Section.id` — the unique section identifier from
+the Stage 3 `Section` entity. All clients (Wails Stage 4b, Expo Stage 5)
+must derive room names from the same `Section.id` to join the same room.
+
 ### Connection
 - WebSocket server: `ws://localhost:1234` (configurable via `SYNC_PORT`)
 - Connect with `y-websocket`'s `WebsocketProvider(url, roomName, ydoc)`
-- Room naming: `whiteboard-<sectionSessionId>`, `highlight-<sectionSessionId>`
+- Room naming: `whiteboard-${section.id}`, `highlight-${section.id}`
 
 ### Whiteboard room — shared shape
 - `doc.getArray('strokes')`: `{ color: string, width: number, points: {x,y}[] }[]`

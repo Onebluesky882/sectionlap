@@ -163,31 +163,23 @@ Create:
 
 gate-out/state-<stage_id>-<domain>.md
 
-Required fields:
+Required fields (see AGENT_RULES.md "Stage Completion" for the authoritative format):
 
-stage_id:
-status: PASS | FAIL
-ready_for_next: YES | NO
-
-deliverables:
-
-* …
-
-validation:
-
-* …
-
-risks:
-
-* …
-
-blockers:
-
-* …
-
-recommendations:
-
-* …
+Status: PASS | FAIL
+Stage:
+Domain:
+Summary:
+Modified Files:
+* file1
+Dependencies Added:
+* none | package@version — reason
+Tests:
+* test_a
+Known Issues:
+* none
+Recommendations:
+* optional
+Ready For Next Stage: YES | NO
 
 ⸻
 
