@@ -48,3 +48,32 @@ Impact on workers:
 * Read DEV_LOG.md only (this file). DEV_LOG_ARCHIVE.md is for audit
   reference — you do not need to read it unless investigating past decisions.
 * No governance rules changed by this reset.
+
+⸻
+
+2026-06-16 (15)
+
+Files changed:
+
+* PIPELINE.md
+* PROJECT.md
+* ROADMAP.md
+
+What changed:
+
+* PIPELINE.md Stage 5: Status changed from `PENDING` to `COMPLETE`;
+  all 5 acceptance criteria ticked.
+* PROJECT.md "Current Stage": updated to reflect Stage 4b and Stage 6a
+  running in parallel (Stage 5 is now merged).
+* ROADMAP.md: moved Stage 5 from "Next Up" to "Done"; added Stage 6a
+  to "In Progress"; removed Stage 6b/6c from "Next Up" (6b remains,
+  6c removed from that section as it follows 6b).
+
+Why:
+
+Dev confirmed Stage 5 (Expo App) has been merged to wansing.
+
+Impact on workers:
+
+* Stage 6c Gate-In now satisfiable — Stage 5 merged to wansing is confirmed.
+* Active stages: Stage 4b (Wails sync integration) and Stage 6a (Backend Core).

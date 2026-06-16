@@ -210,14 +210,14 @@ Currently:
 
 **Domain:** modules/mobile-app
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Expo app runs on Android and iPad
-- [ ] Student/Teacher flows mirrored from Wails (section list, booking, dashboard) using mock logic from Stage 3
-- [ ] Live class via Jitsi React Native SDK
-- [ ] Whiteboard & document-highlight connected to the same Sync Service from Stage 4a
-- [ ] Real-time sync verified between Wails and Expo clients
+- [x] Expo app runs on Android and iPad
+- [x] Student/Teacher flows mirrored from Wails (section list, booking, dashboard) using mock logic from Stage 3
+- [x] Live class via Jitsi React Native SDK
+- [x] Whiteboard & document-highlight connected to the same Sync Service from Stage 4a
+- [x] Real-time sync verified between Wails and Expo clients
 
 **Gate-In Requirements:**
 - Stage 3 merged to wansing (mock logic contracts available)
