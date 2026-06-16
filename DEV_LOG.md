@@ -77,3 +77,62 @@ Impact on workers:
 
 * Stage 6c Gate-In now satisfiable — Stage 5 merged to wansing is confirmed.
 * Active stages: Stage 4b (Wails sync integration) and Stage 6a (Backend Core).
+
+⸻
+
+2026-06-16 (16)
+
+Files changed:
+
+* PIPELINE.md
+* PROJECT.md
+* ROADMAP.md
+
+What changed:
+
+* PIPELINE.md Stage 4b: Status changed from `IN PROGRESS` to `COMPLETE`;
+  both acceptance criteria ticked.
+* PROJECT.md "Current Stage": updated to Stage 6a only (4b now complete).
+* ROADMAP.md: moved Stage 4b from "In Progress" to "Done".
+
+Why:
+
+PR #7 feat(desktop-app): integrate Live Class with sync-service (Stage 4b)
+was merged to wansing on 2026-06-15. Gate-out PASS, merge-approval APPROVED.
+Delivered: useSyncRoom hook, SyncCanvas, WhiteboardPanel, DocumentHighlightPanel,
+LiveClassPage updated with Video/Whiteboard/Highlight tabs.
+
+Impact on workers:
+
+* Stage 6b Gate-In is now satisfiable (Stage 4b merged to wansing confirmed).
+* Current active stage: Stage 6a — Backend Core.
+
+⸻
+
+2026-06-16 (17)
+
+Files changed:
+
+* PIPELINE.md
+* ROADMAP.md
+* breakdown_feature.md (new)
+
+What changed:
+
+* PIPELINE.md Stage 2c: Status changed from `IN PROGRESS` to `COMPLETE`;
+  all 4 acceptance criteria ticked.
+* ROADMAP.md: added Stage 2c to "Done" list.
+* breakdown_feature.md (new): breakdown of all 19 planned AI/system/student
+  features from Planning.md — each with dependencies, difficulty, and
+  priority. Includes 5-phase implementation sequence (A–E).
+
+Why:
+
+PR #9 feat(live-class): add Jibri live streaming merged to wansing.
+gate-out/state-2c-jitsi-livestream.md Status: PASS, Ready For Next Stage: YES.
+Delivers: Jibri service in docker-compose + teacher Start/Stop RTMP panel in LiveClassPage.
+
+Impact on workers:
+
+* No pending stages depend on 2c as a gate-in requirement.
+* breakdown_feature.md is Dev-only planning reference — workers do not need to read it.

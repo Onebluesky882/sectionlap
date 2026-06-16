@@ -115,13 +115,13 @@ Currently:
 
 **Domain:** modules/live-class, modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Jibri service added to docker-compose and starts successfully
-- [ ] Teacher can start/stop live stream from the Wails Live Class screen (RTMP URL configurable)
-- [ ] Stream reaches RTMP endpoint (YouTube Live or local RTMP server for local test)
-- [ ] Setup/run instructions updated in modules/live-class/README.md
+- [x] Jibri service added to docker-compose and starts successfully
+- [x] Teacher can start/stop live stream from the Wails Live Class screen (RTMP URL configurable)
+- [x] Stream reaches RTMP endpoint (YouTube Live or local RTMP server for local test)
+- [x] Setup/run instructions updated in modules/live-class/README.md
 
 **Gate-In Requirements:**
 - Stage 2a merged to wansing (Jitsi docker-compose exists)
@@ -188,11 +188,11 @@ Currently:
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `IN PROGRESS`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Wails app integrated as a client connecting to the sync service
-- [ ] Whiteboard and document-highlight usable from within the Wails app
+- [x] Wails app integrated as a client connecting to the sync service
+- [x] Whiteboard and document-highlight usable from within the Wails app
 
 **Gate-In Requirements:**
 - Stage 1 merged to wansing (Wails app shell exists)

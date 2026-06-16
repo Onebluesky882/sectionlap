@@ -156,15 +156,14 @@ Done
 * [x] Stage 1 — Frontend Shell + Mock Data (Wails)
 * [x] Stage 2a — Jitsi Meet Self-host (infra)
 * [x] Stage 2b — Jitsi Embed in Wails (integration)
+* [x] Stage 2c — Jibri Live Stream (RTMP out)
 * [x] Stage 3 — Mock Logic (Booking / Payment / Enrollment)
 * [x] Stage 4a — Sync Service (Yjs infra)
+* [x] Stage 4b — Sync Service Integration (Wails)
 * [x] Stage 5 — Expo App (Student / Teacher)
 
 In Progress
 
-* [ ] Stage 4b — Sync Service Integration (Wails)
-  - Wails app integrated as a client of the sync service
-  - Whiteboard and document-highlight usable inside the Wails app
 * [ ] Stage 6a — Backend Core (API + DB + Auth)
 
 Next Up
