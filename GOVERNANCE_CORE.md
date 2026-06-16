@@ -43,6 +43,7 @@ Governance File Ownership
 | START_HERE.md          | Conductor | Yes       | Yes             | Read-only |
 | DEV.md                 | Dev       | Yes       | No              | Read-only |
 | DEV_LOG.md             | Dev       | Yes       | No              | Read-only |
+| DEV_LOG_ARCHIVE.md     | Dev       | Yes       | No              | Read-only (audit only) |
 | GOVERNANCE_CORE.md     | Dev       | Yes       | No              | Read-only |
 | Planning.md            | Dev       | Yes       | No              | Read-only |
 
