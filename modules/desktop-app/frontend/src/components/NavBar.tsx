@@ -1,4 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import sectionlapLogo from "../assets/sectionlap_logo.png";
 import { useAppStore } from "../store/useAppStore";
 import { Button } from "./ui/button";
 import { LogOut, User as UserIcon, GraduationCap } from "lucide-react";
@@ -32,9 +33,9 @@ export function NavBar() {
 
   return (
     <nav className="flex items-center justify-between px-8 py-4 bg-card border-b border-border shadow-xs">
-      <div className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">
-        <Link to="/">SectionLap</Link>
-      </div>
+      <Link to="/">
+        <img src={sectionlapLogo} alt="SectionLap" className="h-10 w-auto" />
+      </Link>
 
       <div className="flex gap-2">
         <NavLink to="/" className={linkClass} end>
