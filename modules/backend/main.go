@@ -60,7 +60,8 @@ func main() {
 			},
 			Plugins: authulamodels.PluginsConfig{
 				authulamodels.PluginEmailPassword.String(): map[string]any{
-					"enabled": true,
+					"enabled":      true,
+					"auto_sign_in": true,
 				},
 			},
 		},
