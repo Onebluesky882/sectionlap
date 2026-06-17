@@ -5,6 +5,7 @@ import { Button } from "../../components/ui/button";
 import { User, GraduationCap, ArrowRight, PlusCircle, LogIn, Mail, Lock } from "lucide-react";
 import type { UserRole } from "../../types";
 import sectionlapLogo from "../../assets/sectionlap_logo.png";
+import { formatError } from "../../lib/formatError";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -32,13 +33,17 @@ export function AuthPage() {
       setErrorMsg("Please enter your email and password.");
       return;
     }
+    if (!loginEmail.includes("@")) {
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
     setLoading(true);
     setErrorMsg("");
     try {
       await login(loginEmail.trim(), loginPassword);
       navigate("/");
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to sign in.");
+      setErrorMsg(formatError(err, "Failed to sign in. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -50,13 +55,21 @@ export function AuthPage() {
       setErrorMsg("Please fill in all fields.");
       return;
     }
+    if (!signupEmail.includes("@")) {
+      setErrorMsg("Please enter a valid email address.");
+      return;
+    }
+    if (signupPassword.length < 8) {
+      setErrorMsg("Password must be at least 8 characters long.");
+      return;
+    }
     setLoading(true);
     setErrorMsg("");
     try {
       await signup(signupName.trim(), signupEmail.trim(), signupPassword, signupRole);
       navigate("/");
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to create account.");
+      setErrorMsg(formatError(err, "Failed to create account. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -117,7 +130,7 @@ export function AuthPage() {
 
         {/* Tab Contents */}
         {activeTab === "login" ? (
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} noValidate className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="login-email" className="text-sm font-semibold text-foreground">
                 Email
@@ -170,7 +183,7 @@ export function AuthPage() {
           </form>
         ) : (
           /* Sign Up Content */
-          <form onSubmit={handleSignup} className="space-y-5">
+          <form onSubmit={handleSignup} noValidate className="space-y-5">
             <div className="space-y-2">
               <label htmlFor="name" className="text-sm font-semibold text-foreground">
                 Full Name
