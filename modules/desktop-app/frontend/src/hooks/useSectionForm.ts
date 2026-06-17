@@ -46,7 +46,7 @@ function slugify(title: string): string {
 export function useSectionForm() {
   const currentUser = useAppStore((state) => state.currentUser);
   const sections = useAppStore((state) =>
-    state.sections.filter((s) => s.teacherId === currentUser.id)
+    currentUser ? state.sections.filter((s) => s.teacherId === currentUser.id) : []
   );
   const addSection = useAppStore((state) => state.addSection);
   const updateSection = useAppStore((state) => state.updateSection);
@@ -54,12 +54,12 @@ export function useSectionForm() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [values, setValues] = useState<SectionFormValues>({
     ...EMPTY_FORM,
-    teacher: currentUser.name,
+    teacher: currentUser?.name ?? "",
   });
 
   function startCreate() {
     setEditingId("new");
-    setValues({ ...EMPTY_FORM, teacher: currentUser.name });
+    setValues({ ...EMPTY_FORM, teacher: currentUser?.name ?? "" });
   }
 
   function startEdit(section: Section) {
@@ -69,11 +69,11 @@ export function useSectionForm() {
 
   function cancel() {
     setEditingId(null);
-    setValues({ ...EMPTY_FORM, teacher: currentUser.name });
+    setValues({ ...EMPTY_FORM, teacher: currentUser?.name ?? "" });
   }
 
   function submit() {
-    if (!editingId) return;
+    if (!editingId || !currentUser) return;
 
     const section: Section = {
       id: editingId === "new" ? slugify(values.title) : editingId,

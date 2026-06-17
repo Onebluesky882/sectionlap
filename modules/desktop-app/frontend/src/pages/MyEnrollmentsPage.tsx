@@ -8,14 +8,16 @@ export function MyEnrollmentsPage() {
   const bookings = useAppStore((state) => state.bookings);
   const navigate = useNavigate();
 
-  const enrolled = sections.filter((section) =>
-    bookings.some(
-      (b) =>
-        b.sectionId === section.id &&
-        b.studentId === currentUser.id &&
-        b.status === "paid"
-    )
-  );
+  const enrolled = currentUser
+    ? sections.filter((section) =>
+        bookings.some(
+          (b) =>
+            b.sectionId === section.id &&
+            b.studentId === currentUser.id &&
+            b.status === "paid"
+        )
+      )
+    : [];
 
   return (
     <div>
