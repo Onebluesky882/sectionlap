@@ -7,6 +7,7 @@
     "expo": "~56.0.12",
     "expo-router": "~5.0.7",
     "expo-status-bar": "~56.0.4",
+    "isomorphic-webcrypto": "^2.3.8",
     "nativewind": "^4.1.23",
     "react": "19.2.3",
     "react-native": "0.85.3",
