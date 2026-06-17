@@ -5,20 +5,22 @@ import type { BookingError } from "../types";
 export function useCheckout(sectionId: string) {
   const currentUser = useAppStore((s) => s.currentUser);
   const booking = useAppStore((s) =>
-    s.bookings.find((b) => b.sectionId === sectionId && b.studentId === currentUser.id)
+    currentUser
+      ? s.bookings.find((b) => b.sectionId === sectionId && b.studentId === currentUser.id)
+      : undefined
   );
   const createBooking = useAppStore((s) => s.createBooking);
   const payBooking = useAppStore((s) => s.payBooking);
   const failBooking = useAppStore((s) => s.failBooking);
   const retryBooking = useAppStore((s) => s.retryBooking);
   const [error, setError] = useState<BookingError | null>(null);
+  const [initiated, setInitiated] = useState(false);
 
   useEffect(() => {
-    if (!booking) {
-      const result = createBooking(sectionId);
-      setError(result.error);
-    }
-  }, [booking, sectionId, createBooking]);
+    if (booking || initiated) return;
+    setInitiated(true);
+    createBooking(sectionId).then((result) => setError(result.error));
+  }, [booking, sectionId, createBooking, initiated]);
 
   return {
     booking,

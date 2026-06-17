@@ -34,19 +34,10 @@ function toValues(s: Section): SectionFormValues {
   };
 }
 
-function slugify(title: string) {
-  const base = title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-  return base ? `${base}-${Date.now()}` : `section-${Date.now()}`;
-}
-
 export function useSectionForm() {
   const currentUser = useAppStore((s) => s.currentUser);
   const sections = useAppStore((s) =>
-    s.sections.filter((x) => x.teacherId === currentUser.id)
+    currentUser ? s.sections.filter((x) => x.teacherId === currentUser.id) : []
   );
   const addSection = useAppStore((s) => s.addSection);
   const updateSection = useAppStore((s) => s.updateSection);
@@ -54,12 +45,12 @@ export function useSectionForm() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [values, setValues] = useState<SectionFormValues>({
     ...EMPTY,
-    teacher: currentUser.name,
+    teacher: currentUser?.name ?? "",
   });
 
   function startCreate() {
     setEditingId("new");
-    setValues({ ...EMPTY, teacher: currentUser.name });
+    setValues({ ...EMPTY, teacher: currentUser?.name ?? "" });
   }
 
   function startEdit(section: Section) {
@@ -69,23 +60,25 @@ export function useSectionForm() {
 
   function cancel() {
     setEditingId(null);
-    setValues({ ...EMPTY, teacher: currentUser.name });
+    setValues({ ...EMPTY, teacher: currentUser?.name ?? "" });
   }
 
-  function submit() {
-    if (!editingId) return;
-    const section: Section = {
-      id: editingId === "new" ? slugify(values.title) : editingId,
+  async function submit() {
+    if (!editingId || !currentUser) return;
+    const data = {
       title: values.title,
       description: values.description,
       price: Number(values.price) || 0,
       teacher: values.teacher,
-      teacherId: currentUser.id,
       category: values.category,
       durationMinutes: Number(values.durationMinutes) || 0,
       capacity: Number(values.capacity) || 0,
     };
-    editingId === "new" ? addSection(section) : updateSection(section);
+    if (editingId === "new") {
+      await addSection(data);
+    } else {
+      await updateSection({ ...data, id: editingId, teacherId: currentUser.id });
+    }
     cancel();
   }
 

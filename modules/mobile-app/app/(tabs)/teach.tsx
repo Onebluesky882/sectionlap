@@ -11,12 +11,12 @@ export default function TeacherDashboardPage() {
   const { sections, editingId, values, setValues, startCreate, startEdit, cancel, submit } =
     useSectionForm();
 
-  if (currentUser.role !== "teacher") {
+  if (!currentUser || currentUser.role !== "teacher") {
     return (
       <View className="flex-1 bg-background px-6 py-6">
         <Text className="text-3xl font-bold text-foreground">Teacher Dashboard</Text>
         <Text className="text-muted-foreground mt-3">
-          Switch to the teacher role (top right) to manage your sections.
+          Sign in as a Teacher to manage your sections.
         </Text>
       </View>
     );

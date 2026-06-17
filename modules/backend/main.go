@@ -39,7 +39,8 @@ func main() {
 	}
 
 	epPlugin := email_password.New(email_password_types.EmailPasswordPluginConfig{
-		Enabled: true,
+		Enabled:    true,
+		AutoSignIn: true,
 	})
 
 	auth := authula.New(&authula.AuthConfig{

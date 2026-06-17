@@ -9,11 +9,13 @@ export default function MyEnrollmentsPage() {
   const bookings = useAppStore((s) => s.bookings);
   const router = useRouter();
 
-  const enrolled = sections.filter((section) =>
-    bookings.some(
-      (b) => b.sectionId === section.id && b.studentId === currentUser.id && b.status === "paid"
-    )
-  );
+  const enrolled = currentUser
+    ? sections.filter((section) =>
+        bookings.some(
+          (b) => b.sectionId === section.id && b.studentId === currentUser.id && b.status === "paid"
+        )
+      )
+    : [];
 
   return (
     <FlatList
