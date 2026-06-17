@@ -1,7 +1,8 @@
 // Backend API base URL (modules/backend, Stage 6a).
-// Override with VITE_API_BASE_URL if the server runs on a different host/port.
+// Empty string = use Vite dev server proxy (/api → localhost:8080).
+// In Wails production build, set VITE_API_BASE_URL to the real backend address.
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+  import.meta.env.VITE_API_BASE_URL ?? "";
 
 // Local self-hosted Jitsi Meet instance (modules/live-class, Stage 2a).
 // Override with VITE_JITSI_BASE_URL if the docker-compose stack runs on a
