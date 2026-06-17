@@ -24,7 +24,7 @@ export function NavBar() {
       type: "warning"
     });
     if (confirmed) {
-      logout();
+      await logout();
       navigate("/auth");
     }
   };

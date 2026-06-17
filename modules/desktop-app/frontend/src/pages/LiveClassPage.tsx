@@ -7,6 +7,7 @@ import { WhiteboardPanel } from "../components/WhiteboardPanel";
 import { DocumentHighlightPanel } from "../components/DocumentHighlightPanel";
 import { Button } from "../components/ui/button";
 import { useAppStore } from "../store/useAppStore";
+import { apiGetJitsiToken } from "../lib/api";
 
 type Tab = "video" | "whiteboard" | "highlight";
 type StreamStatus = "idle" | "live";
@@ -30,32 +31,52 @@ export function LiveClassPage() {
     if (!ready || !section || !containerRef.current) return;
 
     const domain = JITSI_BASE_URL.replace(/^https?:\/\//, "");
-    const api = new window.JitsiMeetExternalAPI!(domain, {
-      roomName: section.id,
-      parentNode: containerRef.current,
-      width: "100%",
-      height: "100%",
-      configOverwrite: {
-        prejoinPageEnabled: false,
-      },
-    });
-    apiRef.current = api;
 
-    api.addEventListener("videoConferenceJoined", () => setStatus("joined"));
-    api.addEventListener("videoConferenceLeft", () => setStatus("left"));
-    api.addEventListener("recordingStatusChanged", (event: unknown) => {
-      const e = event as { on: boolean; mode: string };
-      if (e.mode === "stream") {
-        setStreamStatus(e.on ? "live" : "idle");
-      }
+    apiGetJitsiToken(sectionId).then(({ token: jitsiJwt, roomId }) => {
+      if (!containerRef.current) return;
+      const api = new window.JitsiMeetExternalAPI!(domain, {
+        roomName: roomId,
+        parentNode: containerRef.current,
+        width: "100%",
+        height: "100%",
+        jwt: jitsiJwt,
+        configOverwrite: {
+          prejoinPageEnabled: false,
+        },
+      });
+      apiRef.current = api;
+
+      api.addEventListener("videoConferenceJoined", () => setStatus("joined"));
+      api.addEventListener("videoConferenceLeft", () => setStatus("left"));
+      api.addEventListener("recordingStatusChanged", (event: unknown) => {
+        const e = event as { on: boolean; mode: string };
+        if (e.mode === "stream") {
+          setStreamStatus(e.on ? "live" : "idle");
+        }
+      });
+    }).catch(() => {
+      // Token fetch failed — fall back to unauthenticated join using section.id
+      if (!containerRef.current) return;
+      const api = new window.JitsiMeetExternalAPI!(domain, {
+        roomName: section.id,
+        parentNode: containerRef.current,
+        width: "100%",
+        height: "100%",
+        configOverwrite: {
+          prejoinPageEnabled: false,
+        },
+      });
+      apiRef.current = api;
+      api.addEventListener("videoConferenceJoined", () => setStatus("joined"));
+      api.addEventListener("videoConferenceLeft", () => setStatus("left"));
     });
 
     return () => {
-      api.dispose();
+      apiRef.current?.dispose();
       apiRef.current = null;
       setStreamStatus("idle");
     };
-  }, [ready, section]);
+  }, [ready, section, sectionId]);
 
   function handleStartStream() {
     if (!apiRef.current || !rtmpKey.trim()) return;

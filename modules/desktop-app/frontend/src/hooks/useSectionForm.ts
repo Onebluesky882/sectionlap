@@ -34,15 +34,6 @@ function toFormValues(section: Section): SectionFormValues {
   };
 }
 
-function slugify(title: string): string {
-  const base = title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-  return base ? `${base}-${Date.now()}` : `section-${Date.now()}`;
-}
-
 export function useSectionForm() {
   const currentUser = useAppStore((state) => state.currentUser);
   const sections = useAppStore((state) =>
@@ -72,25 +63,27 @@ export function useSectionForm() {
     setValues({ ...EMPTY_FORM, teacher: currentUser?.name ?? "" });
   }
 
-  function submit() {
+  async function submit() {
     if (!editingId || !currentUser) return;
 
-    const section: Section = {
-      id: editingId === "new" ? slugify(values.title) : editingId,
+    const sectionData = {
       title: values.title,
       description: values.description,
       price: Number(values.price) || 0,
       teacher: values.teacher,
-      teacherId: currentUser.id,
       category: values.category,
       durationMinutes: Number(values.durationMinutes) || 0,
       capacity: Number(values.capacity) || 0,
     };
 
     if (editingId === "new") {
-      addSection(section);
+      await addSection(sectionData);
     } else {
-      updateSection(section);
+      await updateSection({
+        ...sectionData,
+        id: editingId,
+        teacherId: currentUser.id,
+      });
     }
     cancel();
   }

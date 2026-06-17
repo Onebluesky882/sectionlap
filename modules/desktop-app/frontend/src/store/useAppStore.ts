@@ -1,163 +1,167 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { BookingRecord, CreateBookingResult, Section, User, UserRole } from "../types";
-import { mockSections } from "../data/mockSections";
-import { MOCK_STUDENT, MOCK_TEACHER } from "../data/mockUsers";
+import {
+  apiSignin,
+  apiSignup,
+  apiSignout,
+  apiMe,
+  apiListSections,
+  apiCreateSection,
+  apiUpdateSection,
+  apiListBookings,
+  apiCreateBooking,
+  apiPayBooking,
+  apiFailBooking,
+  apiRetryBooking,
+  setToken,
+  clearToken,
+} from "../lib/api";
 
 interface AppStore {
   sections: Section[];
   bookings: BookingRecord[];
   currentUser: User | null;
-  users: User[];
-  addSection: (section: Section) => void;
-  updateSection: (section: Section) => void;
-  createBooking: (sectionId: string) => CreateBookingResult;
-  payBooking: (bookingId: string) => void;
-  failBooking: (bookingId: string) => void;
-  retryBooking: (bookingId: string) => void;
-  switchRole: () => void;
-  login: (userId: string) => boolean;
-  signup: (name: string, role: UserRole) => User;
-  logout: () => void;
-}
+  token: string | null;
 
-/**
- * A booking counts against a section's capacity unless its payment has
- * failed — a failed payment frees the seat for retry or for another student.
- */
-function isActiveBooking(booking: BookingRecord): boolean {
-  return booking.status !== "failed";
+  initialize: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  logout: () => Promise<void>;
+
+  loadSections: () => Promise<void>;
+  addSection: (data: Omit<Section, "id" | "teacherId">) => Promise<void>;
+  updateSection: (section: Section) => Promise<void>;
+
+  loadBookings: () => Promise<void>;
+  createBooking: (sectionId: string) => Promise<CreateBookingResult>;
+  payBooking: (bookingId: string) => Promise<void>;
+  failBooking: (bookingId: string) => Promise<void>;
+  retryBooking: (bookingId: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppStore>()(
   persist(
     (set, get) => ({
-      sections: mockSections,
+      sections: [],
       bookings: [],
       currentUser: null,
-      users: [MOCK_STUDENT, MOCK_TEACHER],
+      token: null,
 
-      addSection: (section) =>
-        set((state) => ({ sections: [...state.sections, section] })),
+      initialize: async () => {
+        const { token } = get();
+        if (!token) return;
+        setToken(token);
+        try {
+          const user = await apiMe();
+          if (!user) {
+            clearToken();
+            set({ token: null, currentUser: null });
+            return;
+          }
+          set({ currentUser: user });
+          await get().loadSections();
+          await get().loadBookings();
+        } catch {
+          clearToken();
+          set({ token: null, currentUser: null });
+        }
+      },
 
-      updateSection: (section) =>
+      login: async (email, password) => {
+        const { token, user } = await apiSignin(email, password);
+        setToken(token);
+        set({ token, currentUser: user });
+        await get().loadSections();
+        await get().loadBookings();
+      },
+
+      signup: async (name, email, password, role) => {
+        const { token, user } = await apiSignup(name, email, password, role);
+        setToken(token);
+        set({ token, currentUser: user });
+        await get().loadSections();
+        await get().loadBookings();
+      },
+
+      logout: async () => {
+        try {
+          await apiSignout();
+        } finally {
+          clearToken();
+          set({ token: null, currentUser: null, bookings: [] });
+        }
+      },
+
+      loadSections: async () => {
+        const sections = await apiListSections();
+        set({ sections });
+      },
+
+      addSection: async (data) => {
+        const section = await apiCreateSection(data);
+        set((state) => ({ sections: [...state.sections, section] }));
+      },
+
+      updateSection: async (section) => {
+        const updated = await apiUpdateSection(section);
         set((state) => ({
-          sections: state.sections.map((s) =>
-            s.id === section.id ? section : s
-          ),
-        })),
+          sections: state.sections.map((s) => (s.id === updated.id ? updated : s)),
+        }));
+      },
 
-      createBooking: (sectionId) => {
-        const state = get();
-        if (!state.currentUser) {
-          return { booking: null, error: "NOT_AUTHENTICATED" as any };
+      loadBookings: async () => {
+        const bookings = await apiListBookings();
+        set({ bookings });
+      },
+
+      createBooking: async (sectionId) => {
+        const result = await apiCreateBooking(sectionId);
+        if (result.error === "ALREADY_BOOKED") {
+          // Refresh bookings to get the existing one
+          await get().loadBookings();
+          const currentUser = get().currentUser;
+          const existing = get().bookings.find(
+            (b) =>
+              b.sectionId === sectionId &&
+              b.studentId === currentUser?.id &&
+              b.status !== "failed"
+          );
+          return { booking: existing ?? null, error: "ALREADY_BOOKED" };
         }
-        const studentId = state.currentUser.id;
-
-        const existing = state.bookings.find(
-          (b) =>
-            b.sectionId === sectionId &&
-            b.studentId === studentId &&
-            isActiveBooking(b)
-        );
-        if (existing) {
-          return { booking: existing, error: "ALREADY_BOOKED" };
-        }
-
-        const section = state.sections.find((s) => s.id === sectionId);
-        const activeCount = state.bookings.filter(
-          (b) => b.sectionId === sectionId && isActiveBooking(b)
-        ).length;
-        if (section && activeCount >= section.capacity) {
+        if (result.error === "CAPACITY_FULL") {
           return { booking: null, error: "CAPACITY_FULL" };
         }
-
-        const booking: BookingRecord = {
-          id: `booking-${sectionId}-${studentId}-${Date.now()}`,
-          sectionId,
-          studentId,
-          status: "pending",
-          bookedAt: new Date().toISOString(),
-        };
-        set({ bookings: [...state.bookings, booking] });
-        return { booking, error: null };
-      },
-
-      payBooking: (bookingId) =>
-        set((state) => ({
-          bookings: state.bookings.map((b) =>
-            b.id === bookingId
-              ? { ...b, status: "paid", paidAt: new Date().toISOString() }
-              : b
-          ),
-        })),
-
-      failBooking: (bookingId) =>
-        set((state) => ({
-          bookings: state.bookings.map((b) =>
-            b.id === bookingId ? { ...b, status: "failed" } : b
-          ),
-        })),
-
-      retryBooking: (bookingId) =>
-        set((state) => ({
-          bookings: state.bookings.map((b) =>
-            b.id === bookingId && b.status === "failed"
-              ? { ...b, status: "pending", paidAt: undefined }
-              : b
-          ),
-        })),
-
-      switchRole: () =>
-        set((state) => {
-          if (!state.currentUser) return {};
-          return {
-            currentUser:
-              state.currentUser.role === "teacher"
-                ? state.users.find((u) => u.role === "student") || MOCK_STUDENT
-                : state.users.find((u) => u.role === "teacher") || MOCK_TEACHER,
-          };
-        }),
-
-      login: (userId) => {
-        const state = get();
-        const user = state.users.find((u) => u.id === userId);
-        if (user) {
-          set({ currentUser: user });
-          return true;
+        if (result.booking) {
+          set((state) => ({ bookings: [...state.bookings, result.booking!] }));
         }
-        return false;
+        return result;
       },
 
-      signup: (name, role) => {
-        const newUser: User = {
-          id: `user-${role}-${Date.now()}`,
-          name,
-          role,
-        };
+      payBooking: async (bookingId) => {
+        const updated = await apiPayBooking(bookingId);
         set((state) => ({
-          users: [...state.users, newUser],
-          currentUser: newUser,
+          bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
         }));
-        return newUser;
       },
 
-      logout: () => set({ currentUser: null }),
+      failBooking: async (bookingId) => {
+        const updated = await apiFailBooking(bookingId);
+        set((state) => ({
+          bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
+        }));
+      },
+
+      retryBooking: async (bookingId) => {
+        const updated = await apiRetryBooking(bookingId);
+        set((state) => ({
+          bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
+        }));
+      },
     }),
     {
-      name: "sectionlap-store",
-      version: 3,
-      migrate: (_persisted, version) => {
-        if (version < 3) {
-          return {
-            sections: mockSections,
-            bookings: [],
-            currentUser: null,
-            users: [MOCK_STUDENT, MOCK_TEACHER],
-          };
-        }
-        return _persisted as AppStore;
-      },
+      name: "sectionlap-auth",
+      partialize: (state) => ({ token: state.token }),
     }
   )
 );

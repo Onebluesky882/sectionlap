@@ -19,8 +19,7 @@ export function useCheckout(sectionId: string) {
 
   useEffect(() => {
     if (!booking) {
-      const result = createBooking(sectionId);
-      setError(result.error);
+      createBooking(sectionId).then((result) => setError(result.error));
     }
   }, [booking, sectionId, createBooking]);
 
