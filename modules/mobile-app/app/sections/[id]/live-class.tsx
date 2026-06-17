@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSection } from "../../../src/hooks/useSection";
 import { JITSI_BASE_URL } from "../../../src/config";
+import { getJitsiToken } from "../../../src/services/sectionService";
 import { WhiteboardPanel } from "../../../src/components/WhiteboardPanel";
 import { DocumentHighlightPanel } from "../../../src/components/DocumentHighlightPanel";
 
@@ -20,17 +21,24 @@ export default function LiveClassPage() {
   const router = useRouter();
   const { section, booking } = useSection(id);
   const [tab, setTab] = useState<Tab>("video");
+  const [jitsiUrl, setJitsiUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!section) { router.replace("/"); return; }
-    if (booking?.status !== "paid") router.replace(`/sections/${id}`);
+    if (booking?.status !== "paid") { router.replace(`/sections/${id}`); return; }
+
+    // Fetch JWT from backend then build authenticated Jitsi URL
+    getJitsiToken(id)
+      .then(({ token, roomId }) => {
+        setJitsiUrl(`${JITSI_BASE_URL}/${roomId}?jwt=${token}`);
+      })
+      .catch(() => {
+        // Fall back to unauthenticated join if token fetch fails
+        setJitsiUrl(`${JITSI_BASE_URL}/section-${id}`);
+      });
   }, [section, booking, id, router]);
 
   if (!section || booking?.status !== "paid") return null;
-
-  // Jitsi room URL — same room name convention as the desktop app (section.id).
-  // Uses react-native-webview to embed the self-hosted Jitsi instance.
-  const jitsiUrl = `${JITSI_BASE_URL}/${section.id}`;
 
   return (
     <View className="flex-1 bg-background px-4 pt-4">
@@ -60,12 +68,19 @@ export default function LiveClassPage() {
 
       {tab === "video" && (
         <View className="flex-1 rounded-xl overflow-hidden border border-border">
-          <WebView
-            source={{ uri: jitsiUrl }}
-            allowsInlineMediaPlayback
-            mediaPlaybackRequiresUserAction={false}
-            className="flex-1"
-          />
+          {jitsiUrl ? (
+            <WebView
+              source={{ uri: jitsiUrl }}
+              allowsInlineMediaPlayback
+              mediaPlaybackRequiresUserAction={false}
+              className="flex-1"
+            />
+          ) : (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" />
+              <Text className="text-muted-foreground text-sm mt-2">Connecting…</Text>
+            </View>
+          )}
         </View>
       )}
       {tab === "whiteboard" && (
