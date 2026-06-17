@@ -4,7 +4,7 @@ Status: ACTIVE
 
 Owner: CONDUCTOR
 
-Last Updated: 2026-06-17
+Last Updated: 2026-06-17 (Stage 6c COMPLETE — all pipeline stages done)
 
 ⸻
 
@@ -112,7 +112,7 @@ Success Indicators:
 * [x] Backend core: API + DB + Auth (Stage 6a)
 * [x] Expo mobile app (Stage 5)
 * [x] Wails integrated against the real backend (Stage 6b)
-* [ ] Expo integrated against the real backend (Stage 6c)
+* [x] Expo integrated against the real backend (Stage 6c)
 
 ⸻
 
@@ -165,13 +165,15 @@ Done
 * [x] Stage 6a — Backend Core (API + DB + Auth)
 * [x] Stage 6b — Wails Backend Integration
 
+* [x] Stage 6c — Expo Backend Integration
+
 In Progress
 
-* (none — awaiting dispatch of Stage 6c)
+* (none)
 
 Next Up
 
-* [ ] Stage 6c — Expo Backend Integration
+* (none — all pipeline stages COMPLETE)
 
 
 
@@ -184,7 +186,7 @@ M-001	Desktop MVP (mock data)	Goal 1 / Objective 1	COMPLETE
 M-002	Live Classroom (video + sync)	Goal 2 / Objective 1	COMPLETE
 M-003	Mobile App (Expo)	Goal 2 / Objective 2	COMPLETE
 M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	COMPLETE
-M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	IN_PROGRESS
+M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	COMPLETE
 
 Status Values:
 
@@ -203,7 +205,7 @@ The project will be considered successful when:
 * [x] A teacher can publish a section and a student can book/pay for it end-to-end on real backend
 * [x] Live class (video + whiteboard + document highlight) works on both desktop and mobile
 * [x] Desktop client wired to real backend with no mock logic remaining (Stage 6b)
-* [ ] Mobile client wired to real backend with no mock logic remaining (Stage 6c)
+* [x] Mobile client wired to real backend with no mock logic remaining (Stage 6c)
 * [ ] All stages in PIPELINE.md are COMPLETE and merged to main
 
 ⸻

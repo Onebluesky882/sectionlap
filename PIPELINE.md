@@ -14,7 +14,7 @@
 | 5 | Expo App (Student / Teacher) | COMPLETE |
 | 6a | Backend Core (API + DB + Auth) | COMPLETE |
 | 6b | Wails Backend Integration | COMPLETE |
-| 6c | Expo Backend Integration | PENDING |
+| 6c | Expo Backend Integration | COMPLETE |
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
@@ -287,11 +287,11 @@ Currently:
 
 **Domain:** modules/mobile-app
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Expo app switched from mock logic (Stage 5) to real API calls against Stage 6a
-- [ ] Teacher/student login flow wired to go-better-auth via Stage 6a API
+- [x] Expo app switched from mock logic (Stage 5) to real API calls against Stage 6a
+- [x] Teacher/student login flow wired to go-better-auth via Stage 6a API
 
 **Gate-In Requirements:**
 - Stage 5 merged to wansing (mobile app exists, mock logic to replace)
