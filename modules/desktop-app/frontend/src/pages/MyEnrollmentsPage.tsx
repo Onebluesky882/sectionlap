@@ -12,7 +12,7 @@ export function MyEnrollmentsPage() {
     bookings.some(
       (b) =>
         b.sectionId === section.id &&
-        b.studentId === currentUser.id &&
+        b.studentId === currentUser?.id &&
         b.status === "paid"
     )
   );

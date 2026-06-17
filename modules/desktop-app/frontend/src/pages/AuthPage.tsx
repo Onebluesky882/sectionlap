@@ -2,57 +2,62 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import { Button } from "../components/ui/button";
-import { User, GraduationCap, ArrowRight, Sparkles, PlusCircle, LogIn } from "lucide-react";
+import { User, GraduationCap, ArrowRight, Sparkles, PlusCircle, LogIn, Mail, Lock } from "lucide-react";
 import type { UserRole } from "../types";
 
 export function AuthPage() {
   const navigate = useNavigate();
   const login = useAppStore((state) => state.login);
   const signup = useAppStore((state) => state.signup);
-  const users = useAppStore((state) => state.users);
 
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
 
-  // Login State
-  const [selectedUserId, setSelectedUserId] = useState<string>(users[0]?.id || "");
+  // Login state
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
 
-  // Sign Up State
+  // Sign up state
   const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
   const [signupRole, setSignupRole] = useState<UserRole>("student");
+
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUserId) {
-      setErrorMsg("Please select a user.");
+    if (!loginEmail.trim() || !loginPassword) {
+      setErrorMsg("Please enter your email and password.");
       return;
     }
-    const success = login(selectedUserId);
-    if (success) {
+    setLoading(true);
+    setErrorMsg("");
+    try {
+      await login(loginEmail.trim(), loginPassword);
       navigate("/");
-    } else {
-      setErrorMsg("Failed to login. User not found.");
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed to sign in.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleQuickLogin = (userId: string) => {
-    const success = login(userId);
-    if (success) {
-      navigate("/");
-    }
-  };
-
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!signupName.trim()) {
-      setErrorMsg("Please enter your name.");
+    if (!signupName.trim() || !signupEmail.trim() || !signupPassword) {
+      setErrorMsg("Please fill in all fields.");
       return;
     }
-    const newUser = signup(signupName.trim(), signupRole);
-    if (newUser) {
+    setLoading(true);
+    setErrorMsg("");
+    try {
+      await signup(signupName.trim(), signupEmail.trim(), signupPassword, signupRole);
       navigate("/");
-    } else {
-      setErrorMsg("Failed to register.");
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed to create account.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,74 +121,57 @@ export function AuthPage() {
 
         {/* Tab Contents */}
         {activeTab === "login" ? (
-          <div>
-            {/* Quick Dev Login */}
-            <div className="mb-8">
-              <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Quick Access Mock Accounts
-              </h2>
-              <div className="grid grid-cols-2 gap-3">
-                {users.map((u) => (
-                  <button
-                    key={u.id}
-                    onClick={() => handleQuickLogin(u.id)}
-                    className="flex flex-col items-start rounded-xl border border-border/80 bg-background/50 hover:bg-background p-4 text-left shadow-sm hover:border-indigo-500/50 hover:ring-1 hover:ring-indigo-500/50 hover:-translate-y-0.5 transition-all group"
-                  >
-                    <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-500 dark:bg-indigo-400/15 dark:text-indigo-400">
-                      {u.role === "teacher" ? (
-                        <GraduationCap className="size-5" />
-                      ) : (
-                        <User className="size-5" />
-                      )}
-                    </div>
-                    <div className="font-bold text-foreground text-sm group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
-                      {u.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground capitalize">
-                      {u.role}
-                    </div>
-                  </button>
-                ))}
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="login-email" className="text-sm font-semibold text-foreground">
+                Email
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                  <Mail className="size-5" />
+                </span>
+                <input
+                  type="email"
+                  id="login-email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg border border-input bg-background pl-10 pr-3 py-2.5 text-sm text-foreground shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  autoComplete="email"
+                />
               </div>
             </div>
 
-            {/* Standard Login Selection */}
-            <div className="relative flex items-center justify-center py-2 mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+            <div className="space-y-2">
+              <label htmlFor="login-password" className="text-sm font-semibold text-foreground">
+                Password
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                  <Lock className="size-5" />
+                </span>
+                <input
+                  type="password"
+                  id="login-password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full rounded-lg border border-input bg-background pl-10 pr-3 py-2.5 text-sm text-foreground shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  autoComplete="current-password"
+                />
               </div>
-              <span className="relative bg-card px-3 text-xs uppercase tracking-wider text-muted-foreground">
-                Or choose account
-              </span>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-foreground">
-                  Select Profile
-                </label>
-                <select
-                  value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                >
-                  <option value="" disabled>
-                    -- Choose User Profile --
-                  </option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name} ({u.role})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold tracking-wide shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all gap-2 mt-2">
-                Log In
-                <ArrowRight className="size-4" />
-              </Button>
-            </form>
-          </div>
+            <Button
+              type="submit"
+              size="lg"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold tracking-wide shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all gap-2 mt-2"
+            >
+              {loading ? "Signing in…" : "Sign In"}
+              {!loading && <ArrowRight className="size-4" />}
+            </Button>
+          </form>
         ) : (
           /* Sign Up Content */
           <form onSubmit={handleSignup} className="space-y-5">
@@ -202,6 +190,46 @@ export function AuthPage() {
                   onChange={(e) => setSignupName(e.target.value)}
                   placeholder="Enter your name"
                   className="w-full rounded-lg border border-input bg-background pl-10 pr-3 py-2.5 text-sm text-foreground shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="signup-email" className="text-sm font-semibold text-foreground">
+                Email
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                  <Mail className="size-5" />
+                </span>
+                <input
+                  type="email"
+                  id="signup-email"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg border border-input bg-background pl-10 pr-3 py-2.5 text-sm text-foreground shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  autoComplete="email"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="signup-password" className="text-sm font-semibold text-foreground">
+                Password
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                  <Lock className="size-5" />
+                </span>
+                <input
+                  type="password"
+                  id="signup-password"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  placeholder="Choose a password"
+                  className="w-full rounded-lg border border-input bg-background pl-10 pr-3 py-2.5 text-sm text-foreground shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  autoComplete="new-password"
                 />
               </div>
             </div>
@@ -265,9 +293,14 @@ export function AuthPage() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold tracking-wide shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all gap-2 mt-4">
-              Create Account
-              <PlusCircle className="size-4" />
+            <Button
+              type="submit"
+              size="lg"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold tracking-wide shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all gap-2 mt-4"
+            >
+              {loading ? "Creating account…" : "Create Account"}
+              {!loading && <PlusCircle className="size-4" />}
             </Button>
           </form>
         )}

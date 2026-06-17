@@ -34,19 +34,10 @@ function toFormValues(section: Section): SectionFormValues {
   };
 }
 
-function slugify(title: string): string {
-  const base = title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-  return base ? `${base}-${Date.now()}` : `section-${Date.now()}`;
-}
-
 export function useSectionForm() {
   const currentUser = useAppStore((state) => state.currentUser);
   const sections = useAppStore((state) =>
-    state.sections.filter((s) => s.teacherId === currentUser.id)
+    state.sections.filter((s) => s.teacherId === currentUser?.id)
   );
   const addSection = useAppStore((state) => state.addSection);
   const updateSection = useAppStore((state) => state.updateSection);
@@ -54,12 +45,12 @@ export function useSectionForm() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [values, setValues] = useState<SectionFormValues>({
     ...EMPTY_FORM,
-    teacher: currentUser.name,
+    teacher: currentUser?.name ?? "",
   });
 
   function startCreate() {
     setEditingId("new");
-    setValues({ ...EMPTY_FORM, teacher: currentUser.name });
+    setValues({ ...EMPTY_FORM, teacher: currentUser?.name ?? "" });
   }
 
   function startEdit(section: Section) {
@@ -69,28 +60,30 @@ export function useSectionForm() {
 
   function cancel() {
     setEditingId(null);
-    setValues({ ...EMPTY_FORM, teacher: currentUser.name });
+    setValues({ ...EMPTY_FORM, teacher: currentUser?.name ?? "" });
   }
 
-  function submit() {
-    if (!editingId) return;
+  async function submit() {
+    if (!editingId || !currentUser) return;
 
-    const section: Section = {
-      id: editingId === "new" ? slugify(values.title) : editingId,
+    const sectionData = {
       title: values.title,
       description: values.description,
       price: Number(values.price) || 0,
       teacher: values.teacher,
-      teacherId: currentUser.id,
       category: values.category,
       durationMinutes: Number(values.durationMinutes) || 0,
       capacity: Number(values.capacity) || 0,
     };
 
     if (editingId === "new") {
-      addSection(section);
+      await addSection(sectionData);
     } else {
-      updateSection(section);
+      await updateSection({
+        ...sectionData,
+        id: editingId,
+        teacherId: currentUser.id,
+      });
     }
     cancel();
   }

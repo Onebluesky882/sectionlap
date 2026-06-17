@@ -6,7 +6,7 @@ export function useCheckout(sectionId: string) {
   const currentUser = useAppStore((state) => state.currentUser);
   const booking = useAppStore((state) =>
     state.bookings.find(
-      (b) => b.sectionId === sectionId && b.studentId === currentUser.id
+      (b) => b.sectionId === sectionId && b.studentId === currentUser?.id
     )
   );
   const createBooking = useAppStore((state) => state.createBooking);
@@ -17,8 +17,7 @@ export function useCheckout(sectionId: string) {
 
   useEffect(() => {
     if (!booking) {
-      const result = createBooking(sectionId);
-      setError(result.error);
+      createBooking(sectionId).then((result) => setError(result.error));
     }
   }, [booking, sectionId, createBooking]);
 
