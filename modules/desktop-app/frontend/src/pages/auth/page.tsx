@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppStore } from "../store/useAppStore";
-import { Button } from "../components/ui/button";
+import { useAppStore } from "../../store/useAppStore";
+import { Button } from "../../components/ui/button";
 import { User, GraduationCap, ArrowRight, PlusCircle, LogIn, Mail, Lock } from "lucide-react";
-import type { UserRole } from "../types";
-import sectionlapLogo from "../assets/sectionlap_logo.png";
+import type { UserRole } from "../../types";
+import sectionlapLogo from "../../assets/sectionlap_logo.png";
 
 export function AuthPage() {
   const navigate = useNavigate();

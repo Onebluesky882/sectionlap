@@ -1,8 +1,8 @@
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { useSection } from "../hooks/useSection";
-import { useAppStore } from "../store/useAppStore";
-import { Button } from "../components/ui/button";
-import { ConfirmModal } from "../components/ConfirmModal";
+import { useSection } from "../../hooks/useSection";
+import { useAppStore } from "../../store/useAppStore";
+import { Button } from "../../components/ui/button";
+import { ConfirmModal } from "../../components/ConfirmModal";
 
 export function SectionDetailPage() {
   const { sectionId = "" } = useParams();

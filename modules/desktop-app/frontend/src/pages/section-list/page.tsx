@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useAppStore } from "../store/useAppStore";
-import { SectionCard } from "../components/SectionCard";
-import { Button } from "../components/ui/button";
+import { useAppStore } from "../../store/useAppStore";
+import { SectionCard } from "../../components/SectionCard";
+import { Button } from "../../components/ui/button";
 
 const CATEGORIES = ["All", "Frontend", "Backend", "DevOps", "Mobile", "Data Science", "Design"];
 

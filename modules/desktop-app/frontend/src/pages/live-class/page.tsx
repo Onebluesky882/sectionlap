@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { useSection } from "../hooks/useSection";
-import { useJitsiExternalApi, type JitsiMeetExternalApi } from "../hooks/useJitsiExternalApi";
-import { JITSI_BASE_URL, DEFAULT_RTMP_STREAM_KEY } from "../config";
-import { WhiteboardPanel } from "../components/WhiteboardPanel";
-import { DocumentHighlightPanel } from "../components/DocumentHighlightPanel";
-import { Button } from "../components/ui/button";
-import { useAppStore } from "../store/useAppStore";
-import { getJitsiToken } from "../services/sectionService";
+import { useSection } from "../../hooks/useSection";
+import { useJitsiExternalApi, type JitsiMeetExternalApi } from "../../hooks/useJitsiExternalApi";
+import { JITSI_BASE_URL, DEFAULT_RTMP_STREAM_KEY } from "../../config";
+import { WhiteboardPanel } from "../../components/WhiteboardPanel";
+import { DocumentHighlightPanel } from "../../components/DocumentHighlightPanel";
+import { Button } from "../../components/ui/button";
+import { useAppStore } from "../../store/useAppStore";
+import { getJitsiToken } from "../../services/sectionService";
 
 type Tab = "video" | "whiteboard" | "highlight";
 type StreamStatus = "idle" | "live";

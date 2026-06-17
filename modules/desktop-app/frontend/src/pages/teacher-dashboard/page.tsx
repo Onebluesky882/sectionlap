@@ -1,9 +1,9 @@
 import React from "react";
-import { useSectionForm } from "../hooks/useSectionForm";
-import { SectionCard } from "../components/SectionCard";
-import { SectionForm } from "../components/SectionForm";
-import { useAppStore } from "../store/useAppStore";
-import { Button } from "../components/ui/button";
+import { useSectionForm } from "../../hooks/useSectionForm";
+import { SectionCard } from "../../components/SectionCard";
+import { SectionForm } from "../../components/SectionForm";
+import { useAppStore } from "../../store/useAppStore";
+import { Button } from "../../components/ui/button";
 import { BookOpen, Users, DollarSign, Plus, Calendar, ShieldAlert } from "lucide-react";
 
 export default function TeacherDashboardPage() {
@@ -46,7 +46,7 @@ export default function TeacherDashboardPage() {
   const activeBookings = relevantBookings.filter((b) => b.status !== "failed");
   const totalSeatsBooked = activeBookings.length;
   const paidBookings = relevantBookings.filter((b) => b.status === "paid");
-  
+
   const totalRevenue = paidBookings.reduce((sum, b) => {
     const section = sections.find((s) => s.id === b.sectionId);
     return sum + (section ? section.price : 0);

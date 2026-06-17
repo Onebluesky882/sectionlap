@@ -266,6 +266,54 @@ explicitly instructed.
 
 ⸻
 
+Frontend Folder Structure (desktop-app)
+
+All pages in `modules/desktop-app/frontend/src/pages/` must follow the
+folder-per-page convention:
+
+  pages/
+  └── <page-name>/
+      └── page.tsx
+
+Examples:
+
+  pages/auth/page.tsx
+  pages/section-list/page.tsx
+  pages/section-detail/page.tsx
+  pages/checkout/page.tsx
+  pages/my-enrollments/page.tsx
+  pages/live-class/page.tsx
+  pages/teacher-dashboard/page.tsx
+
+Rules:
+
+* Page folder name: kebab-case
+* Entry file: always named `page.tsx`
+* Relative imports inside `page.tsx` must use `../../` (two levels up)
+  to reach `store/`, `hooks/`, `components/`, `services/`, `lib/`, `config`,
+  `types`, and `assets/`
+* Do NOT create flat page files like `pages/FooPage.tsx`
+* App.tsx imports must reference `./pages/<name>/page`
+
+Service Layer:
+
+All business logic must go through the service layer:
+
+  UI (page/component) → hook (business logic) → service (API calls) → store (global state)
+
+Services live in `src/services/`:
+
+  services/authService.ts
+  services/sectionService.ts
+  services/bookingService.ts
+
+Services use `request<T>()` from `lib/api.ts`.
+No page or component may call `fetch()` or the API directly.
+
+See ENGINEERING_CONTROLLER.md for the full architecture rule.
+
+⸻
+
 Decision Rules
 
 DECISIONS.md is authoritative and binding for all technology choices.

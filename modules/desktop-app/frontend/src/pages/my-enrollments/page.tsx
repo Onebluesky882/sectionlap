@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useAppStore } from "../store/useAppStore";
-import { SectionCard } from "../components/SectionCard";
+import { useAppStore } from "../../store/useAppStore";
+import { SectionCard } from "../../components/SectionCard";
 
 export function MyEnrollmentsPage() {
   const currentUser = useAppStore((state) => state.currentUser);

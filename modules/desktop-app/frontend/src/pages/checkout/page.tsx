@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { useSection } from "../hooks/useSection";
-import { useCheckout } from "../hooks/useCheckout";
-import { Button } from "../components/ui/button";
+import { useSection } from "../../hooks/useSection";
+import { useCheckout } from "../../hooks/useCheckout";
+import { Button } from "../../components/ui/button";
 
 export function CheckoutPage() {
   const { sectionId = "" } = useParams();

@@ -175,3 +175,33 @@ Impact on workers:
 * Workers implementing 6b/6c must read CONTRACTS.md "Module: Backend API (Stage 6a)"
   for the auth/session contract, endpoint list, and response shapes.
 * Auth import path: `github.com/Authula/authula` (not m-t-a97/go-better-auth).
+
+⸻
+
+Date: 2026-06-17
+
+Files Changed:
+* AGENT_RULES.md — added "Frontend Folder Structure (desktop-app)" section
+
+What Changed:
+
+Added a new governance section to AGENT_RULES.md specifying:
+1. All pages in desktop-app frontend must follow the folder-per-page pattern:
+   `pages/<name>/page.tsx` (kebab-case folder, always named page.tsx)
+2. Relative imports in page.tsx must use `../../` prefix
+3. No flat page files (e.g. `pages/FooPage.tsx`) are allowed
+4. Service layer rule: pages must not call fetch() directly; must go through
+   services/ → lib/api.ts
+
+Why:
+
+Pages were reorganized from flat `pages/XxxPage.tsx` to folder structure
+`pages/<name>/page.tsx` for clarity and scalability. This rule ensures future
+worker agents follow the same convention and do not revert to flat files.
+
+Impact on workers:
+
+* Any stage that adds or modifies pages in desktop-app/frontend must use the
+  folder-per-page structure
+* All imports inside page.tsx must use `../../` to reach src-level directories
+* Pages may not call fetch() or API directly — must use services/
