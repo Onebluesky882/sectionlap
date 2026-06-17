@@ -7,7 +7,7 @@ import { WhiteboardPanel } from "../components/WhiteboardPanel";
 import { DocumentHighlightPanel } from "../components/DocumentHighlightPanel";
 import { Button } from "../components/ui/button";
 import { useAppStore } from "../store/useAppStore";
-import { apiGetJitsiToken } from "../lib/api";
+import { getJitsiToken } from "../services/sectionService";
 
 type Tab = "video" | "whiteboard" | "highlight";
 type StreamStatus = "idle" | "live";
@@ -32,7 +32,7 @@ export function LiveClassPage() {
 
     const domain = JITSI_BASE_URL.replace(/^https?:\/\//, "");
 
-    apiGetJitsiToken(sectionId).then(({ token: jitsiJwt, roomId }) => {
+    getJitsiToken(sectionId).then(({ token: jitsiJwt, roomId }) => {
       if (!containerRef.current) return;
       const api = new window.JitsiMeetExternalAPI!(domain, {
         roomName: roomId,

@@ -1,25 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { BookingRecord, CreateBookingResult, Section, User, UserRole } from "../types";
-import {
-  apiSignin,
-  apiSignup,
-  apiSignout,
-  apiMe,
-  apiListSections,
-  apiCreateSection,
-  apiUpdateSection,
-  apiListBookings,
-  apiCreateBooking,
-  apiPayBooking,
-  apiFailBooking,
-  apiRetryBooking,
-  apiCancelBooking,
-  setToken,
-  clearToken,
-  setUserName,
-  clearUserName,
-} from "../lib/api";
+import { setToken, clearToken, setUserName, clearUserName } from "../lib/api";
+import * as authService from "../services/authService";
+import * as sectionService from "../services/sectionService";
+import * as bookingService from "../services/bookingService";
 
 interface AppStore {
   // Data
@@ -74,7 +59,7 @@ export const useAppStore = create<AppStore>()(
         set({ isAuthLoading: true });
         setToken(token);
         try {
-          const user = await apiMe();
+          const user = await authService.getMe();
           if (!user) {
             clearToken();
             clearUserName();
@@ -97,7 +82,7 @@ export const useAppStore = create<AppStore>()(
       login: async (email, password) => {
         set({ isAuthLoading: true, authError: null });
         try {
-          const { token, user } = await apiSignin(email, password);
+          const { token, user } = await authService.login(email, password);
           setToken(token);
           setUserName(user.name);
           set({ token, currentUser: user });
@@ -114,7 +99,7 @@ export const useAppStore = create<AppStore>()(
       signup: async (name, email, password, role) => {
         set({ isAuthLoading: true, authError: null });
         try {
-          const { token, user } = await apiSignup(name, email, password, role);
+          const { token, user } = await authService.signup(name, email, password, role);
           setToken(token);
           setUserName(user.name);
           set({ token, currentUser: user });
@@ -130,7 +115,7 @@ export const useAppStore = create<AppStore>()(
 
       logout: async () => {
         try {
-          await apiSignout();
+          await authService.logout();
         } finally {
           clearToken();
           clearUserName();
@@ -140,17 +125,17 @@ export const useAppStore = create<AppStore>()(
 
       loadSections: async (category?: string) => {
         const cat = category ?? get().categoryFilter;
-        const sections = await apiListSections(cat || undefined);
+        const sections = await sectionService.listSections(cat || undefined);
         set({ sections });
       },
 
       addSection: async (data) => {
-        const section = await apiCreateSection(data);
+        const section = await sectionService.createSection(data);
         set((state) => ({ sections: [section, ...state.sections] }));
       },
 
       updateSection: async (section) => {
-        const updated = await apiUpdateSection(section);
+        const updated = await sectionService.updateSection(section);
         set((state) => ({
           sections: state.sections.map((s) => (s.id === updated.id ? updated : s)),
         }));
@@ -162,16 +147,19 @@ export const useAppStore = create<AppStore>()(
       },
 
       loadBookings: async () => {
-        const bookings = await apiListBookings();
+        const bookings = await bookingService.listBookings();
         set({ bookings });
       },
 
       createBooking: async (sectionId) => {
-        const result = await apiCreateBooking(sectionId);
+        const result = await bookingService.createBooking(sectionId);
         if (result.error === "ALREADY_BOOKED") {
           await get().loadBookings();
           const existing = get().bookings.find(
-            (b) => b.sectionId === sectionId && b.studentId === get().currentUser?.id && b.status !== "failed"
+            (b) =>
+              b.sectionId === sectionId &&
+              b.studentId === get().currentUser?.id &&
+              b.status !== "failed"
           );
           return { booking: existing ?? null, error: "ALREADY_BOOKED" };
         }
@@ -183,28 +171,28 @@ export const useAppStore = create<AppStore>()(
       },
 
       payBooking: async (bookingId) => {
-        const updated = await apiPayBooking(bookingId);
+        const updated = await bookingService.payBooking(bookingId);
         set((state) => ({
           bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
         }));
       },
 
       failBooking: async (bookingId) => {
-        const updated = await apiFailBooking(bookingId);
+        const updated = await bookingService.failBooking(bookingId);
         set((state) => ({
           bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
         }));
       },
 
       retryBooking: async (bookingId) => {
-        const updated = await apiRetryBooking(bookingId);
+        const updated = await bookingService.retryBooking(bookingId);
         set((state) => ({
           bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
         }));
       },
 
       cancelBooking: async (bookingId) => {
-        const updated = await apiCancelBooking(bookingId);
+        const updated = await bookingService.cancelBooking(bookingId);
         set((state) => ({
           bookings: state.bookings.map((b) => (b.id === updated.id ? updated : b)),
         }));
