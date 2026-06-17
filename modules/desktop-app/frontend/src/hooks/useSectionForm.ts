@@ -37,7 +37,7 @@ function toFormValues(section: Section): SectionFormValues {
 export function useSectionForm() {
   const currentUser = useAppStore((state) => state.currentUser);
   const sections = useAppStore((state) =>
-    state.sections.filter((s) => s.teacherId === currentUser?.id)
+    currentUser ? state.sections.filter((s) => s.teacherId === currentUser.id) : []
   );
   const addSection = useAppStore((state) => state.addSection);
   const updateSection = useAppStore((state) => state.updateSection);

@@ -5,9 +5,11 @@ import type { BookingError } from "../types";
 export function useCheckout(sectionId: string) {
   const currentUser = useAppStore((state) => state.currentUser);
   const booking = useAppStore((state) =>
-    state.bookings.find(
-      (b) => b.sectionId === sectionId && b.studentId === currentUser?.id
-    )
+    currentUser
+      ? state.bookings.find(
+          (b) => b.sectionId === sectionId && b.studentId === currentUser.id
+        )
+      : undefined
   );
   const createBooking = useAppStore((state) => state.createBooking);
   const payBooking = useAppStore((state) => state.payBooking);

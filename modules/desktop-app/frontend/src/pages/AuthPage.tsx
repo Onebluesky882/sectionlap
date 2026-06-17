@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import { Button } from "../components/ui/button";
-import { User, GraduationCap, ArrowRight, Sparkles, PlusCircle, LogIn, Mail, Lock } from "lucide-react";
+import { User, GraduationCap, ArrowRight, PlusCircle, LogIn, Mail, Lock } from "lucide-react";
 import type { UserRole } from "../types";
+import sectionlapLogo from "../assets/sectionlap_logo.png";
 
 export function AuthPage() {
   const navigate = useNavigate();
@@ -72,13 +73,8 @@ export function AuthPage() {
       <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-white/70 shadow-2xl backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/60 p-8 transition-all">
         {/* Title / Logo Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-indigo-500/25">
-            <Sparkles className="size-6 animate-pulse" />
-          </div>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400">
-            Welcome to SectionLap
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <img src={sectionlapLogo} alt="SectionLap" className="mx-auto h-24 w-auto" />
+          <p className="mt-3 text-sm text-muted-foreground">
             Collab tools and live classes for modern education
           </p>
         </div>
