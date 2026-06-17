@@ -93,3 +93,17 @@ func (ctrl *BookingController) Retry(c fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{"data": booking, "error": nil, "status": "success"})
 }
+
+func (ctrl *BookingController) Cancel(c fiber.Ctx) error {
+	userID := middlewares.GetUserID(c)
+	bookingID := c.Params("id")
+
+	booking, err := ctrl.bookingService.Cancel(c.Context(), bookingID, userID)
+	if err != nil {
+		if err.Error() == "forbidden" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "forbidden"})
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(fiber.Map{"data": booking, "error": nil, "status": "success"})
+}

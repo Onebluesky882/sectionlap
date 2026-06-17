@@ -51,7 +51,7 @@ export function CheckoutPage() {
 
         {paid ? (
           <div className="mt-4 p-4 rounded-md bg-accent text-accent-foreground flex flex-col gap-3">
-            ✅ Payment simulated successfully — you're booked in!
+            ✅ Payment confirmed — you're enrolled!
           </div>
         ) : failed ? (
           <div>
@@ -62,17 +62,11 @@ export function CheckoutPage() {
           </div>
         ) : (
           <div className="flex gap-2">
-            <Button onClick={pay}>Pay ${section.price}</Button>
-            <Button variant="outline" onClick={simulateFailure}>
-              Simulate Failed Payment
-            </Button>
+            <Button onClick={pay}>Confirm Payment ฿{section.price}</Button>
           </div>
         )}
-        <p className="text-muted-foreground text-sm mt-4">
-          This is a UI-only simulation. No real payment is processed.
-        </p>
         {booking?.status === "pending" && (
-          <p className="text-muted-foreground text-sm mt-4">Booking status: pending payment.</p>
+          <p className="text-muted-foreground text-sm mt-4">Awaiting payment confirmation.</p>
         )}
       </div>
     </div>

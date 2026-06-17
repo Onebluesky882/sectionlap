@@ -17,7 +17,8 @@ func NewSectionController(svc services.SectionService) *SectionController {
 }
 
 func (ctrl *SectionController) List(c fiber.Ctx) error {
-	sections, err := ctrl.sectionService.List(c.Context())
+	category := c.Query("category")
+	sections, err := ctrl.sectionService.List(c.Context(), category)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

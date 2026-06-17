@@ -9,7 +9,7 @@ import (
 )
 
 type SectionRepository interface {
-	GetAll(ctx context.Context) ([]models.Section, error)
+	GetAll(ctx context.Context, category string) ([]models.Section, error)
 	GetByID(ctx context.Context, id string) (*models.Section, error)
 	GetByTeacherID(ctx context.Context, teacherID string) ([]models.Section, error)
 	Create(ctx context.Context, section *models.Section) error
@@ -24,9 +24,13 @@ func NewSectionRepository(db *bun.DB) SectionRepository {
 	return &sectionRepository{db: db}
 }
 
-func (r *sectionRepository) GetAll(ctx context.Context) ([]models.Section, error) {
+func (r *sectionRepository) GetAll(ctx context.Context, category string) ([]models.Section, error) {
 	var sections []models.Section
-	err := r.db.NewSelect().Model(&sections).Scan(ctx)
+	q := r.db.NewSelect().Model(&sections).OrderExpr("created_at DESC")
+	if category != "" {
+		q = q.Where("category = ?", category)
+	}
+	err := q.Scan(ctx)
 	return sections, err
 }
 

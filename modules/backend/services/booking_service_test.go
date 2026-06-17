@@ -13,7 +13,7 @@ type mockSectionRepo struct {
 	sections map[string]*models.Section
 }
 
-func (m *mockSectionRepo) GetAll(ctx context.Context) ([]models.Section, error) {
+func (m *mockSectionRepo) GetAll(ctx context.Context, category string) ([]models.Section, error) {
 	result := make([]models.Section, 0, len(m.sections))
 	for _, s := range m.sections {
 		result = append(result, *s)

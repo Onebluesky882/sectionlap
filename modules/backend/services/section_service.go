@@ -12,28 +12,30 @@ import (
 )
 
 type SectionService interface {
-	List(ctx context.Context) ([]models.Section, error)
+	List(ctx context.Context, category string) ([]models.Section, error)
 	GetByID(ctx context.Context, id string) (*models.Section, error)
 	Create(ctx context.Context, teacherID, teacherName string, input CreateSectionInput) (*models.Section, error)
 	Update(ctx context.Context, id, teacherID string, input UpdateSectionInput) (*models.Section, error)
 }
 
 type CreateSectionInput struct {
-	Title           string  `json:"title"`
-	Description     string  `json:"description"`
-	Price           float64 `json:"price"`
-	Category        string  `json:"category"`
-	DurationMinutes int     `json:"durationMinutes"`
-	Capacity        int     `json:"capacity"`
+	Title           string     `json:"title"`
+	Description     string     `json:"description"`
+	Price           float64    `json:"price"`
+	Category        string     `json:"category"`
+	DurationMinutes int        `json:"durationMinutes"`
+	Capacity        int        `json:"capacity"`
+	ScheduledAt     *time.Time `json:"scheduledAt,omitempty"`
 }
 
 type UpdateSectionInput struct {
-	Title           *string  `json:"title,omitempty"`
-	Description     *string  `json:"description,omitempty"`
-	Price           *float64 `json:"price,omitempty"`
-	Category        *string  `json:"category,omitempty"`
-	DurationMinutes *int     `json:"durationMinutes,omitempty"`
-	Capacity        *int     `json:"capacity,omitempty"`
+	Title           *string    `json:"title,omitempty"`
+	Description     *string    `json:"description,omitempty"`
+	Price           *float64   `json:"price,omitempty"`
+	Category        *string    `json:"category,omitempty"`
+	DurationMinutes *int       `json:"durationMinutes,omitempty"`
+	Capacity        *int       `json:"capacity,omitempty"`
+	ScheduledAt     *time.Time `json:"scheduledAt,omitempty"`
 }
 
 type sectionService struct {
@@ -44,8 +46,8 @@ func NewSectionService(repo repositories.SectionRepository) SectionService {
 	return &sectionService{repo: repo}
 }
 
-func (s *sectionService) List(ctx context.Context) ([]models.Section, error) {
-	return s.repo.GetAll(ctx)
+func (s *sectionService) List(ctx context.Context, category string) ([]models.Section, error) {
+	return s.repo.GetAll(ctx, category)
 }
 
 func (s *sectionService) GetByID(ctx context.Context, id string) (*models.Section, error) {
@@ -63,6 +65,7 @@ func (s *sectionService) Create(ctx context.Context, teacherID, teacherName stri
 		Category:        input.Category,
 		DurationMinutes: input.DurationMinutes,
 		Capacity:        input.Capacity,
+		ScheduledAt:     input.ScheduledAt,
 		CreatedAt:       time.Now().UTC(),
 		UpdatedAt:       time.Now().UTC(),
 	}
@@ -98,6 +101,9 @@ func (s *sectionService) Update(ctx context.Context, id, teacherID string, input
 	}
 	if input.Capacity != nil {
 		section.Capacity = *input.Capacity
+	}
+	if input.ScheduledAt != nil {
+		section.ScheduledAt = input.ScheduledAt
 	}
 	section.UpdatedAt = time.Now().UTC()
 

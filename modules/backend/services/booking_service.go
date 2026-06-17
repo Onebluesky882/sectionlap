@@ -28,6 +28,7 @@ type BookingService interface {
 	Pay(ctx context.Context, bookingID, studentID string) (*models.Booking, error)
 	Fail(ctx context.Context, bookingID string) (*models.Booking, error)
 	Retry(ctx context.Context, bookingID, studentID string) (*models.Booking, error)
+	Cancel(ctx context.Context, bookingID, studentID string) (*models.Booking, error)
 	ListByStudent(ctx context.Context, studentID string) ([]models.Booking, error)
 }
 
@@ -126,6 +127,25 @@ func (s *bookingService) Retry(ctx context.Context, bookingID, studentID string)
 
 	booking.Status = models.PaymentPending
 	booking.PaidAt = nil
+	if err := s.bookingRepo.Update(ctx, booking); err != nil {
+		return nil, err
+	}
+	return booking, nil
+}
+
+func (s *bookingService) Cancel(ctx context.Context, bookingID, studentID string) (*models.Booking, error) {
+	booking, err := s.bookingRepo.GetByID(ctx, bookingID)
+	if err != nil {
+		return nil, fmt.Errorf("booking not found: %w", err)
+	}
+	if booking.StudentID != studentID {
+		return nil, fmt.Errorf("forbidden")
+	}
+	if booking.Status == models.PaymentPaid {
+		return nil, fmt.Errorf("cannot cancel a paid booking")
+	}
+
+	booking.Status = models.PaymentFailed
 	if err := s.bookingRepo.Update(ctx, booking); err != nil {
 		return nil, err
 	}

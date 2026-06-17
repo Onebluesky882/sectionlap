@@ -36,5 +36,8 @@ func Migrate(db *bun.DB) error {
 		return err
 	}
 
+	// Additive migrations for new columns
+	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ`)
+
 	return nil
 }

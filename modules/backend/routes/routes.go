@@ -42,4 +42,5 @@ func Register(
 	bookings.Post("/:id/pay", bookingCtrl.Pay)
 	bookings.Post("/:id/fail", bookingCtrl.Fail)
 	bookings.Post("/:id/retry", bookingCtrl.Retry)
+	bookings.Post("/:id/cancel", bookingCtrl.Cancel)
 }

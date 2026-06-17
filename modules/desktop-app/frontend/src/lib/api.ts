@@ -2,17 +2,22 @@ import { API_BASE_URL } from "../config";
 import type { BookingRecord, CreateBookingResult, Section, User, UserRole } from "../types";
 
 const TOKEN_KEY = "sectionlap_token";
+const USER_NAME_KEY = "sectionlap_username";
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
-
 export function setToken(token: string): void {
   localStorage.setItem(TOKEN_KEY, token);
 }
-
 export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY);
+}
+export function setUserName(name: string): void {
+  localStorage.setItem(USER_NAME_KEY, name);
+}
+export function clearUserName(): void {
+  localStorage.removeItem(USER_NAME_KEY);
 }
 
 interface ApiResponse<T> {
@@ -26,13 +31,13 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const token = getToken();
+  const userName = localStorage.getItem(USER_NAME_KEY);
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (userName) headers["X-User-Name"] = userName;
 
   const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
   const body: ApiResponse<T> = await res.json();
@@ -83,13 +88,14 @@ export async function apiMe(): Promise<SessionData["user"] | null> {
 
 // Sections
 
-export async function apiListSections(): Promise<Section[]> {
-  const res = await request<Section[]>("/api/sections");
+export async function apiListSections(category?: string): Promise<Section[]> {
+  const params = category ? `?category=${encodeURIComponent(category)}` : "";
+  const res = await request<Section[]>(`/api/sections${params}`);
   return res.data ?? [];
 }
 
 export async function apiCreateSection(
-  section: Omit<Section, "id" | "teacherId">
+  section: Omit<Section, "id" | "teacherId" | "teacher">
 ): Promise<Section> {
   const res = await request<Section>("/api/sections", {
     method: "POST",
@@ -127,12 +133,8 @@ export async function apiCreateBooking(
     method: "POST",
     body: JSON.stringify({ sectionId }),
   });
-  if (res.error === "ALREADY_BOOKED") {
-    return { booking: null, error: "ALREADY_BOOKED" };
-  }
-  if (res.error === "CAPACITY_FULL") {
-    return { booking: null, error: "CAPACITY_FULL" };
-  }
+  if (res.error === "ALREADY_BOOKED") return { booking: null, error: "ALREADY_BOOKED" };
+  if (res.error === "CAPACITY_FULL") return { booking: null, error: "CAPACITY_FULL" };
   if (!res.data) throw new Error(res.error ?? "Failed to create booking");
   return { booking: res.data, error: null };
 }
@@ -143,27 +145,25 @@ export async function apiListBookings(): Promise<BookingRecord[]> {
 }
 
 export async function apiPayBooking(bookingId: string): Promise<BookingRecord> {
-  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/pay`, {
-    method: "POST",
-  });
+  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/pay`, { method: "POST" });
   if (!res.data) throw new Error(res.error ?? "Failed to pay booking");
   return res.data;
 }
 
 export async function apiFailBooking(bookingId: string): Promise<BookingRecord> {
-  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/fail`, {
-    method: "POST",
-  });
+  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/fail`, { method: "POST" });
   if (!res.data) throw new Error(res.error ?? "Failed to fail booking");
   return res.data;
 }
 
-export async function apiRetryBooking(
-  bookingId: string
-): Promise<BookingRecord> {
-  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/retry`, {
-    method: "POST",
-  });
+export async function apiRetryBooking(bookingId: string): Promise<BookingRecord> {
+  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/retry`, { method: "POST" });
   if (!res.data) throw new Error(res.error ?? "Failed to retry booking");
+  return res.data;
+}
+
+export async function apiCancelBooking(bookingId: string): Promise<BookingRecord> {
+  const res = await request<BookingRecord>(`/api/bookings/${bookingId}/cancel`, { method: "POST" });
+  if (!res.data) throw new Error(res.error ?? "Failed to cancel booking");
   return res.data;
 }
