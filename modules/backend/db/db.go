@@ -39,17 +39,28 @@ func Migrate(db *bun.DB) error {
 	// Additive migrations for new columns
 	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ`)
 
-	// Foreign key constraints (idempotent — ignored if already exist)
+	// Drop old CASCADE constraints if they exist (replaced by RESTRICT below)
+	drops := []string{
+		`ALTER TABLE sections DROP CONSTRAINT IF EXISTS fk_sections_teacher`,
+		`ALTER TABLE bookings DROP CONSTRAINT IF EXISTS fk_bookings_section`,
+		`ALTER TABLE bookings DROP CONSTRAINT IF EXISTS fk_bookings_student`,
+	}
+	for _, drop := range drops {
+		_, _ = db.ExecContext(ctx, drop)
+	}
+
+	// Foreign key constraints — RESTRICT prevents deleting a user/section
+	// that still has dependent records (sections, bookings).
 	fks := []string{
 		`ALTER TABLE sections ADD CONSTRAINT fk_sections_teacher
-		 FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE`,
+		 FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE RESTRICT`,
 		`ALTER TABLE bookings ADD CONSTRAINT fk_bookings_section
-		 FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE`,
+		 FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE RESTRICT`,
 		`ALTER TABLE bookings ADD CONSTRAINT fk_bookings_student
-		 FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE`,
+		 FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE RESTRICT`,
 	}
 	for _, fk := range fks {
-		_, _ = db.ExecContext(ctx, fk) // ignore error if constraint already exists
+		_, _ = db.ExecContext(ctx, fk) // ignored if constraint already exists
 	}
 
 	return nil
