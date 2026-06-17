@@ -34,14 +34,14 @@ func (ctrl *BookingController) Create(c fiber.Ctx) error {
 
 	if result.Error != nil {
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
-			"data":   fiber.Map{"booking": result.Booking, "error": string(*result.Error)},
+			"data":   nil,
 			"error":  string(*result.Error),
 			"status": "error",
 		})
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"data":   fiber.Map{"booking": result.Booking, "error": nil},
+		"data":   result.Booking,
 		"error":  nil,
 		"status": "success",
 	})
