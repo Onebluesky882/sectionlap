@@ -7,13 +7,13 @@
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
 | 2b | Jitsi Embed in Wails (integration) | COMPLETE |
-| 2c | Jitsi Live Stream (Jibri + RTMP out) | IN PROGRESS |
+| 2c | Jitsi Live Stream (Jibri + RTMP out) | COMPLETE |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | COMPLETE |
 | 4a | Sync Service (Yjs infra) | COMPLETE |
-| 4b | Sync Service Integration (Wails) | IN PROGRESS |
-| 5 | Expo App (Student / Teacher) | PENDING |
-| 6a | Backend Core (API + DB + Auth) | IN PROGRESS |
-| 6b | Wails Backend Integration | PENDING |
+| 4b | Sync Service Integration (Wails) | COMPLETE |
+| 5 | Expo App (Student / Teacher) | COMPLETE |
+| 6a | Backend Core (API + DB + Auth) | COMPLETE |
+| 6b | Wails Backend Integration | COMPLETE |
 | 6c | Expo Backend Integration | PENDING |
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
@@ -265,11 +265,11 @@ Currently:
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-**Status:** `PENDING` → `IN PROGRESS` → `COMPLETE` | `BLOCKED`
+**Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-- [ ] Wails app switched from mock logic (Stage 3) to real API calls against Stage 6a
-- [ ] Teacher/student login flow wired to go-better-auth via Stage 6a API
+- [x] Wails app switched from mock logic (Stage 3) to real API calls against Stage 6a
+- [x] Teacher/student login flow wired to go-better-auth via Stage 6a API
 
 **Gate-In Requirements:**
 - Stage 3 merged to wansing (mock logic to replace)

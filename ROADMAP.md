@@ -4,7 +4,7 @@ Status: ACTIVE
 
 Owner: CONDUCTOR
 
-Last Updated: 2026-06-15
+Last Updated: 2026-06-17
 
 ⸻
 
@@ -63,7 +63,7 @@ Success Criteria:
 
 * [x] Teachers can post and manage individual sections
 * [x] Students can browse, book, and pay per section (mock logic)
-* [ ] Real payment + persistence via backend (Stage 6a)
+* [x] Real payment + persistence via backend (Stage 6a)
 
 ⸻
 
@@ -78,8 +78,8 @@ Success Criteria:
 
 * [x] Self-hosted Jitsi Meet for live video (Stage 2a/2b)
 * [x] Real-time whiteboard & document-highlight sync service (Stage 4a)
-* [ ] Sync features integrated into Wails (Stage 4b)
-* [ ] Full mobile parity via Expo (Stage 5)
+* [x] Sync features integrated into Wails (Stage 4b)
+* [x] Full mobile parity via Expo (Stage 5)
 
 ⸻
 
@@ -96,7 +96,7 @@ Success Indicators:
 
 * [x] Frontend shell + mock data (Stage 1)
 * [x] Booking/payment/enrollment mock logic (Stage 3)
-* [ ] Real-time sync integrated into desktop app (Stage 4b)
+* [x] Real-time sync integrated into desktop app (Stage 4b)
 
 ⸻
 
@@ -109,9 +109,10 @@ to feature parity with the desktop app, both running against the same backend.
 
 Success Indicators:
 
-* [ ] Backend core: API + DB + Auth (Stage 6a)
-* [ ] Expo mobile app (Stage 5)
-* [ ] Wails and Expo both integrated against the real backend (Stage 6b/6c)
+* [x] Backend core: API + DB + Auth (Stage 6a)
+* [x] Expo mobile app (Stage 5)
+* [x] Wails integrated against the real backend (Stage 6b)
+* [ ] Expo integrated against the real backend (Stage 6c)
 
 ⸻
 
@@ -162,15 +163,14 @@ Done
 * [x] Stage 4b — Sync Service Integration (Wails)
 * [x] Stage 5 — Expo App (Student / Teacher)
 * [x] Stage 6a — Backend Core (API + DB + Auth)
+* [x] Stage 6b — Wails Backend Integration
 
 In Progress
 
-* (none — awaiting dispatch of Stage 6b / 6c)
+* (none — awaiting dispatch of Stage 6c)
 
 Next Up
 
-* [ ] Stage 6b — Wails Backend Integration
-* [ ] Stage 6b — Wails Backend Integration
 * [ ] Stage 6c — Expo Backend Integration
 
 
@@ -181,10 +181,10 @@ Milestone Backlog
 
 ID	Name	Goal	Status
 M-001	Desktop MVP (mock data)	Goal 1 / Objective 1	COMPLETE
-M-002	Live Classroom (video + sync)	Goal 2 / Objective 1	IN_PROGRESS
-M-003	Mobile App (Expo)	Goal 2 / Objective 2	PLANNING
-M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	PLANNING
-M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	PLANNING
+M-002	Live Classroom (video + sync)	Goal 2 / Objective 1	COMPLETE
+M-003	Mobile App (Expo)	Goal 2 / Objective 2	COMPLETE
+M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	COMPLETE
+M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	IN_PROGRESS
 
 Status Values:
 
@@ -200,9 +200,10 @@ Success Metrics
 
 The project will be considered successful when:
 
-* [ ] A teacher can publish a section and a student can book/pay for it end-to-end on real backend
-* [ ] Live class (video + whiteboard + document highlight) works on both desktop and mobile
-* [ ] Desktop and mobile clients share the same backend contracts with no mock logic remaining
+* [x] A teacher can publish a section and a student can book/pay for it end-to-end on real backend
+* [x] Live class (video + whiteboard + document highlight) works on both desktop and mobile
+* [x] Desktop client wired to real backend with no mock logic remaining (Stage 6b)
+* [ ] Mobile client wired to real backend with no mock logic remaining (Stage 6c)
 * [ ] All stages in PIPELINE.md are COMPLETE and merged to main
 
 ⸻
