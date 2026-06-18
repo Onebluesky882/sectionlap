@@ -1,24 +1,28 @@
 package controllers
 
 import (
+	"strings"
+
 	"github.com/gofiber/fiber/v3"
 
 	"sectionlap/backend/middlewares"
+	"sectionlap/backend/repositories"
 	"sectionlap/backend/services"
 )
 
 // SupervisorController handles full manual CRUD on sections for supervisor and dev roles.
 type SupervisorController struct {
 	sectionService services.SectionService
+	sectionRepo    repositories.SectionRepository
 }
 
-func NewSupervisorController(svc services.SectionService) *SupervisorController {
-	return &SupervisorController{sectionService: svc}
+func NewSupervisorController(svc services.SectionService, repo repositories.SectionRepository) *SupervisorController {
+	return &SupervisorController{sectionService: svc, sectionRepo: repo}
 }
 
 // ListSections returns all sections regardless of status.
 func (ctrl *SupervisorController) ListSections(c fiber.Ctx) error {
-	sections, err := ctrl.sectionService.List(c.Context(), "")
+	sections, err := ctrl.sectionRepo.GetAllAdmin(c.Context())
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -79,8 +83,8 @@ func (ctrl *SupervisorController) UpdateSection(c fiber.Ctx) error {
 // DeleteSection removes a section permanently.
 func (ctrl *SupervisorController) DeleteSection(c fiber.Ctx) error {
 	id := c.Params("id")
-	if err := ctrl.sectionService.Delete(c.Context(), id); err != nil {
-		if err.Error() == "section not found: "+err.Error() {
+	if err := ctrl.sectionRepo.Delete(c.Context(), id); err != nil {
+		if strings.Contains(err.Error(), "not found") {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "section not found"})
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})

@@ -102,7 +102,7 @@ func main() {
 		cookieName,
 	)
 	sectionCtrl := controllers.NewSectionController(sectionSvc)
-	supervisorCtrl := controllers.NewSupervisorController(sectionSvc)
+	supervisorCtrl := controllers.NewSupervisorController(sectionSvc, sectionRepo)
 	bookingCtrl := controllers.NewBookingController(bookingSvc)
 	jitsiCtrl := controllers.NewJitsiController(jitsiSvc)
 	feedbackCtrl := controllers.NewFeedbackController(feedbackRepo)
