@@ -7,8 +7,11 @@ import (
 type UserRoleType string
 
 const (
-	RoleTeacher UserRoleType = "teacher"
-	RoleStudent UserRoleType = "student"
+	RoleTeacher    UserRoleType = "teacher"
+	RoleStudent    UserRoleType = "student"
+	RoleAdmin      UserRoleType = "admin"
+	RoleSupervisor UserRoleType = "supervisor"
+	RoleDev        UserRoleType = "dev"
 )
 
 type UserRole struct {

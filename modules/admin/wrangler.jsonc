@@ -1,0 +1,31 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sectionlap-admin",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-06-16",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	"images": {
+		"binding": "IMAGES"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "sectionlap-admin"
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"BACKEND_URL": "http://localhost:8080"
+	}
+	// Secrets (set via `wrangler secret put`):
+	//   BACKEND_URL — production backend URL (e.g. https://api.sectionlap.com)
+}

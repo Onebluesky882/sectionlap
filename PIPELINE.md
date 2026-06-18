@@ -328,6 +328,11 @@ Currently:
 - [x] Zustand store for booking state
 - [x] All pages pass TypeScript strict mode
 - [x] Deployed to Cloudflare Workers via OpenNext
+- [x] Auth pages (`/login`) — register + login for student/teacher roles
+- [x] Sections page (`/sections`) — browse available sections
+- [x] Dashboard + profile pages — teacher flows
+- [x] Roadmap page (`/roadmap`) — AI feature roadmap
+- [x] Student onboarding (`/onboarding`) — post-signup form (nickname, age, subjects of interest); backend `student_profiles` table + `POST/GET /api/student/profile`
 
 **Gate-In Requirements:**
 - Stage 6a merged to wansing (backend API available for `/api/bookings`)

@@ -81,6 +81,24 @@ func (m *AuthMiddleware) RequireRole(role models.UserRoleType) fiber.Handler {
 	}
 }
 
+// RequireAnyRole passes if the authenticated user holds at least one of the given roles.
+func (m *AuthMiddleware) RequireAnyRole(roles ...models.UserRoleType) fiber.Handler {
+	set := make(map[models.UserRoleType]struct{}, len(roles))
+	for _, r := range roles {
+		set[r] = struct{}{}
+	}
+	return func(c fiber.Ctx) error {
+		userRole, ok := c.Locals(string(CtxUserRole)).(models.UserRoleType)
+		if !ok {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "forbidden"})
+		}
+		if _, allowed := set[userRole]; !allowed {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "forbidden"})
+		}
+		return c.Next()
+	}
+}
+
 func GetUserID(c fiber.Ctx) string {
 	v, _ := c.Locals(string(CtxUserID)).(string)
 	return v

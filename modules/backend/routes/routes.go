@@ -17,6 +17,7 @@ func Register(
 	feedbackCtrl *controllers.FeedbackController,
 	teacherProfileCtrl *controllers.TeacherProfileController,
 	studentProfileCtrl *controllers.StudentProfileController,
+	adminCtrl *controllers.AdminController,
 	authMw *middlewares.AuthMiddleware,
 ) {
 	api := app.Group("/api")
@@ -60,4 +61,14 @@ func Register(
 	student := api.Group("/student", authMw.Require(), authMw.RequireRole(models.RoleStudent))
 	student.Post("/profile", studentProfileCtrl.Submit)
 	student.Get("/profile", studentProfileCtrl.Get)
+
+	// Admin (admin only)
+	admin := api.Group("/admin", authMw.Require(), authMw.RequireRole(models.RoleAdmin))
+	admin.Get("/stats", adminCtrl.GetStats)
+	admin.Get("/teachers", adminCtrl.ListTeachers)
+	admin.Post("/teachers/:id/approve", adminCtrl.ApproveTeacher)
+	admin.Post("/teachers/:id/reject", adminCtrl.RejectTeacher)
+	admin.Get("/sections", adminCtrl.ListSections)
+	admin.Post("/sections/:id/approve", adminCtrl.ApproveSection)
+	admin.Post("/sections/:id/reject", adminCtrl.RejectSection)
 }

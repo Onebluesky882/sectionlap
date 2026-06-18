@@ -12,6 +12,7 @@ type UserRoleRepository interface {
 	GetByUserID(ctx context.Context, userID string) (*models.UserRole, error)
 	Upsert(ctx context.Context, userRole *models.UserRole) error
 	SetVerified(ctx context.Context, userID string, verified bool) error
+	ListByRole(ctx context.Context, role models.UserRoleType) ([]models.UserRole, error)
 }
 
 type userRoleRepository struct {
@@ -44,4 +45,10 @@ func (r *userRoleRepository) SetVerified(ctx context.Context, userID string, ver
 		Where("user_id = ?", userID).
 		Exec(ctx)
 	return err
+}
+
+func (r *userRoleRepository) ListByRole(ctx context.Context, role models.UserRoleType) ([]models.UserRole, error) {
+	var roles []models.UserRole
+	err := r.db.NewSelect().Model(&roles).Where("role = ?", role).Scan(ctx)
+	return roles, err
 }

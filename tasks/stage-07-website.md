@@ -1,6 +1,6 @@
 Stage: 7
 Domain: modules/website
-Status: DISPATCHED
+Status: COMPLETE
 Gate-In Verified: YES
 
 ---
@@ -34,11 +34,19 @@ booking flow and landing experience, wired to the real backend from Stage 6a.
 
 ## Deliverables
 
-1. Home page (`/`) — landing with CTA to booking
-2. Booking page (`/booking`) — date + time slot selection wired to POST /api/bookings
-3. Zustand store for booking state (`useBookingStore.ts`)
-4. All pages pass TypeScript strict mode
-5. Deployed to Cloudflare Workers via OpenNext
+1. [x] Home page (`/`) — landing with CTA to booking
+2. [x] Booking page (`/booking`) — date + time slot selection wired to POST /api/bookings
+3. [x] Zustand store for booking state (`useBookingStore.ts`)
+4. [x] All pages pass TypeScript strict mode
+5. [x] Deployed to Cloudflare Workers via OpenNext
+6. [x] Auth pages (`/login`) — register + login for student/teacher roles
+7. [x] Sections page (`/sections`) — browse available sections
+8. [x] Dashboard (`/dashboard`) — teacher dashboard with section management
+9. [x] Profile page (`/profile`) — teacher verification form
+10. [x] Roadmap page (`/roadmap`) — AI feature roadmap (translated to English)
+11. [x] Student onboarding (`/onboarding`) — post-signup profile form (nickname, age, subjects of interest)
+    - Backend: `student_profiles` table, `POST/GET /api/student/profile`
+    - Frontend: 3-layer page + `useStudentProfile` hook + redirect from register flow
 
 ---
 

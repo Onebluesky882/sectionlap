@@ -18,6 +18,8 @@ type Section struct {
 	Category        string     `json:"category" bun:"column:category,notnull"`
 	DurationMinutes int        `json:"durationMinutes" bun:"column:duration_minutes,notnull"`
 	Capacity        int        `json:"capacity" bun:"column:capacity,notnull"`
+	Questions       []string   `json:"questions" bun:"column:questions,type:jsonb,default:'[]'"`
+	Status          string     `json:"status" bun:"column:status,notnull,default:'pending'"`
 	ScheduledAt     *time.Time `json:"scheduledAt,omitempty" bun:"column:scheduled_at"`
 	CreatedAt       time.Time  `json:"createdAt" bun:"column:created_at,default:current_timestamp"`
 	UpdatedAt       time.Time  `json:"updatedAt" bun:"column:updated_at,default:current_timestamp"`

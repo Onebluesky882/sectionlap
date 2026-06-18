@@ -11,6 +11,7 @@ import (
 type TeacherProfileRepository interface {
 	Upsert(ctx context.Context, profile *models.TeacherProfile) error
 	GetByTeacherID(ctx context.Context, teacherID string) (*models.TeacherProfile, error)
+	ListAll(ctx context.Context) ([]models.TeacherProfile, error)
 }
 
 type teacherProfileRepository struct {
@@ -35,4 +36,10 @@ func (r *teacherProfileRepository) GetByTeacherID(ctx context.Context, teacherID
 		return nil, err
 	}
 	return &p, nil
+}
+
+func (r *teacherProfileRepository) ListAll(ctx context.Context) ([]models.TeacherProfile, error) {
+	var profiles []models.TeacherProfile
+	err := r.db.NewSelect().Model(&profiles).OrderExpr("submitted_at DESC").Scan(ctx)
+	return profiles, err
 }

@@ -10,10 +10,12 @@ import (
 
 type SectionRepository interface {
 	GetAll(ctx context.Context, category string) ([]models.Section, error)
+	GetAllAdmin(ctx context.Context) ([]models.Section, error)
 	GetByID(ctx context.Context, id string) (*models.Section, error)
 	GetByTeacherID(ctx context.Context, teacherID string) ([]models.Section, error)
 	Create(ctx context.Context, section *models.Section) error
 	Update(ctx context.Context, section *models.Section) error
+	Delete(ctx context.Context, id string) error
 }
 
 type sectionRepository struct {
@@ -26,11 +28,17 @@ func NewSectionRepository(db *bun.DB) SectionRepository {
 
 func (r *sectionRepository) GetAll(ctx context.Context, category string) ([]models.Section, error) {
 	var sections []models.Section
-	q := r.db.NewSelect().Model(&sections).OrderExpr("created_at DESC")
+	q := r.db.NewSelect().Model(&sections).Where("status = ?", "approved").OrderExpr("created_at DESC")
 	if category != "" {
 		q = q.Where("category = ?", category)
 	}
 	err := q.Scan(ctx)
+	return sections, err
+}
+
+func (r *sectionRepository) GetAllAdmin(ctx context.Context) ([]models.Section, error) {
+	var sections []models.Section
+	err := r.db.NewSelect().Model(&sections).OrderExpr("created_at DESC").Scan(ctx)
 	return sections, err
 }
 
@@ -56,5 +64,10 @@ func (r *sectionRepository) Create(ctx context.Context, section *models.Section)
 
 func (r *sectionRepository) Update(ctx context.Context, section *models.Section) error {
 	_, err := r.db.NewUpdate().Model(section).Where("id = ?", section.ID).Exec(ctx)
+	return err
+}
+
+func (r *sectionRepository) Delete(ctx context.Context, id string) error {
+	_, err := r.db.NewDelete().TableExpr("sections").Where("id = ?", id).Exec(ctx)
 	return err
 }

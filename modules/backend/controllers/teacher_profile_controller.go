@@ -19,6 +19,7 @@ func NewTeacherProfileController(profileRepo repositories.TeacherProfileReposito
 	return &TeacherProfileController{profileRepo: profileRepo, userRoleRepo: userRoleRepo}
 }
 
+
 type SubmitProfileBody struct {
 	FullName  string `json:"fullName"`
 	IDCard    string `json:"idCard"`
@@ -49,12 +50,8 @@ func (ctrl *TeacherProfileController) Submit(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to save profile"})
 	}
 
-	if err := ctrl.userRoleRepo.SetVerified(c.Context(), userID, true); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to verify teacher"})
-	}
-
 	return c.JSON(fiber.Map{
-		"data":   fiber.Map{"verified": true, "profile": profile},
+		"data":   fiber.Map{"verified": false, "profile": profile},
 		"error":  nil,
 		"status": "success",
 	})
