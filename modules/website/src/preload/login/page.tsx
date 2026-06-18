@@ -15,32 +15,53 @@ export default function LoginPreload() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (mode === "login") {
-      login(email, password);
-    } else {
-      register(name, email, password, role);
-    }
+    if (mode === "login") login(email, password);
+    else register(name, email, password, role);
   }
 
+  const inputCls = "w-full border border-[#ede8ed] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#e8275e] focus:border-transparent transition-all placeholder:text-gray-400";
+
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="text-center space-y-1">
-          <h1 className="text-2xl font-bold">SectionLap</h1>
+    <main className="min-h-[calc(100vh-56px)] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#fce4ec] mb-2">
+            <span className="text-2xl">🎓</span>
+          </div>
+          <h1 className="text-2xl font-bold text-[#1a1a2e]">
+            {mode === "login" ? "ยินดีต้อนรับกลับ" : "เริ่มต้นกับ SectionLap"}
+          </h1>
           <p className="text-sm text-gray-500">
-            {mode === "login" ? "เข้าสู่ระบบเพื่อจอง section" : "สมัครสมาชิก"}
+            {mode === "login" ? "เข้าสู่ระบบเพื่อจอง section" : "สมัครฟรี ไม่มีค่าใช้จ่ายรายเดือน"}
           </p>
+        </div>
+
+        {/* Tab */}
+        <div className="flex rounded-xl border border-[#ede8ed] p-1 bg-[#f5f5f7]">
+          {(["login", "register"] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+                mode === m ? "bg-white text-[#e8275e] shadow-sm" : "text-gray-500"
+              }`}
+            >
+              {m === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
+            </button>
+          ))}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "register" && (
             <input
               type="text"
-              placeholder="ชื่อ"
+              placeholder="ชื่อ-นามสกุล"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              className={inputCls}
             />
           )}
 
@@ -50,55 +71,54 @@ export default function LoginPreload() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            className={inputCls}
           />
 
           <input
             type="password"
-            placeholder="รหัสผ่าน"
+            placeholder="รหัสผ่าน (อย่างน้อย 8 ตัว)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
+            className={inputCls}
           />
 
           {mode === "register" && (
-            <div className="flex rounded-lg border border-gray-300 overflow-hidden">
-              {(["student", "teacher"] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRole(r)}
-                  className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                    role === r ? "bg-black text-white" : "hover:bg-gray-50"
-                  }`}
-                >
-                  {r === "student" ? "นักเรียน" : "ผู้สอน"}
-                </button>
-              ))}
+            <div className="space-y-2">
+              <p className="text-xs text-gray-500 font-medium">บทบาทของคุณ</p>
+              <div className="grid grid-cols-2 gap-2">
+                {(["student", "teacher"] as UserRole[]).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => setRole(r)}
+                    className={`py-2.5 rounded-xl text-sm font-semibold border-2 transition-all ${
+                      role === r
+                        ? "border-[#e8275e] bg-[#fce4ec] text-[#e8275e]"
+                        : "border-[#ede8ed] text-gray-500 hover:border-[#e8275e]/50"
+                    }`}
+                  >
+                    {r === "student" ? "🙋 นักเรียน" : "👩‍🏫 ผู้สอน"}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-full bg-black text-white py-3 text-sm font-medium disabled:opacity-40 hover:bg-gray-800 transition-colors"
+            className="w-full rounded-full bg-[#e8275e] text-white py-3 text-sm font-semibold disabled:opacity-40 hover:bg-[#c01f4e] transition-colors shadow-lg shadow-pink-200"
           >
             {isLoading ? "กำลังดำเนินการ..." : mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
           </button>
         </form>
-
-        <p className="text-center text-sm text-gray-500">
-          {mode === "login" ? "ยังไม่มีบัญชี?" : "มีบัญชีแล้ว?"}{" "}
-          <button
-            onClick={() => setMode(mode === "login" ? "register" : "login")}
-            className="font-medium text-black underline underline-offset-2"
-          >
-            {mode === "login" ? "สมัครสมาชิก" : "เข้าสู่ระบบ"}
-          </button>
-        </p>
       </div>
     </main>
   );
