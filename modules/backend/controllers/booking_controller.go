@@ -16,7 +16,8 @@ func NewBookingController(svc services.BookingService) *BookingController {
 }
 
 type CreateBookingBody struct {
-	SectionID string `json:"sectionId"`
+	SectionID string   `json:"sectionId"`
+	Answers   []string `json:"answers"`
 }
 
 func (ctrl *BookingController) Create(c fiber.Ctx) error {
@@ -27,9 +28,9 @@ func (ctrl *BookingController) Create(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request body"})
 	}
 
-	result, err := ctrl.bookingService.Create(c.Context(), body.SectionID, userID)
+	result, err := ctrl.bookingService.Create(c.Context(), body.SectionID, userID, body.Answers)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	if result.Error != nil {

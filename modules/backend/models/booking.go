@@ -21,6 +21,7 @@ type Booking struct {
 	SectionID string        `json:"sectionId" bun:"column:section_id,notnull"`
 	StudentID string        `json:"studentId" bun:"column:student_id,notnull"`
 	Status    PaymentStatus `json:"status" bun:"column:status,notnull,default:'pending'"`
+	Answers   []string      `json:"answers" bun:"column:answers,type:jsonb,default:'[]'"`
 	BookedAt  time.Time     `json:"bookedAt" bun:"column:booked_at,notnull,default:current_timestamp"`
 	PaidAt    *time.Time    `json:"paidAt,omitempty" bun:"column:paid_at"`
 }

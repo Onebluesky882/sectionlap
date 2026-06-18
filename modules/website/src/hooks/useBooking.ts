@@ -19,17 +19,19 @@ export function useBooking() {
     reset,
   } = useBookingStore();
 
-  async function submitBooking(sectionId: string) {
-    if (!selectedDate || !selectedTimeSlot) return;
+  async function submitBooking(sectionId: string, answers?: string[]) {
     setLoading(true);
     setError(null);
     try {
       const res = await authFetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sectionId, date: selectedDate, timeSlot: selectedTimeSlot }),
+        body: JSON.stringify({ sectionId, answers: answers ?? [] }),
       });
-      if (!res.ok) throw new Error("Booking failed");
+      if (!res.ok) {
+        const body = await res.json() as { error?: string };
+        throw new Error(body.error ?? "Booking failed");
+      }
       const { data } = (await res.json()) as { data: { booking: Booking } };
       addBooking(data.booking);
     } catch (e) {
