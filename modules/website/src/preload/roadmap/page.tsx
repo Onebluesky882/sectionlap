@@ -3,85 +3,85 @@
 const TEACHER_FEATURES = [
   {
     title: "AI Curriculum Designer",
-    desc: "กรอก Topic เดียว — Claude แตก Lesson Tree ให้อัตโนมัติ teacher approve ก่อน save กลายเป็น section list",
+    desc: "Enter a single topic — agent automatically expands it into a lesson tree. Teacher reviews and approves before saving as a section list.",
   },
   {
     title: "AI Teaching Script Generator",
-    desc: "สร้าง script การสอนแบบ intro → concept → example → summary พร้อม export PDF ใช้ก่อน live class ได้เลย",
+    desc: "Generate a structured teaching script: intro → concept → example → summary. Export as PDF to use before your live class.",
   },
   {
     title: "AI Lesson Scope Checker",
-    desc: "Monitor real-time สิ่งที่ teacher พิมพ์หรือพูด แจ้งเตือนแบบ non-intrusive เมื่อ content เริ่มออกนอก scope",
+    desc: "Monitors what the teacher types or says in real-time and sends a non-intrusive alert when content starts to drift off-scope.",
   },
   {
     title: "AI Quiz Generator",
-    desc: "กด Generate ระหว่าง live class — Claude สร้าง 3–5 คำถามจาก content ที่สอนไปแล้ว teacher เห็นผล real-time",
+    desc: "Hit Generate during a live class — agent creates 3–5 questions based on content already covered. Results appear in real-time.",
   },
   {
     title: "AI Demo Project Builder",
-    desc: "ระบุ topic + tech stack — Claude สร้าง starter project พร้อม code ส่งให้ student เป็น sandbox ได้เลย",
+    desc: "Specify a topic and tech stack — agent generates a starter project with code, ready to hand to students as a sandbox.",
   },
 ];
 
 const STUDENT_FEATURES = [
   {
     title: "Private AI Tutor",
-    desc: "AI tutor ส่วนตัวที่รู้ context ของ section ที่เรียนอยู่ และประวัติคำถามของคุณ ตอบแบบ Socratic method",
+    desc: "A personal AI tutor that knows the context of the section you're studying and your question history. Responds using the Socratic method.",
   },
   {
     title: "AI Expand Example",
-    desc: "Highlight ส่วนใดก็ได้ในเนื้อหา กด Expand — AI สร้างตัวอย่างเพิ่มอีก 2–3 ข้อ ปรับตาม level ของคุณ",
+    desc: "Highlight any part of the content and tap Expand — the AI generates 2–3 additional examples tailored to your level.",
   },
   {
     title: "Remark + Private Chat with AI",
-    desc: "Bookmark timestamp ระหว่าง live class ได้ และเปิด private chat กับ AI เพื่อถามเงียบ ๆ โดยที่ teacher ไม่เห็น",
+    desc: "Bookmark timestamps during a live class, then open a private AI chat to ask questions quietly without the teacher seeing.",
   },
   {
     title: "AI Auto Notes",
-    desc: "AI สรุป key points จาก class เป็น bullet structured อัตโนมัติ student แก้ไขเพิ่มเติมได้ export เป็น PDF/Markdown",
+    desc: "AI automatically summarizes key points from the class into structured bullets. Students can edit and export as PDF or Markdown.",
   },
   {
     title: "AI Personalized Learning Roadmap",
-    desc: "วิเคราะห์ quiz scores + attendance + remark history แล้วสร้าง roadmap แนะนำว่า section ไหนควรเรียนต่อหรือ review",
+    desc: "Analyzes quiz scores, attendance, and remark history to build a personalized roadmap recommending which sections to continue or review.",
   },
   {
     title: "AI Question Merge",
-    desc: "เมื่อหลายคนถามเรื่องเดียวกัน AI รวมเป็น 1 คำถามตัวแทนพร้อม count แล้วส่งเข้า Q&A queue ให้ teacher ตอบ",
+    desc: "When multiple students ask the same thing, the AI consolidates them into one representative question with a count, then adds it to the Q&A queue.",
   },
   {
     title: "AI Assistant (General)",
-    desc: "Chat interface ถามอะไรก็ได้เกี่ยวกับ section ที่เรียนอยู่ รู้ context ปัจจุบัน ใช้ได้ทันทีโดยไม่ต้องมี history",
+    desc: "A chat interface where you can ask anything about the current section. Context-aware and ready to use instantly — no history required.",
   },
   {
     title: "Public Class Chat + Auto Questions",
-    desc: "Chat room สาธารณะระหว่าง live class AI วิเคราะห์ chat แล้ว generate คำถามที่น่าสนใจเข้า queue อัตโนมัติ",
+    desc: "A public chat room during live class. The AI analyzes messages and automatically generates interesting questions to add to the queue.",
   },
 ];
 
 const SYSTEM_FEATURES = [
   {
     title: "Calendar Booking",
-    desc: "Teacher สร้าง time slot — Student จองได้ทันที ระบบป้องกัน double booking และส่ง reminder ก่อนเรียน",
+    desc: "Teachers create time slots — students book instantly. The system prevents double-booking and sends reminders before class.",
   },
   {
     title: "Public Q&A Remark List",
-    desc: "รวบรวมคำถามจาก chat ให้ teacher ตอบช่วงท้าย class เปิด Q&A Mode แสดงทีละข้อ sort by priority",
+    desc: "Collects questions from chat for the teacher to address at the end of class. Q&A Mode displays questions one at a time, sorted by priority.",
   },
   {
     title: "Invite by Email (Private Room)",
-    desc: "Teacher ส่ง invite link ที่ expire ได้ไปยัง email ผู้รับ เปิด private room เฉพาะสำหรับ oral exam หรือ 1-on-1",
+    desc: "Teachers send expirable invite links via email to open a private room — ideal for oral exams or 1-on-1 sessions.",
   },
   {
     title: "Class Participant Email Notification",
-    desc: "หลัง class จบ ระบบส่ง email สรุป attendance + quiz result + key points พร้อม link กลับมา replay",
+    desc: "After class ends, the system emails a summary of attendance, quiz results, and key points along with a replay link.",
   },
   {
     title: "AI Reports & Insights",
-    desc: "Dashboard analytics ให้ teacher พิมพ์ถามได้เป็นภาษาธรรมดา เช่น 'นักเรียนคนไหนมาน้อยที่สุด?' Claude ตอบจาก DB",
+    desc: "Analytics dashboard where teachers can ask questions in plain language — e.g. 'Who has the lowest attendance?' — and agent queries the database.",
   },
   {
     title: "Portfolio / Sandbox to Student",
-    desc: "หลัง section จบ ส่ง starter project ให้ student อัตโนมัติ เปิด sandbox ได้ใน browser โดยไม่ต้อง setup เอง",
+    desc: "After a section ends, a starter project is automatically sent to students. They can open a sandbox in the browser with zero setup.",
   },
 ];
 
@@ -111,11 +111,11 @@ export default function RoadmapPreload() {
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-[#1A2332] leading-[1.1] tracking-tight">
           AI Assistant<br />
-          <span className="text-[#6AA098]">ช่วยให้เรียนได้ดีขึ้น</span>
+          <span className="text-[#6AA098]">that helps you learn better</span>
         </h1>
         <p className="text-[#64748B] text-base leading-relaxed max-w-lg">
-          AI assistant ที่เข้าใจ context การเรียนของคุณ ช่วยทั้งครูเตรียมบทเรียน
-          และนักเรียนทำความเข้าใจเนื้อหาได้ลึกขึ้น ทุก feature ออกแบบมาเพื่อให้การเรียนมีประสิทธิภาพมากขึ้น
+          An AI assistant that understands your learning context — helping teachers prepare lessons
+          and students deepen their understanding. Every feature is designed to make learning more effective.
         </p>
       </section>
 
@@ -123,11 +123,11 @@ export default function RoadmapPreload() {
       <section className="max-w-4xl mx-auto px-4 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-14 gap-y-14">
 
-          {/* ครู */}
+          {/* Teachers */}
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#EAF4F2] text-[#4D8078]">
-                สำหรับครู
+                For Teachers
               </span>
               <span className="text-xs text-[#94A3B8]">{TEACHER_FEATURES.length} features</span>
             </div>
@@ -138,11 +138,11 @@ export default function RoadmapPreload() {
             </ul>
           </div>
 
-          {/* นักเรียน */}
+          {/* Students */}
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#EBF2F7] text-[#4A7294]">
-                สำหรับนักเรียน
+                For Students
               </span>
               <span className="text-xs text-[#94A3B8]">{STUDENT_FEATURES.length} features</span>
             </div>
@@ -153,13 +153,13 @@ export default function RoadmapPreload() {
             </ul>
           </div>
 
-          {/* ระบบกลาง — full width */}
+          {/* Shared System — full width */}
           <div className="lg:col-span-2 pt-6 border-t border-[#DDE8E6]">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#F3F4F6] text-[#374151]">
-                ระบบกลาง
+                Shared System
               </span>
-              <span className="text-xs text-[#94A3B8]">{SYSTEM_FEATURES.length} features · ใช้ร่วมกันทั้งครูและนักเรียน</span>
+              <span className="text-xs text-[#94A3B8]">{SYSTEM_FEATURES.length} features · shared by teachers and students</span>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-14">
               {SYSTEM_FEATURES.map((f, i) => (
