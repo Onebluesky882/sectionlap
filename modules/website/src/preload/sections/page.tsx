@@ -35,21 +35,21 @@ export default function SectionsPreload() {
           >
             <div className="flex items-start justify-between">
               <h2 className="font-semibold">{s.title}</h2>
-              <span className="text-sm font-medium text-black">฿{s.price.toLocaleString()}</span>
+              <span className="text-sm font-medium text-black">
+                {s.price === 0 ? "ฟรี" : `฿${s.price.toLocaleString()}`}
+              </span>
             </div>
             <p className="text-sm text-gray-500 line-clamp-2">{s.description}</p>
             <div className="flex items-center gap-3 text-xs text-gray-400">
-              <span>{s.teacherName}</span>
+              <span>{s.teacher}</span>
               <span>·</span>
-              <span>{s.enrolledCount}/{s.capacity} คน</span>
+              <span>{s.durationMinutes} นาที</span>
+              <span>·</span>
+              <span>{s.capacity} ที่นั่ง</span>
             </div>
-            <div className="flex flex-wrap gap-1">
-              {s.tags.map((tag) => (
-                <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">
-                  {tag}
-                </span>
-              ))}
-            </div>
+            <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">
+              {s.category}
+            </span>
           </Link>
         ))}
       </div>

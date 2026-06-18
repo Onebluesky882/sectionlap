@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useSectionStore } from "@/store/useSectionStore";
+import type { Section } from "@/store/useSectionStore";
 
 export function useSections() {
   const { sections, isLoading, error, setSections, setLoading, setError } = useSectionStore();
@@ -12,9 +13,9 @@ export function useSections() {
     fetch("/api/sections")
       .then((r) => {
         if (!r.ok) throw new Error("โหลด section ไม่สำเร็จ");
-        return r.json() as Promise<{ data: { sections: import("@/store/useSectionStore").Section[] } }>;
+        return r.json() as Promise<{ data: Section[] }>;
       })
-      .then(({ data }) => setSections(data.sections))
+      .then(({ data }) => setSections(data))
       .catch((e) => setError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด"))
       .finally(() => setLoading(false));
   }, []);

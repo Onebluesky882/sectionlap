@@ -6,6 +6,12 @@ interface __BaseEnv_CloudflareEnv {
 	ASSETS: Fetcher;
 	NEXTJS_ENV: string;
 	WORKER_SELF_REFERENCE: Fetcher /* website */;
+	SECTIONLAP_BUCKET: R2Bucket;
+	BACKEND_URL: string;
+	R2_ACCESS_KEY_ID: string;
+	R2_SECRET_ACCESS_KEY: string;
+	R2_ACCOUNT_ID: string;
+	R2_BUCKET_NAME: string;
 }
 declare namespace Cloudflare {
 	interface Env extends __BaseEnv_CloudflareEnv {}

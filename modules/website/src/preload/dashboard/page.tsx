@@ -54,7 +54,7 @@ export default function DashboardPreload() {
               <div className="space-y-0.5">
                 <p className="font-medium">{s.title}</p>
                 <p className="text-xs text-gray-400">
-                  {s.enrolledCount}/{s.capacity} คน · ฿{s.price.toLocaleString()}
+                  {s.durationMinutes} นาที · {s.price === 0 ? "ฟรี" : `฿${s.price.toLocaleString()}`}
                 </p>
               </div>
               <Link

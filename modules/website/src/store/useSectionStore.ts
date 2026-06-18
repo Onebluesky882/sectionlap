@@ -4,13 +4,14 @@ export type Section = {
   id: string;
   title: string;
   description: string;
+  teacher: string;
   teacherId: string;
-  teacherName: string;
+  category: string;
   price: number;
   capacity: number;
-  enrolledCount: number;
-  tags: string[];
-  schedule: string;
+  durationMinutes: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 type SectionStore = {

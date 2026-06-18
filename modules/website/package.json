@@ -10,9 +10,13 @@
 		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
 		"upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
 		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
+		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
+		"test": "playwright test",
+		"test:ui": "playwright test --ui"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1071.0",
+		"@aws-sdk/s3-request-presigner": "^3.1071.0",
 		"@opennextjs/cloudflare": "^1.19.9",
 		"next": "16.2.6",
 		"react": "^19.1.7",
@@ -21,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
+		"@playwright/test": "^1.61.0",
 		"@tailwindcss/postcss": "^4",
 		"@types/node": "^20.19.43",
 		"@types/react": "^19.1.7",

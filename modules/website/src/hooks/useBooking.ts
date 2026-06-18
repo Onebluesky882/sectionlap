@@ -1,6 +1,8 @@
 "use client";
 
 import { useBookingStore } from "@/store/useBookingStore";
+import { authFetch } from "@/lib/authFetch";
+import type { Booking } from "@/store/useBookingStore";
 
 export function useBooking() {
   const {
@@ -22,13 +24,13 @@ export function useBooking() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/bookings", {
+      const res = await authFetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sectionId, date: selectedDate, timeSlot: selectedTimeSlot }),
       });
       if (!res.ok) throw new Error("Booking failed");
-      const { data } = (await res.json()) as { data: { booking: import("@/store/useBookingStore").Booking } };
+      const { data } = (await res.json()) as { data: { booking: Booking } };
       addBooking(data.booking);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type UserRole = "student" | "teacher";
 
@@ -21,14 +22,22 @@ type AuthStore = {
   logout: () => void;
 };
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
-  token: null,
-  isLoading: false,
-  error: null,
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+      isLoading: false,
+      error: null,
 
-  setUser: (user, token) => set({ user, token, error: null }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
-  logout: () => set({ user: null, token: null }),
-}));
+      setUser: (user, token) => set({ user, token, error: null }),
+      setLoading: (isLoading) => set({ isLoading }),
+      setError: (error) => set({ error }),
+      logout: () => set({ user: null, token: null }),
+    }),
+    {
+      name: "sectionlap-auth",
+      partialize: (s) => ({ user: s.user, token: s.token }),
+    },
+  ),
+);

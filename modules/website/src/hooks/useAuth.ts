@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import type { User, UserRole } from "@/store/useAuthStore";
 
 export function useAuth() {
   const { user, token, isLoading, error, setUser, setLoading, setError, logout } = useAuthStore();
@@ -11,13 +12,13 @@ export function useAuth() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) throw new Error("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
-      const { data } = (await res.json()) as { data: { user: import("@/store/useAuthStore").User; token: string } };
+      const { data } = (await res.json()) as { data: { user: User; token: string } };
       setUser(data.user, data.token);
       router.push(data.user.role === "teacher" ? "/dashboard" : "/sections");
     } catch (e) {
@@ -27,17 +28,17 @@ export function useAuth() {
     }
   }
 
-  async function register(name: string, email: string, password: string, role: import("@/store/useAuthStore").UserRole) {
+  async function register(name: string, email: string, password: string, role: UserRole) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role }),
       });
       if (!res.ok) throw new Error("สมัครสมาชิกไม่สำเร็จ");
-      const { data } = (await res.json()) as { data: { user: import("@/store/useAuthStore").User; token: string } };
+      const { data } = (await res.json()) as { data: { user: User; token: string } };
       setUser(data.user, data.token);
       router.push(data.user.role === "teacher" ? "/dashboard" : "/sections");
     } catch (e) {
@@ -47,10 +48,35 @@ export function useAuth() {
     }
   }
 
-  function signOut() {
+  async function restoreSession() {
+    const storedToken = useAuthStore.getState().token;
+    if (!storedToken) return;
+    try {
+      const res = await fetch("/api/auth/me", {
+        headers: { Authorization: `Bearer ${storedToken}` },
+      });
+      if (!res.ok) {
+        logout();
+        return;
+      }
+      const { data } = (await res.json()) as { data: User };
+      setUser(data, storedToken);
+    } catch {
+      logout();
+    }
+  }
+
+  async function signOut() {
+    const storedToken = useAuthStore.getState().token;
+    if (storedToken) {
+      await fetch("/api/auth/signout", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${storedToken}` },
+      }).catch(() => {});
+    }
     logout();
     router.push("/login");
   }
 
-  return { user, token, isLoading, error, login, register, signOut };
+  return { user, token, isLoading, error, login, register, restoreSession, signOut };
 }
