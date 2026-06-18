@@ -1,0 +1,51 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "section-lap-web",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-06-16",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	"images": {
+		// Enable image optimization
+		// see https://opennext.js.org/cloudflare/howtos/image
+		"binding": "IMAGES"
+	},
+	"services": [
+		{
+			// Self-reference service binding, the service name must match the worker name
+			// see https://opennext.js.org/cloudflare/caching
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "section-lap-web"
+		}
+	],
+	"observability": {
+		"enabled": true
+	},
+	"r2_buckets": [
+		{
+			"bucket_name": "sectionlap-bucket",
+			"binding": "SECTIONLAP_BUCKET"
+		}
+	],
+	"vars": {
+		"BACKEND_URL": "http://localhost:8080"
+	}
+	// Secrets (set via `wrangler secret put`):
+	//   R2_ACCESS_KEY_ID      — R2 API token Access Key ID
+	//   R2_SECRET_ACCESS_KEY  — R2 API token Secret Access Key
+	//   R2_ACCOUNT_ID         — Cloudflare Account ID
+}

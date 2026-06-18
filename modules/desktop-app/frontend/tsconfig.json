@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+<<<<<<< HEAD
+=======
+    "baseUrl": ".",
+    "paths": {
+       "@/*": ["./src/*"]
+    },
+>>>>>>> wansing
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": [
@@ -9,6 +16,10 @@
     ],
     "allowJs": false,
     "skipLibCheck": true,
+<<<<<<< HEAD
+=======
+    "ignoreDeprecations": "6.0",
+>>>>>>> wansing
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,

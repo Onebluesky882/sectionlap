@@ -26,3 +26,10 @@ Rules:
   # ADR NNN — Title
   ```
 - This rule applies in every worktree — the `docs/adrs/` directory is shared via git
+
+## Package Manager Rules
+
+- **website** (`modules/website/`) — use **pnpm** for all Node dependency installs and script runs
+  - `pnpm install`, `pnpm add <pkg>`, `pnpm run dev`, etc.
+  - Never use `npm` or `yarn` in this module
+- All other Node modules follow their own lockfile convention (check for `pnpm-lock.yaml` vs `package-lock.json`)

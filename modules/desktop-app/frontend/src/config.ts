@@ -1,0 +1,23 @@
+// Backend API base URL (modules/backend, Stage 6a).
+// Empty string = use Vite dev server proxy (/api → localhost:8080).
+// In Wails production build, set VITE_API_BASE_URL to the real backend address.
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "";
+
+// Local self-hosted Jitsi Meet instance (modules/live-class, Stage 2a).
+// Override with VITE_JITSI_BASE_URL if the docker-compose stack runs on a
+// different host/port (see modules/live-class/.env.example).
+export const JITSI_BASE_URL =
+  import.meta.env.VITE_JITSI_BASE_URL ?? "http://localhost:8000";
+
+// Local sync-service instance (modules/sync-service, Stage 4a) for the
+// real-time whiteboard and document-highlight features.
+// Override with VITE_SYNC_BASE_URL if the server runs on a different host/port.
+export const SYNC_BASE_URL =
+  import.meta.env.VITE_SYNC_BASE_URL ?? "ws://localhost:1234";
+
+// RTMP stream key for Jibri live streaming (Stage 2c).
+// Set VITE_RTMP_STREAM_KEY at build time to pre-fill the teacher's key input.
+// If empty, the teacher must paste their RTMP key at runtime before going live.
+export const DEFAULT_RTMP_STREAM_KEY =
+  import.meta.env.VITE_RTMP_STREAM_KEY ?? "";

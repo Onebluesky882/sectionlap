@@ -1,8 +1,21 @@
 {
   "compilerOptions": {
+<<<<<<< HEAD
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
+=======
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "composite": true,
+    "ignoreDeprecations": "6.0",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+>>>>>>> wansing
     "allowSyntheticDefaultImports": true
   },
   "include": [

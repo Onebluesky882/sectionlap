@@ -25,6 +25,20 @@ Build the Expo app (Android + iPad):
 Gate-In Verified: NO
 Prior Gate-Out: tasks/state-3-booking-logic-gate-out.md, tasks/state-4a-sync-infra-gate-out.md (pending)
 Prior Merge: tasks/state-3-booking-logic-merge-approval.md, tasks/state-4a-sync-infra-merge-approval.md (pending)
+<<<<<<< HEAD
+=======
+
+Architecture Requirements:
+- State management: Zustand only (see DECISIONS.md 002)
+- Project structure must follow:
+    app/          Expo Router route files — no business logic, no store access
+    components/   Pure presentational components — receive props only
+    hooks/        All store access and side-effects (useStore*, useSession*, etc.)
+    stores/       Zustand store definitions
+- Pages (app/) call hooks only — never call stores directly
+- Components are pure — no useStore calls inside components
+- Violation of this structure fails gate validation
+>>>>>>> wansing
 
 Constraints:
 - Branch from main only

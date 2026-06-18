@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SectionLap Sync Demo — Whiteboard</title>
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 1rem; }
+  canvas { border: 1px solid #ccc; touch-action: none; cursor: crosshair; }
+  .bar { margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+  <h2>Whiteboard (room: <span id="room"></span>)</h2>
+  <div class="bar">
+    <label>Room: <input id="roomInput" value="demo-room" /></label>
+    <button id="join">Join</button>
+    <button id="clear">Clear</button>
+  </div>
+  <canvas id="board" width="800" height="500"></canvas>
+
+  <script type="module">
+    import * as Y from 'https://esm.sh/yjs@13.6.18'
+    import { WebsocketProvider } from 'https://esm.sh/y-websocket@1.5.4?deps=yjs@13.6.18'
+
+    const canvas = document.getElementById('board')
+    const ctx = canvas.getContext('2d')
+    const roomInput = document.getElementById('roomInput')
+    const roomLabel = document.getElementById('room')
+    const joinBtn = document.getElementById('join')
+    const clearBtn = document.getElementById('clear')
+
+    let doc, provider, strokes, drawing = false, currentStroke = null
+
+    function redraw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      strokes.forEach(stroke => drawStroke(stroke))
+    }
+
+    function drawStroke(stroke) {
+      if (!stroke.points || stroke.points.length < 2) return
+      ctx.beginPath()
+      ctx.strokeStyle = stroke.color || '#000'
+      ctx.lineWidth = stroke.width || 2
+      ctx.moveTo(stroke.points[0].x, stroke.points[0].y)
+      for (let i = 1; i < stroke.points.length; i++) {
+        ctx.lineTo(stroke.points[i].x, stroke.points[i].y)
+      }
+      ctx.stroke()
+    }
+
+    function join(room) {
+      if (provider) provider.destroy()
+      doc = new Y.Doc()
+      provider = new WebsocketProvider('ws://localhost:1234', `whiteboard-${room}`, doc)
+      strokes = doc.getArray('strokes')
+      strokes.observe(redraw)
+      roomLabel.textContent = room
+      redraw()
+    }
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect()
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    }
+
+    canvas.addEventListener('mousedown', e => {
+      drawing = true
+      currentStroke = { color: '#000', width: 2, points: [pos(e)] }
+    })
+    canvas.addEventListener('mousemove', e => {
+      if (!drawing) return
+      currentStroke.points.push(pos(e))
+      redraw()
+      drawStroke(currentStroke)
+    })
+    window.addEventListener('mouseup', () => {
+      if (!drawing) return
+      drawing = false
+      if (currentStroke && currentStroke.points.length > 1) {
+        strokes.push([currentStroke])
+      }
+      currentStroke = null
+    })
+
+    clearBtn.addEventListener('click', () => {
+      strokes.delete(0, strokes.length)
+    })
+
+    joinBtn.addEventListener('click', () => join(roomInput.value.trim() || 'demo-room'))
+
+    join(roomInput.value)
+  </script>
+</body>
+</html>

@@ -23,20 +23,62 @@ Workers own:
 * evidence
 * gate-out submission
 
+Do not:
+
+* redesign the roadmap
+* modify architecture
+* modify contracts
+* modify security policies
+* create new stages
+* change stage ordering
+* self-approve work
+* merge code
+
+⸻
+
+Dev / Conductor Direction Authority
+
+The Dev has final authority over this project (Dev > Conductor > Workers).
+See DEV.md for the full Dev authority definition and operating rules.
+
+Workers must follow the Dev's direction on:
+
+* overall flow and execution order
+* tool and library selection
+* file/document writing format and style
+
+Do not:
+
+* choose alternative tools or libraries without Dev approval
+* deviate from the Dev's specified flow or format
+* rewrite documents in a different style than instructed
+
 ⸻
 
 Required Reading Order
 
 Read these files in exact order:
 
-1. PROJECT.md
-2. ARCHITECTURE.md
-3. CONTRACTS.md
-4. DECISIONS.md
-5. PIPELINE.md
-6. AGENT_RULES.md
+0.  GOVERNANCE_CORE.md (ownership table + authority order — read first)
+1.  PROJECT.md
+2.  ROADMAP.md
+3.  ARCHITECTURE.md
+4.  CONTRACTS.md
+5.  DECISIONS.md
+6.  SECURITY_RULES.md
+7.  AGENT_RULES.md
+8.  PIPELINE.md
+9.  CONDUCTOR.md
+10. DEV.md
+11. DEV_LOG.md (read all unread entries)
+12. DESIGN_SYSTEM.md (required if assigned stage touches frontend/UI)
+13. ENGINEERING_CONTROLLER.md
 
 Do not continue until all files have been read.
+
+This list is the single source of truth for required reading.
+AGENT_RULES.md, SECURITY_RULES.md, and GOVERNANCE_CORE.md reference this
+list rather than duplicating it.
 
 ⸻
 
@@ -46,7 +88,7 @@ From PIPELINE.md:
 
 Find the stage where:
 
-status: IN_PROGRESS
+status: IN PROGRESS
 
 This is your assigned stage.
 
@@ -61,7 +103,7 @@ Verify Gate-In
 
 Locate:
 
-tasks/<stage_id>/dispatch-in.md
+tasks/state-<stage_id>-<domain>.md
 
 Requirements:
 
@@ -119,33 +161,9 @@ Completion
 
 Create:
 
-tasks/<stage_id>/gate-out.md
+gate-out/state-<stage_id>-<domain>.md
 
-Required fields:
-
-stage_id:
-status: PASS | FAIL
-ready_for_next: YES | NO
-
-deliverables:
-
-* …
-
-validation:
-
-* …
-
-risks:
-
-* …
-
-blockers:
-
-* …
-
-recommendations:
-
-* …
+Required fields: see AGENT_RULES.md → "Stage Completion" for the authoritative format.
 
 ⸻
 
@@ -155,7 +173,7 @@ STOP.
 
 Wait for:
 
-tasks/<stage_id>/merge-approval.md
+merge-approval/state-<stage_id>-<domain>.md
 
 Do not continue to another stage.
 
