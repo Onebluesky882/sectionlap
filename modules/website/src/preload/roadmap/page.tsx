@@ -1,123 +1,175 @@
 "use client";
 
-import Link from "next/link";
-
-const PHASES = [
+const TEACHER_FEATURES = [
   {
-    phase: "Phase A", label: "Foundation AI", status: "planned",
-    features: [
-      { id: "SYS1", title: "Calendar Booking",    role: "System",  body: "Real time-slot booking with double-booking prevention and reminders." },
-      { id: "T3",   title: "AI Teaching Script",  role: "Teacher", body: "Generate a full lesson script: intro → concept → example → summary." },
-      { id: "S7",   title: "AI Assistant",         role: "Student", body: "Ask anything about your enrolled section. No memory across sessions." },
-    ],
+    title: "AI Curriculum Designer",
+    desc: "กรอก Topic เดียว — Claude แตก Lesson Tree ให้อัตโนมัติ teacher approve ก่อน save กลายเป็น section list",
   },
   {
-    phase: "Phase B", label: "AI Core", status: "planned",
-    features: [
-      { id: "T1", title: "AI Curriculum Designer", role: "Teacher", body: "One topic in → full lesson tree out. Teacher approves before saving." },
-      { id: "S4", title: "AI Expand Example",      role: "Student", body: "Highlight a concept, get 2–3 additional examples tuned to your level." },
-      { id: "S1", title: "Remark + Private Chat",  role: "Student", body: "Bookmark timestamps mid-class and ask a private AI to expand on them." },
-      { id: "S3", title: "Private AI Tutor",       role: "Student", body: "Persistent tutor that knows your section history. Socratic method." },
-    ],
+    title: "AI Teaching Script Generator",
+    desc: "สร้าง script การสอนแบบ intro → concept → example → summary พร้อม export PDF ใช้ก่อน live class ได้เลย",
   },
   {
-    phase: "Phase C", label: "Live Class AI", status: "planned",
-    features: [
-      { id: "T5",   title: "AI Quiz Generator",   role: "Teacher", body: "Mid-class quiz from content taught so far. Live answer results." },
-      { id: "S8",   title: "AI Question Merge",   role: "Student", body: "Cluster similar questions into one with a count — queued for Q&A." },
-      { id: "SYS4", title: "Public Q&A Queue",    role: "System",  body: "Surfaces merged questions in priority order for end-of-class Q&A." },
-      { id: "S2",   title: "Public Chat + Auto Q", role: "Student", body: "Real-time class chat. AI auto-generates questions from the chat stream." },
-    ],
+    title: "AI Lesson Scope Checker",
+    desc: "Monitor real-time สิ่งที่ teacher พิมพ์หรือพูด แจ้งเตือนแบบ non-intrusive เมื่อ content เริ่มออกนอก scope",
   },
   {
-    phase: "Phase D", label: "Advanced", status: "future",
-    features: [
-      { id: "T2",   title: "AI Scope Checker",        role: "Teacher", body: "Monitors what the teacher says and flags when content drifts off-scope." },
-      { id: "S5",   title: "AI Personalized Roadmap", role: "Student", body: "Analyses quiz + attendance → recommends which sections to take next." },
-      { id: "S6",   title: "AI Auto Notes",            role: "Student", body: "Structured bullet-point notes from the lesson. Editable, exportable." },
-      { id: "SYS2", title: "AI Reports & Insights",   role: "System",  body: "Natural language analytics. Ask 'Which student attended least?'" },
-    ],
+    title: "AI Quiz Generator",
+    desc: "กด Generate ระหว่าง live class — Claude สร้าง 3–5 คำถามจาก content ที่สอนไปแล้ว teacher เห็นผล real-time",
   },
   {
-    phase: "Phase E", label: "Infra Heavy", status: "future",
-    features: [
-      { id: "T4",   title: "AI Demo Project Builder", role: "Teacher", body: "Generate a starter project from the lesson scope for students." },
-      { id: "SYS6", title: "Auto Portfolio / Sandbox", role: "System", body: "Sends starter project to enrolled students automatically after class." },
-      { id: "SYS3", title: "Invite by Email",          role: "System", body: "Private room links with expiring tokens for 1-on-1 and oral exams." },
-    ],
+    title: "AI Demo Project Builder",
+    desc: "ระบุ topic + tech stack — Claude สร้าง starter project พร้อม code ส่งให้ student เป็น sandbox ได้เลย",
   },
 ];
 
-const ROLE_STYLE: Record<string, string> = {
-  Teacher: "bg-[#EAF4F2] text-[#4D8078]",
-  Student: "bg-[#EBF2F7] text-[#4A7294]",
-  System:  "bg-[#F7FAFA] text-[#64748B]",
-};
+const STUDENT_FEATURES = [
+  {
+    title: "Private AI Tutor",
+    desc: "AI tutor ส่วนตัวที่รู้ context ของ section ที่เรียนอยู่ และประวัติคำถามของคุณ ตอบแบบ Socratic method",
+  },
+  {
+    title: "AI Expand Example",
+    desc: "Highlight ส่วนใดก็ได้ในเนื้อหา กด Expand — AI สร้างตัวอย่างเพิ่มอีก 2–3 ข้อ ปรับตาม level ของคุณ",
+  },
+  {
+    title: "Remark + Private Chat with AI",
+    desc: "Bookmark timestamp ระหว่าง live class ได้ และเปิด private chat กับ AI เพื่อถามเงียบ ๆ โดยที่ teacher ไม่เห็น",
+  },
+  {
+    title: "AI Auto Notes",
+    desc: "AI สรุป key points จาก class เป็น bullet structured อัตโนมัติ student แก้ไขเพิ่มเติมได้ export เป็น PDF/Markdown",
+  },
+  {
+    title: "AI Personalized Learning Roadmap",
+    desc: "วิเคราะห์ quiz scores + attendance + remark history แล้วสร้าง roadmap แนะนำว่า section ไหนควรเรียนต่อหรือ review",
+  },
+  {
+    title: "AI Question Merge",
+    desc: "เมื่อหลายคนถามเรื่องเดียวกัน AI รวมเป็น 1 คำถามตัวแทนพร้อม count แล้วส่งเข้า Q&A queue ให้ teacher ตอบ",
+  },
+  {
+    title: "AI Assistant (General)",
+    desc: "Chat interface ถามอะไรก็ได้เกี่ยวกับ section ที่เรียนอยู่ รู้ context ปัจจุบัน ใช้ได้ทันทีโดยไม่ต้องมี history",
+  },
+  {
+    title: "Public Class Chat + Auto Questions",
+    desc: "Chat room สาธารณะระหว่าง live class AI วิเคราะห์ chat แล้ว generate คำถามที่น่าสนใจเข้า queue อัตโนมัติ",
+  },
+];
+
+const SYSTEM_FEATURES = [
+  {
+    title: "Calendar Booking",
+    desc: "Teacher สร้าง time slot — Student จองได้ทันที ระบบป้องกัน double booking และส่ง reminder ก่อนเรียน",
+  },
+  {
+    title: "Public Q&A Remark List",
+    desc: "รวบรวมคำถามจาก chat ให้ teacher ตอบช่วงท้าย class เปิด Q&A Mode แสดงทีละข้อ sort by priority",
+  },
+  {
+    title: "Invite by Email (Private Room)",
+    desc: "Teacher ส่ง invite link ที่ expire ได้ไปยัง email ผู้รับ เปิด private room เฉพาะสำหรับ oral exam หรือ 1-on-1",
+  },
+  {
+    title: "Class Participant Email Notification",
+    desc: "หลัง class จบ ระบบส่ง email สรุป attendance + quiz result + key points พร้อม link กลับมา replay",
+  },
+  {
+    title: "AI Reports & Insights",
+    desc: "Dashboard analytics ให้ teacher พิมพ์ถามได้เป็นภาษาธรรมดา เช่น 'นักเรียนคนไหนมาน้อยที่สุด?' Claude ตอบจาก DB",
+  },
+  {
+    title: "Portfolio / Sandbox to Student",
+    desc: "หลัง section จบ ส่ง starter project ให้ student อัตโนมัติ เปิด sandbox ได้ใน browser โดยไม่ต้อง setup เอง",
+  },
+];
+
+function FeatureRow({ index, title, desc }: { index: number; title: string; desc: string }) {
+  return (
+    <li className="flex gap-4 py-5 border-b border-[#F1F5F9] last:border-0">
+      <span className="shrink-0 w-6 text-xs font-mono text-[#C4D4D2] mt-0.5 select-none">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <div className="space-y-1 min-w-0">
+        <p className="text-sm font-semibold text-[#1A2332]">{title}</p>
+        <p className="text-xs text-[#64748B] leading-relaxed">{desc}</p>
+      </div>
+    </li>
+  );
+}
 
 export default function RoadmapPreload() {
   return (
-    <main className="min-h-[calc(100vh-56px)] max-w-4xl mx-auto px-4 py-14 space-y-16">
+    <main className="min-h-screen bg-white">
 
-      {/* Header */}
-      <div className="space-y-4">
-        <p className="text-xs font-bold text-[#6AA098] uppercase tracking-widest">AI Roadmap</p>
-        <h1 className="text-4xl font-bold text-[#1A2332] leading-tight">
-          What we&apos;re building<br />inside the classroom.
+      {/* Hero */}
+      <section className="max-w-4xl mx-auto px-4 pt-16 pb-14 space-y-4">
+        <div className="inline-flex items-center gap-2 border border-[#DDE8E6] rounded-full px-3 py-1">
+          <span className="w-2 h-2 rounded-full bg-[#6C93B2] animate-pulse" />
+          <span className="text-xs font-medium text-[#64748B] tracking-wide">AI ROADMAP</span>
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-bold text-[#1A2332] leading-[1.1] tracking-tight">
+          AI Assistant<br />
+          <span className="text-[#6AA098]">ช่วยให้เรียนได้ดีขึ้น</span>
         </h1>
-        <p className="text-[#64748B] text-sm max-w-lg leading-relaxed">
-          19 AI features across 5 phases — for teachers, students, and the live class itself.
-          Each phase builds on the previous one.
+        <p className="text-[#64748B] text-base leading-relaxed max-w-lg">
+          AI assistant ที่เข้าใจ context การเรียนของคุณ ช่วยทั้งครูเตรียมบทเรียน
+          และนักเรียนทำความเข้าใจเนื้อหาได้ลึกขึ้น ทุก feature ออกแบบมาเพื่อให้การเรียนมีประสิทธิภาพมากขึ้น
         </p>
-        <div className="flex items-center gap-3 pt-1 text-xs text-[#64748B]">
-          <span className="font-semibold">19 features total</span>
-          <span className="text-[#DDE8E6]">·</span>
-          <span className="font-semibold">Phase A–C = MVP AI (11 features)</span>
-        </div>
-      </div>
+      </section>
 
-      {/* Phases */}
-      {PHASES.map(({ phase, label, status, features }) => (
-        <div key={phase} className="space-y-5">
-          <div className="flex items-center gap-4">
-            <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${status === "planned" ? "bg-[#6AA098] text-white" : "border border-[#DDE8E6] text-[#64748B]"}`}>
-              {phase}
-            </span>
-            <h2 className="text-lg font-bold text-[#1A2332]">{label}</h2>
-            <div className="flex-1 h-px bg-[#DDE8E6]" />
-            <span className="text-[10px] text-[#64748B] uppercase tracking-wider">{features.length} features</span>
+      {/* Feature lists */}
+      <section className="max-w-4xl mx-auto px-4 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-14 gap-y-14">
+
+          {/* ครู */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#EAF4F2] text-[#4D8078]">
+                สำหรับครู
+              </span>
+              <span className="text-xs text-[#94A3B8]">{TEACHER_FEATURES.length} features</span>
+            </div>
+            <ul>
+              {TEACHER_FEATURES.map((f, i) => (
+                <FeatureRow key={f.title} index={i} title={f.title} desc={f.desc} />
+              ))}
+            </ul>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-4 border-l-2 border-[#DDE8E6]">
-            {features.map(({ id, title, role, body }) => (
-              <div key={id} className="rounded-xl border border-[#DDE8E6] p-4 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] font-bold text-[#64748B]">{id}</span>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${ROLE_STYLE[role]}`}>{role}</span>
-                </div>
-                <p className="font-semibold text-[#1A2332] text-sm">{title}</p>
-                <p className="text-xs text-[#64748B] leading-relaxed">{body}</p>
-              </div>
-            ))}
+          {/* นักเรียน */}
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#EBF2F7] text-[#4A7294]">
+                สำหรับนักเรียน
+              </span>
+              <span className="text-xs text-[#94A3B8]">{STUDENT_FEATURES.length} features</span>
+            </div>
+            <ul>
+              {STUDENT_FEATURES.map((f, i) => (
+                <FeatureRow key={f.title} index={i} title={f.title} desc={f.desc} />
+              ))}
+            </ul>
           </div>
-        </div>
-      ))}
 
-      {/* Footer note */}
-      <div className="rounded-2xl border border-dashed border-[#DDE8E6] px-6 py-5 flex items-start gap-4">
-        <span className="text-lg mt-0.5 shrink-0">📌</span>
-        <div className="space-y-1">
-          <p className="text-sm font-semibold text-[#1A2332]">All AI features share one gateway</p>
-          <p className="text-xs text-[#64748B] leading-relaxed">
-            Every AI feature routes through a single Backend AI Gateway. The frontend never calls the model directly — context injection, streaming, and access control are all handled server-side.
-          </p>
-        </div>
-      </div>
+          {/* ระบบกลาง — full width */}
+          <div className="lg:col-span-2 pt-6 border-t border-[#DDE8E6]">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#F3F4F6] text-[#374151]">
+                ระบบกลาง
+              </span>
+              <span className="text-xs text-[#94A3B8]">{SYSTEM_FEATURES.length} features · ใช้ร่วมกันทั้งครูและนักเรียน</span>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-14">
+              {SYSTEM_FEATURES.map((f, i) => (
+                <FeatureRow key={f.title} index={i} title={f.title} desc={f.desc} />
+              ))}
+            </ul>
+          </div>
 
-      <div className="text-center pb-4">
-        <Link href="/" className="text-sm font-semibold text-[#6AA098] underline underline-offset-2">
-          ← Back to home
-        </Link>
-      </div>
+        </div>
+      </section>
 
     </main>
   );

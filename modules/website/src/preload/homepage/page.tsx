@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 
-const TICKER = ["Python", "JavaScript", "UI/UX Design", "Data Science", "React", "Go", "Machine Learning", "SQL", "Figma", "TypeScript", "Next.js", "DevOps"];
+const TICKER = [
+  "Mathematics", "Physics", "Chemistry", "Biology", "Statistics",
+  "Python", "JavaScript", "TypeScript", "Go", "Rust", "Java", "C++", "Swift", "Kotlin",
+  "React", "Next.js", "Node.js", "DevOps", "Docker", "SQL", "Machine Learning",
+  "UI/UX Design", "Figma", "Data Science", "Cloud Computing", "Cybersecurity",
+  "English", "History", "Economics", "Philosophy", "Literature",
+  "Calculus", "Linear Algebra", "Algorithms", "System Design",
+];
 
 const STEPS = [
   { n: "01", title: "Find a Section", body: "Browse classes by category, teacher, or skill level. Every section is a focused, single-topic live class." },
