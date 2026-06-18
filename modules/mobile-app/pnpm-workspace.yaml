@@ -15,3 +15,6 @@ minimumReleaseAgeExclude:
   - expo-modules-core@56.0.17
   - expo-modules-jsi@56.0.10
   - expo@56.0.12
+
+allowBuilds:
+  unrs-resolver: set this to true or false
