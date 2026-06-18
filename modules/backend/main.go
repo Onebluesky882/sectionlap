@@ -105,6 +105,10 @@ func main() {
 	bookingCtrl := controllers.NewBookingController(bookingSvc)
 	jitsiCtrl := controllers.NewJitsiController(jitsiSvc)
 	feedbackCtrl := controllers.NewFeedbackController(feedbackRepo)
+	teacherProfileRepo := repositories.NewTeacherProfileRepository(db)
+	teacherProfileCtrl := controllers.NewTeacherProfileController(teacherProfileRepo, userRoleRepo)
+	studentProfileRepo := repositories.NewStudentProfileRepository(db)
+	studentProfileCtrl := controllers.NewStudentProfileController(studentProfileRepo)
 
 	authMw := middlewares.NewAuthMiddleware(
 		coreServices.SessionService,
@@ -115,7 +119,7 @@ func main() {
 
 	app := fiber.New(fiber.Config{AppName: "SectionLap Backend"})
 
-	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, authMw)
+	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, authMw)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("SectionLap backend listening on %s", addr)

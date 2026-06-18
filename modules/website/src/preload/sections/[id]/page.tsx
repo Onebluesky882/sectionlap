@@ -1,13 +1,20 @@
 "use client";
 
+import Link from "next/link";
 import { useSection } from "@/hooks/useSection";
 import { useBooking } from "@/hooks/useBooking";
+import { useBookingStore } from "@/store/useBookingStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 
 export default function SectionDetailPreload({ id }: { id: string }) {
   const { section, isLoading, error } = useSection(id);
   const { submitBooking, isLoading: booking } = useBooking();
+  const bookings = useBookingStore((s) => s.bookings);
+  const user = useAuthStore((s) => s.user);
   const router = useRouter();
+
+  const isEnrolled = bookings.some((b) => b.sectionId === id && b.status === "confirmed");
 
   if (isLoading) {
     return (
@@ -85,13 +92,22 @@ export default function SectionDetailPreload({ id }: { id: string }) {
               {section.price === 0 ? "ฟรี" : `฿${section.price.toLocaleString()}`}
             </p>
           </div>
-          <button
-            disabled={booking}
-            onClick={handleBook}
-            className="rounded-full bg-[#6AA098] text-white px-8 py-3 text-sm font-semibold disabled:opacity-40 hover:bg-[#4D8078] transition-colors"
-          >
-            {booking ? "กำลังจอง..." : "จองเลย"}
-          </button>
+          {isEnrolled || user?.role === "teacher" ? (
+            <Link
+              href={`/sections/${id}/live`}
+              className="rounded-full bg-[#1A2332] text-white px-8 py-3 text-sm font-semibold hover:bg-[#2d3a4f] transition-colors"
+            >
+              เข้าห้องเรียน
+            </Link>
+          ) : (
+            <button
+              disabled={booking}
+              onClick={handleBook}
+              className="rounded-full bg-[#6AA098] text-white px-8 py-3 text-sm font-semibold disabled:opacity-40 hover:bg-[#4D8078] transition-colors"
+            >
+              {booking ? "กำลังจอง..." : "จองเลย"}
+            </button>
+          )}
         </div>
       </div>
 

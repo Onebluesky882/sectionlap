@@ -1,14 +1,12 @@
-<<<<<<< HEAD
-=======
 export type UserRole = "teacher" | "student";
 
 export interface User {
   id: string;
   name: string;
   role: UserRole;
+  verified: boolean;
 }
 
->>>>>>> wansing
 export interface Section {
   id: string;
   title: string;

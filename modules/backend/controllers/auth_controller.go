@@ -71,10 +71,11 @@ func (ctrl *AuthController) SignUp(c fiber.Ctx) error {
 		"data": fiber.Map{
 			"token": result.SessionToken,
 			"user": fiber.Map{
-				"id":    result.User.ID,
-				"name":  result.User.Name,
-				"email": result.User.Email,
-				"role":  body.Role,
+				"id":       result.User.ID,
+				"name":     result.User.Name,
+				"email":    result.User.Email,
+				"role":     body.Role,
+				"verified": body.Role == models.RoleStudent,
 			},
 		},
 		"error":  nil,
@@ -109,10 +110,11 @@ func (ctrl *AuthController) SignIn(c fiber.Ctx) error {
 		"data": fiber.Map{
 			"token": result.SessionToken,
 			"user": fiber.Map{
-				"id":    result.User.ID,
-				"name":  result.User.Name,
-				"email": result.User.Email,
-				"role":  userRole.Role,
+				"id":       result.User.ID,
+				"name":     result.User.Name,
+				"email":    result.User.Email,
+				"role":     userRole.Role,
+				"verified": userRole.IsVerified,
 			},
 		},
 		"error":  nil,
@@ -157,10 +159,11 @@ func (ctrl *AuthController) Me(c fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"data": fiber.Map{
-			"id":    user.ID,
-			"name":  user.Name,
-			"email": user.Email,
-			"role":  userRole.Role,
+			"id":       user.ID,
+			"name":     user.Name,
+			"email":    user.Email,
+			"role":     userRole.Role,
+			"verified": userRole.IsVerified,
 		},
 		"error":  nil,
 		"status": "success",

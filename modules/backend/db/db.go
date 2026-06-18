@@ -38,9 +38,16 @@ func Migrate(db *bun.DB) error {
 	if _, err := db.NewCreateTable().Model((*models.Feedback)(nil)).IfNotExists().Exec(ctx); err != nil {
 		return err
 	}
+	if _, err := db.NewCreateTable().Model((*models.TeacherProfile)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
+	if _, err := db.NewCreateTable().Model((*models.StudentProfile)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
 
 	// Additive migrations for new columns
 	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE`)
 
 	// Drop old CASCADE constraints if they exist (replaced by RESTRICT below)
 	drops := []string{

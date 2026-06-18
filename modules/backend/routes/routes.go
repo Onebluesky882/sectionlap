@@ -15,6 +15,8 @@ func Register(
 	bookingCtrl *controllers.BookingController,
 	jitsiCtrl *controllers.JitsiController,
 	feedbackCtrl *controllers.FeedbackController,
+	teacherProfileCtrl *controllers.TeacherProfileController,
+	studentProfileCtrl *controllers.StudentProfileController,
 	authMw *middlewares.AuthMiddleware,
 ) {
 	api := app.Group("/api")
@@ -48,4 +50,14 @@ func Register(
 	// Feedback (requires auth)
 	feedback := api.Group("/feedback", authMw.Require())
 	feedback.Post("/", feedbackCtrl.Submit)
+
+	// Teacher profile & verification (teacher only)
+	teacher := api.Group("/teacher", authMw.Require(), authMw.RequireRole(models.RoleTeacher))
+	teacher.Post("/profile", teacherProfileCtrl.Submit)
+	teacher.Get("/profile", teacherProfileCtrl.Get)
+
+	// Student profile (student only)
+	student := api.Group("/student", authMw.Require(), authMw.RequireRole(models.RoleStudent))
+	student.Post("/profile", studentProfileCtrl.Submit)
+	student.Get("/profile", studentProfileCtrl.Get)
 }

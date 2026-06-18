@@ -8,6 +8,7 @@ export type User = {
   name: string;
   email: string;
   role: UserRole;
+  verified: boolean;
 };
 
 type AuthStore = {

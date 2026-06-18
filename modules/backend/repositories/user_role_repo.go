@@ -11,6 +11,7 @@ import (
 type UserRoleRepository interface {
 	GetByUserID(ctx context.Context, userID string) (*models.UserRole, error)
 	Upsert(ctx context.Context, userRole *models.UserRole) error
+	SetVerified(ctx context.Context, userID string, verified bool) error
 }
 
 type userRoleRepository struct {
@@ -33,6 +34,14 @@ func (r *userRoleRepository) GetByUserID(ctx context.Context, userID string) (*m
 func (r *userRoleRepository) Upsert(ctx context.Context, userRole *models.UserRole) error {
 	_, err := r.db.NewInsert().Model(userRole).
 		On("CONFLICT (user_id) DO UPDATE SET role = EXCLUDED.role").
+		Exec(ctx)
+	return err
+}
+
+func (r *userRoleRepository) SetVerified(ctx context.Context, userID string, verified bool) error {
+	_, err := r.db.NewUpdate().Model((*models.UserRole)(nil)).
+		Set("is_verified = ?", verified).
+		Where("user_id = ?", userID).
 		Exec(ctx)
 	return err
 }
