@@ -169,11 +169,11 @@ Done
 
 In Progress
 
-* (none)
+* [ ] Stage 7 — Website (Next.js + Cloudflare)
 
 Next Up
 
-* (none — all pipeline stages COMPLETE)
+* (none)
 
 
 
@@ -187,6 +187,7 @@ M-002	Live Classroom (video + sync)	Goal 2 / Objective 1	COMPLETE
 M-003	Mobile App (Expo)	Goal 2 / Objective 2	COMPLETE
 M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	COMPLETE
 M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	COMPLETE
+M-006	Website (Next.js + Cloudflare)	Goal 1	IN_PROGRESS
 
 Status Values:
 

@@ -15,6 +15,7 @@
 | 6a | Backend Core (API + DB + Auth) | COMPLETE |
 | 6b | Wails Backend Integration | COMPLETE |
 | 6c | Expo Backend Integration | COMPLETE |
+| 7 | Website (Next.js + Cloudflare) | IN_PROGRESS |
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
@@ -302,6 +303,43 @@ Currently:
 **Gate-Out:** `gate-out/state-6c-mobile-auth-integration.md`
 
 **Merge-Approval:** `merge-approval/state-6c-mobile-auth-integration.md`
+
+⸻
+
+### Stage 7 — Website (Next.js + Cloudflare)
+
+**Domain:** modules/website
+**Agent:** [assigned agent]
+**Status:** `IN_PROGRESS`
+
+**Tech Stack:**
+- Framework: Next.js 16 (App Router)
+- Styling: Tailwind CSS v4
+- State: Zustand v5
+- Deploy: Cloudflare Workers via OpenNext
+
+**Architecture Pattern:**
+- `src/app/<name>/page.tsx` — Server Component; imports only from `src/preload/<name>/page.tsx`
+- `src/preload/<name>/page.tsx` — `"use client"`; combines hook logic + pure UI
+- `src/hooks/use<Name>.ts` — custom hooks for business logic
+- `src/store/use<Name>Store.ts` — Zustand global state
+- `src/components/` — pure presentational components
+
+**Acceptance Criteria:**
+- [ ] Home page (`/`) — landing with CTA to booking
+- [ ] Booking page (`/booking`) — date + time slot selection wired to POST /api/bookings
+- [ ] Zustand store for booking state
+- [ ] All pages pass TypeScript strict mode
+- [ ] Deployed to Cloudflare Workers via OpenNext
+
+**Gate-In Requirements:**
+- Stage 6a merged to wansing (backend API available for `/api/bookings`)
+
+**Dispatch-In:** `tasks/stage-07-website.md`
+
+**Gate-Out:** `gate-out/stage-07-website.md`
+
+**Merge-Approval:** `merge-approval/stage-07-website.md`
 
 ⸻
 
