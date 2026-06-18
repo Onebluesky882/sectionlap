@@ -205,3 +205,67 @@ Impact on workers:
   folder-per-page structure
 * All imports inside page.tsx must use `../../` to reach src-level directories
 * Pages may not call fetch() or API directly — must use services/
+
+⸻
+
+2026-06-17 (19)
+
+Files changed:
+
+* modules/desktop-app/frontend/src/pages/auth/page.tsx
+* modules/desktop-app/frontend/src/lib/formatError.ts (new)
+* modules/backend/controllers/booking_controller.go
+* modules/mobile-app/babel.config.js
+* modules/mobile-app/package.json
+* modules/mobile-app/pnpm-lock.yaml
+* modules/mobile-app/nativewind-env.d.ts (new)
+* ROADMAP.md
+
+What changed:
+
+1. **Desktop UX — user-friendly error messages** (commits a419274, 2e7638d):
+   - Auth page forms now have `noValidate` — prevents browser-native "The string
+     did not match the expected pattern." tooltip from appearing on submit.
+   - Added front-end validation for email format and password length (≥8 chars)
+     before hitting the backend, with plain-language messages.
+   - Added `src/lib/formatError.ts` — maps raw backend/library error strings
+     (e.g. "email already registered", "password length invalid",
+     "invalid credentials") to user-readable sentences.
+   - Auth page catch blocks use `formatError()` instead of bare `err.message`.
+
+2. **Backend — fix POST /api/bookings response shape** (commit e0b95ea):
+   - Controller was returning `data: {booking: {...}, error: null}` (nested).
+   - All other booking endpoints (Pay/Fail/Retry/Cancel) return `data: booking`
+     directly. Both mobile and desktop bookingService.createBooking expected
+     the flat shape — booking was stored with wrong structure, causing pay to
+     silently fail.
+   - Fixed to return `data: booking` on success, `data: null` on conflict,
+     consistent with all other booking endpoints.
+
+3. **Mobile — fix Expo Android bundle compilation** (commit 5051137):
+   - Removed `"nativewind/babel"` preset from babel.config.js. It transitively
+     loads `react-native-css-interop/babel` which unconditionally adds
+     `"react-native-worklets/plugin"` — a Reanimated 4 dependency not installed.
+   - Added `worklets: false` to `babel-preset-expo` options to prevent it from
+     auto-loading `react-native-worklets/plugin`.
+   - NativeWind styling still works via `jsxImportSource: "nativewind"` in
+     `babel-preset-expo` (confirmed by bundle inspection).
+   - Installed `isomorphic-webcrypto` — missing peer dep of `lib0` (transitive
+     dep of `y-websocket`). Android bundle now compiles at 4.2 MB.
+
+4. **ROADMAP.md** — updated Last Updated date and ticked final success metric
+   (all pipeline stages COMPLETE on wansing branch).
+
+Why:
+
+Post-integration QA: user-facing UI tests revealed raw developer error messages,
+a booking API shape mismatch that silently broke the pay flow, and a mobile
+bundler that failed to compile due to missing Babel/npm dependencies.
+
+Impact on workers:
+
+* No pipeline stages remain — no worker dispatch needed.
+* If any future stage is added, read the updated AGENT_RULES.md and CONTRACTS.md
+  before starting.
+* formatError.ts is the canonical place to add new error string mappings;
+  do not display raw err.message to users in auth or booking flows.

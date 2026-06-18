@@ -4,7 +4,7 @@ Status: ACTIVE
 
 Owner: CONDUCTOR
 
-Last Updated: 2026-06-17 (Stage 6c COMPLETE — all pipeline stages done)
+Last Updated: 2026-06-17 (post-integration fixes: UX errors, booking API shape, mobile build)
 
 ⸻
 
@@ -206,7 +206,7 @@ The project will be considered successful when:
 * [x] Live class (video + whiteboard + document highlight) works on both desktop and mobile
 * [x] Desktop client wired to real backend with no mock logic remaining (Stage 6b)
 * [x] Mobile client wired to real backend with no mock logic remaining (Stage 6c)
-* [ ] All stages in PIPELINE.md are COMPLETE and merged to main
+* [x] All pipeline stages COMPLETE on wansing branch (merge to main pending)
 
 ⸻
 
