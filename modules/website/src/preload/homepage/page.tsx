@@ -133,17 +133,6 @@ export default function HomepagePreload() {
             <p className="text-sm text-[#64748B]">ระบบ AI ที่ช่วยทั้งครูและนักเรียน ตั้งแต่วางแผนบทเรียนจนถึงระหว่างสอนสด</p>
           </div>
 
-          {/* AI stack note */}
-          <div className="rounded-2xl border border-[#DDE8E6] bg-[#F7FAFA] px-6 py-5 flex items-start gap-4">
-            <span className="text-2xl mt-0.5">⚡</span>
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-[#1A2332]">Powered by Claude AI (claude-sonnet-4-6)</p>
-              <p className="text-xs text-[#64748B] leading-relaxed">
-                ทุก AI feature ใช้ Claude API ผ่าน Backend AI Gateway — streaming response, context injection จาก lesson plan, ไม่มีการส่ง data ออกนอกระบบ
-              </p>
-            </div>
-          </div>
-
           {/* Feature grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
