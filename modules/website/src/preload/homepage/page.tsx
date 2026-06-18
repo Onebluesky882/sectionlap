@@ -123,6 +123,111 @@ export default function HomepagePreload() {
         </div>
       </section>
 
+      {/* ── AI Features Roadmap ── */}
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto space-y-12">
+
+          <div className="text-center space-y-2">
+            <p className="text-xs font-bold text-[#6C93B2] uppercase tracking-widest">COMING SOON</p>
+            <h2 className="text-2xl font-bold text-[#1A2332]">AI ที่กำลังจะมาใน SectionLap</h2>
+            <p className="text-sm text-[#64748B]">ระบบ AI ที่ช่วยทั้งครูและนักเรียน ตั้งแต่วางแผนบทเรียนจนถึงระหว่างสอนสด</p>
+          </div>
+
+          {/* AI stack note */}
+          <div className="rounded-2xl border border-[#DDE8E6] bg-[#F7FAFA] px-6 py-5 flex items-start gap-4">
+            <span className="text-2xl mt-0.5">⚡</span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-[#1A2332]">Powered by Claude AI (claude-sonnet-4-6)</p>
+              <p className="text-xs text-[#64748B] leading-relaxed">
+                ทุก AI feature ใช้ Claude API ผ่าน Backend AI Gateway — streaming response, context injection จาก lesson plan, ไม่มีการส่ง data ออกนอกระบบ
+              </p>
+            </div>
+          </div>
+
+          {/* Feature grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              {
+                tag: "ครู",
+                tagColor: "bg-[#EAF4F2] text-[#4D8078]",
+                title: "AI Curriculum Designer",
+                desc: "กรอก Topic เดียว — Claude แตก Lesson Tree ให้อัตโนมัติ แล้ว approve ก่อน save",
+                phase: "Phase B",
+              },
+              {
+                tag: "ครู",
+                tagColor: "bg-[#EAF4F2] text-[#4D8078]",
+                title: "AI Teaching Script",
+                desc: "สร้าง script การสอน intro → concept → example → summary พร้อม export PDF",
+                phase: "Phase A",
+              },
+              {
+                tag: "ครู",
+                tagColor: "bg-[#EAF4F2] text-[#4D8078]",
+                title: "AI Quiz Generator",
+                desc: "กด Generate ระหว่าง live class — Claude สร้าง 3–5 คำถามจาก content ที่สอนไปแล้ว",
+                phase: "Phase C",
+              },
+              {
+                tag: "นักเรียน",
+                tagColor: "bg-[#EBF2F7] text-[#4A7294]",
+                title: "Private AI Tutor",
+                desc: "AI tutor ส่วนตัวที่รู้ context section ของคุณ ตอบแบบ Socratic method",
+                phase: "Phase B",
+              },
+              {
+                tag: "นักเรียน",
+                tagColor: "bg-[#EBF2F7] text-[#4A7294]",
+                title: "AI Expand Example",
+                desc: "Highlight ส่วนใดก็ได้ → AI สร้างตัวอย่างเพิ่มเติมปรับตาม level ของคุณ",
+                phase: "Phase B",
+              },
+              {
+                tag: "นักเรียน",
+                tagColor: "bg-[#EBF2F7] text-[#4A7294]",
+                title: "AI Question Merge",
+                desc: "20 คนถามคล้ายกัน — AI รวมเป็น 1 คำถามตัวแทน แล้วส่งเข้า Q&A queue",
+                phase: "Phase C",
+              },
+            ].map(({ tag, tagColor, title, desc, phase }) => (
+              <div key={title} className="rounded-2xl border border-[#DDE8E6] p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${tagColor}`}>{tag}</span>
+                  <span className="text-[10px] text-[#64748B] font-medium">{phase}</span>
+                </div>
+                <p className="font-semibold text-[#1A2332] text-sm">{title}</p>
+                <p className="text-xs text-[#64748B] leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Roadmap phases */}
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-[#64748B] uppercase tracking-widest">Roadmap</p>
+            <div className="overflow-x-auto">
+              <div className="flex gap-3 min-w-max pb-1">
+                {[
+                  { phase: "Phase A", label: "Foundation AI", items: "Calendar · Script · Assistant", done: false },
+                  { phase: "Phase B", label: "AI Core",       items: "Curriculum · Tutor · Expand", done: false },
+                  { phase: "Phase C", label: "Live Class AI", items: "Quiz · Q&A · Chat AI",         done: false },
+                  { phase: "Phase D", label: "Advanced",      items: "Notes · Roadmap · Reports",    done: false },
+                ].map(({ phase, label, items }, i) => (
+                  <div key={phase} className="flex items-center gap-3">
+                    <div className="rounded-xl border border-[#DDE8E6] bg-[#F7FAFA] px-4 py-3 space-y-0.5 min-w-[160px]">
+                      <p className="text-[10px] font-bold text-[#6AA098] uppercase tracking-wider">{phase}</p>
+                      <p className="text-sm font-semibold text-[#1A2332]">{label}</p>
+                      <p className="text-[10px] text-[#64748B]">{items}</p>
+                    </div>
+                    {i < 3 && <span className="text-[#DDE8E6] text-lg shrink-0">→</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* ── Teacher CTA ── */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto rounded-2xl bg-[#1A2332] px-10 py-12 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 items-center">
