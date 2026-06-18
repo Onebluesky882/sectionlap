@@ -28,9 +28,10 @@ export default function Navbar() {
 
         <nav className="hidden sm:flex items-center gap-1">
           {[
-            { href: "/sections", label: "คลาสเรียน" },
+            { href: "/sections", label: "Classes" },
             ...(user?.role === "teacher" ? [{ href: "/dashboard", label: "Dashboard" }] : []),
-            ...(user ? [{ href: "/profile", label: "โปรไฟล์" }] : []),
+            ...(user ? [{ href: "/profile", label: "Profile" }] : []),
+            { href: "/roadmap", label: "Roadmap" },
             { href: "/feedback", label: "Feedback" },
           ].map(({ href, label }) => (
             <Link
