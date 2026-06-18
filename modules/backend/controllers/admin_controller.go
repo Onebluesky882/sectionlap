@@ -13,6 +13,7 @@ type AdminController struct {
 	userRoleRepo       repositories.UserRoleRepository
 	teacherProfileRepo repositories.TeacherProfileRepository
 	sectionRepo        repositories.SectionRepository
+	sectionService     services.SectionService
 	db                 *bun.DB
 }
 
@@ -20,14 +21,30 @@ func NewAdminController(
 	userRoleRepo repositories.UserRoleRepository,
 	teacherProfileRepo repositories.TeacherProfileRepository,
 	sectionRepo repositories.SectionRepository,
+	sectionService services.SectionService,
 	db *bun.DB,
 ) *AdminController {
 	return &AdminController{
 		userRoleRepo:       userRoleRepo,
 		teacherProfileRepo: teacherProfileRepo,
 		sectionRepo:        sectionRepo,
+		sectionService:     sectionService,
 		db:                 db,
 	}
+}
+
+// UpdateSection allows admin to update any section's fields (no ownership check).
+func (ctrl *AdminController) UpdateSection(c fiber.Ctx) error {
+	id := c.Params("id")
+	var input services.UpdateSectionInput
+	if err := c.Bind().JSON(&input); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request body"})
+	}
+	section, err := ctrl.sectionService.AdminUpdate(c.Context(), id, input)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(fiber.Map{"data": section, "error": nil, "status": "success"})
 }
 
 func (ctrl *AdminController) GetStats(c fiber.Ctx) error {

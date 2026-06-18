@@ -345,4 +345,46 @@ Currently:
 
 ⸻
 
+### Stage 8 — Role-Based Access Control Expansion (admin / supervisor / dev)
+
+**Domain:** modules/backend
+**Agent:** [assigned agent]
+**Status:** `COMPLETE`
+
+**Tech Stack:**
+- Same as Stage 6a (Fiber v3 / Bun / PostgreSQL)
+
+**Background:**
+Stage 6a introduced `teacher` and `student` roles. This stage adds three internal-operation roles:
+
+| Role | Purpose | Section Permissions |
+|------|---------|---------------------|
+| `admin` | Platform moderation — approve/reject teachers & sections, update any section's fields | `PUT /PATCH /api/admin/sections/:id` (no ownership check) |
+| `supervisor` | Full manual CRUD — operate sections on behalf of any teacher, including delete | `GET / POST / PUT / PATCH / DELETE /api/internal/sections` |
+| `dev` | Same permissions as supervisor — engineering access for debugging / seeding | `GET / POST / PUT / PATCH / DELETE /api/internal/sections` |
+
+**Key Design Decisions:**
+- `RequireAnyRole(roles...)` middleware helper: avoids duplicating route groups for supervisor & dev.
+- `SectionService.AdminUpdate` — shared by admin and supervisor; skips owner check.
+- `SectionService.Delete` — validates section existence; real deletion guarded by Postgres FK RESTRICT on `bookings.section_id` (prevents deleting sections with active bookings).
+- All new routes are under distinct path prefixes (`/api/admin/`, `/api/internal/`) — no collision with teacher/student routes.
+
+**Acceptance Criteria:**
+- [x] `RoleSupervisor` and `RoleDev` constants added to `models.UserRoleType`
+- [x] `RequireAnyRole` middleware added — supervisor and dev share the same route group
+- [x] `SectionRepository.Delete` implemented
+- [x] `SectionService.AdminUpdate` (no ownership check) and `SectionService.Delete` added
+- [x] Admin: `PUT/PATCH /api/admin/sections/:id` — update any section
+- [x] Supervisor/Dev: `GET/POST/PUT/PATCH/DELETE /api/internal/sections[/:id]` — full CRUD
+- [x] Backend builds clean (`go build ./...`) and all tests pass
+- [x] ADR 002 documents role permission matrix
+
+**Gate-In Requirements:**
+- Stage 6a merged (backend role system baseline exists)
+- Stage 7 merged (website consumes section API — ensure no breaking route changes)
+
+**Gate-Out:** All acceptance criteria checked, `go build ./...` and `go test ./...` green.
+
+⸻
+
 <!-- Repeat for each stage -->
