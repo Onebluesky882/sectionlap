@@ -14,6 +14,7 @@ func Register(
 	sectionCtrl *controllers.SectionController,
 	bookingCtrl *controllers.BookingController,
 	jitsiCtrl *controllers.JitsiController,
+	feedbackCtrl *controllers.FeedbackController,
 	authMw *middlewares.AuthMiddleware,
 ) {
 	api := app.Group("/api")
@@ -43,4 +44,8 @@ func Register(
 	bookings.Post("/:id/fail", bookingCtrl.Fail)
 	bookings.Post("/:id/retry", bookingCtrl.Retry)
 	bookings.Post("/:id/cancel", bookingCtrl.Cancel)
+
+	// Feedback (requires auth)
+	feedback := api.Group("/feedback", authMw.Require())
+	feedback.Post("/", feedbackCtrl.Submit)
 }

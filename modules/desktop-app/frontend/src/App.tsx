@@ -5,6 +5,7 @@ import { SectionListPage } from "./pages/section-list/page";
 import { SectionDetailPage } from "./pages/section-detail/page";
 import { CheckoutPage } from "./pages/checkout/page";
 import { MyEnrollmentsPage } from "./pages/my-enrollments/page";
+import { FeedbackPage } from "./pages/feedback/page";
 import { LiveClassPage } from "./pages/live-class/page";
 import TeacherDashboardPage from "./pages/teacher-dashboard/page";
 import { AuthPage } from "./pages/auth/page";
@@ -33,6 +34,7 @@ function App() {
           <Route path="sections/:sectionId/live-class" element={<LiveClassPage />} />
           <Route path="dashboard" element={<TeacherDashboardPage />} />
           <Route path="my-enrollments" element={<MyEnrollmentsPage />} />
+          <Route path="feedback" element={<FeedbackPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

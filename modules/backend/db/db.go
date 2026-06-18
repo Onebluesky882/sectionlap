@@ -35,6 +35,9 @@ func Migrate(db *bun.DB) error {
 	if _, err := db.NewCreateTable().Model((*models.UserRole)(nil)).IfNotExists().Exec(ctx); err != nil {
 		return err
 	}
+	if _, err := db.NewCreateTable().Model((*models.Feedback)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
 
 	// Additive migrations for new columns
 	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ`)

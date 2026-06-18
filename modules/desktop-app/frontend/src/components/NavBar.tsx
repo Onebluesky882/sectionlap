@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import sectionlapLogo from "../assets/sectionlap_logo.png";
 import { useAppStore } from "../store/useAppStore";
 import { Button } from "./ui/button";
-import { LogOut, User as UserIcon, GraduationCap } from "lucide-react";
+import { LogOut, User as UserIcon, GraduationCap, MessageSquare } from "lucide-react";
 import { ConfirmModal } from "./ConfirmModal";
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -51,6 +51,12 @@ export function NavBar() {
             Teacher Dashboard
           </NavLink>
         )}
+        <NavLink to="/feedback" className={linkClass}>
+          <span className="flex items-center gap-1.5">
+            <MessageSquare className="size-3.5" />
+            Feedback
+          </span>
+        </NavLink>
       </div>
 
       <div className="flex items-center gap-4">

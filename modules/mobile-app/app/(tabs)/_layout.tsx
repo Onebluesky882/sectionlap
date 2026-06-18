@@ -6,6 +6,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: "Sections" }} />
       <Tabs.Screen name="enrollments" options={{ title: "My Enrollments" }} />
       <Tabs.Screen name="teach" options={{ title: "Teach" }} />
+      <Tabs.Screen name="feedback" options={{ title: "Feedback" }} />
     </Tabs>
   );
 }

@@ -81,6 +81,7 @@ func main() {
 	userRoleRepo := repositories.NewUserRoleRepository(db)
 	sectionRepo := repositories.NewSectionRepository(db)
 	bookingRepo := repositories.NewBookingRepository(db)
+	feedbackRepo := repositories.NewFeedbackRepository(db)
 
 	// Services
 	sectionSvc := services.NewSectionService(sectionRepo)
@@ -103,6 +104,7 @@ func main() {
 	sectionCtrl := controllers.NewSectionController(sectionSvc)
 	bookingCtrl := controllers.NewBookingController(bookingSvc)
 	jitsiCtrl := controllers.NewJitsiController(jitsiSvc)
+	feedbackCtrl := controllers.NewFeedbackController(feedbackRepo)
 
 	authMw := middlewares.NewAuthMiddleware(
 		coreServices.SessionService,
@@ -113,7 +115,7 @@ func main() {
 
 	app := fiber.New(fiber.Config{AppName: "SectionLap Backend"})
 
-	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, authMw)
+	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, authMw)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("SectionLap backend listening on %s", addr)

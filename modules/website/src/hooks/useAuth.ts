@@ -17,10 +17,10 @@ export function useAuth() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (!res.ok) throw new Error("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
-      const { data } = (await res.json()) as { data: { user: User; token: string } };
-      setUser(data.user, data.token);
-      router.push(data.user.role === "teacher" ? "/dashboard" : "/sections");
+      const body = await res.json() as { data?: { user: User; token: string }; error?: string };
+      if (!res.ok || !body.data) throw new Error(body.error ?? "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+      setUser(body.data.user, body.data.token);
+      router.push(body.data.user.role === "teacher" ? "/dashboard" : "/sections");
     } catch (e) {
       setError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
     } finally {
@@ -37,10 +37,10 @@ export function useAuth() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role }),
       });
-      if (!res.ok) throw new Error("สมัครสมาชิกไม่สำเร็จ");
-      const { data } = (await res.json()) as { data: { user: User; token: string } };
-      setUser(data.user, data.token);
-      router.push(data.user.role === "teacher" ? "/dashboard" : "/sections");
+      const body = await res.json() as { data?: { user: User; token: string }; error?: string };
+      if (!res.ok || !body.data) throw new Error(body.error ?? "สมัครสมาชิกไม่สำเร็จ");
+      setUser(body.data.user, body.data.token);
+      router.push(body.data.user.role === "teacher" ? "/dashboard" : "/sections");
     } catch (e) {
       setError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
     } finally {
