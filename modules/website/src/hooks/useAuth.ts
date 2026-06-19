@@ -20,7 +20,11 @@ export function useAuth() {
       const body = await res.json() as { data?: { user: User; token: string }; error?: string };
       if (!res.ok || !body.data) throw new Error(body.error ?? "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
       setUser(body.data.user, body.data.token);
-      router.push(body.data.user.role === "teacher" ? "/dashboard" : "/sections");
+      if (body.data.user.role === "teacher" && !body.data.user.verified) {
+        router.push("/teacher-verify");
+      } else {
+        router.push(body.data.user.role === "teacher" ? "/dashboard" : "/sections");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
     } finally {
@@ -40,7 +44,11 @@ export function useAuth() {
       const body = await res.json() as { data?: { user: User; token: string }; error?: string };
       if (!res.ok || !body.data) throw new Error(body.error ?? "สมัครสมาชิกไม่สำเร็จ");
       setUser(body.data.user, body.data.token);
-      router.push(body.data.user.role === "teacher" ? "/dashboard" : "/sections");
+      if (body.data.user.role === "teacher" && !body.data.user.verified) {
+        router.push("/teacher-verify");
+      } else {
+        router.push(body.data.user.role === "teacher" ? "/dashboard" : "/onboarding");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
     } finally {

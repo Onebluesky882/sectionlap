@@ -4,7 +4,7 @@ Status: ACTIVE
 
 Owner: CONDUCTOR
 
-Last Updated: 2026-06-17 (post-integration fixes: UX errors, booking API shape, mobile build)
+Last Updated: 2026-06-18 (Stage 7 website complete — all pipeline stages COMPLETE)
 
 ⸻
 
@@ -166,10 +166,11 @@ Done
 * [x] Stage 6b — Wails Backend Integration
 
 * [x] Stage 6c — Expo Backend Integration
+* [x] Stage 7 — Website (Next.js + Cloudflare)
 
 In Progress
 
-* [ ] Stage 7 — Website (Next.js + Cloudflare)
+* (none)
 
 Next Up
 
@@ -187,7 +188,7 @@ M-002	Live Classroom (video + sync)	Goal 2 / Objective 1	COMPLETE
 M-003	Mobile App (Expo)	Goal 2 / Objective 2	COMPLETE
 M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	COMPLETE
 M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	COMPLETE
-M-006	Website (Next.js + Cloudflare)	Goal 1	IN_PROGRESS
+M-006	Website (Next.js + Cloudflare)	Goal 1	COMPLETE
 
 Status Values:
 
@@ -208,6 +209,7 @@ The project will be considered successful when:
 * [x] Desktop client wired to real backend with no mock logic remaining (Stage 6b)
 * [x] Mobile client wired to real backend with no mock logic remaining (Stage 6c)
 * [x] All pipeline stages COMPLETE on wansing branch (merge to main pending)
+* [x] Website live on Cloudflare Workers (Stage 7)
 
 ⸻
 

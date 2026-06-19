@@ -32,6 +32,15 @@ func (m *mockSectionRepo) GetByTeacherID(ctx context.Context, teacherID string) 
 	return nil, nil
 }
 
+func (m *mockSectionRepo) GetAllAdmin(ctx context.Context) ([]models.Section, error) {
+	return nil, nil
+}
+
+func (m *mockSectionRepo) Delete(ctx context.Context, id string) error {
+	delete(m.sections, id)
+	return nil
+}
+
 func (m *mockSectionRepo) Create(ctx context.Context, section *models.Section) error {
 	m.sections[section.ID] = section
 	return nil
@@ -119,7 +128,7 @@ func TestCreateBooking_Success(t *testing.T) {
 	svc, _, _ := newTestService()
 	ctx := context.Background()
 
-	result, err := svc.Create(ctx, "section-1", "student-1")
+	result, err := svc.Create(ctx, "section-1", "student-1", nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -146,7 +155,7 @@ func TestCreateBooking_AlreadyBooked(t *testing.T) {
 		BookedAt:  time.Now(),
 	}
 
-	result, err := svc.Create(ctx, "section-1", "student-1")
+	result, err := svc.Create(ctx, "section-1", "student-1", nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -165,7 +174,7 @@ func TestCreateBooking_CapacityFull(t *testing.T) {
 	bookingRepo.bookings["b1"] = &models.Booking{ID: "b1", SectionID: "section-1", StudentID: "student-2", Status: models.PaymentPending, BookedAt: time.Now()}
 	bookingRepo.bookings["b2"] = &models.Booking{ID: "b2", SectionID: "section-1", StudentID: "student-3", Status: models.PaymentPending, BookedAt: time.Now()}
 
-	result, err := svc.Create(ctx, "section-1", "student-1")
+	result, err := svc.Create(ctx, "section-1", "student-1", nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -255,7 +264,7 @@ func TestFailedBookingNotCountedInCapacity(t *testing.T) {
 	bookingRepo.bookings["b1"] = &models.Booking{ID: "b1", SectionID: "section-1", StudentID: "student-2", Status: models.PaymentFailed, BookedAt: time.Now()}
 	bookingRepo.bookings["b2"] = &models.Booking{ID: "b2", SectionID: "section-1", StudentID: "student-3", Status: models.PaymentPending, BookedAt: time.Now()}
 
-	result, err := svc.Create(ctx, "section-1", "student-1")
+	result, err := svc.Create(ctx, "section-1", "student-1", nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

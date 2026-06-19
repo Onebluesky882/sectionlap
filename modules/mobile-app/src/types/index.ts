@@ -4,6 +4,7 @@ export interface User {
   id: string;
   name: string;
   role: UserRole;
+  verified: boolean;
 }
 
 export interface Section {

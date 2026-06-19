@@ -31,6 +31,7 @@ export default function Navbar() {
             { href: "/sections", label: "Classes" },
             ...(user?.role === "teacher" ? [{ href: "/dashboard", label: "Dashboard" }] : []),
             ...(user ? [{ href: "/profile", label: "Profile" }] : []),
+            { href: "/download", label: "Download" },
             { href: "/roadmap", label: "Roadmap" },
             { href: "/feedback", label: "Feedback" },
           ].map(({ href, label }) => (
@@ -58,7 +59,7 @@ export default function Navbar() {
                 onClick={signOut}
                 className="text-xs font-medium text-[#64748B] hover:text-[#6AA098] transition-colors"
               >
-                ออกจากระบบ
+                Sign Out
               </button>
             </>
           ) : (
@@ -66,7 +67,7 @@ export default function Navbar() {
               href="/login"
               className="rounded-full bg-[#6AA098] text-white px-4 py-1.5 text-sm font-semibold hover:bg-[#4D8078] transition-colors"
             >
-              เริ่มเลย
+              Get Started
             </Link>
           )}
         </div>

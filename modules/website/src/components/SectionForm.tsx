@@ -29,10 +29,12 @@ export default function SectionForm({
     category: initial?.category ?? CATEGORIES[0],
     durationMinutes: initial?.durationMinutes ?? 60,
     capacity: initial?.capacity ?? 20,
+    questions: initial?.questions ?? [],
     scheduledAt: initial?.scheduledAt ?? "",
   });
 
   const [touched, setTouched] = useState<Partial<Record<keyof SectionFormData, boolean>>>({});
+  const [newQuestion, setNewQuestion] = useState("");
 
   function set<K extends keyof SectionFormData>(key: K, value: SectionFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -123,6 +125,48 @@ export default function SectionForm({
           />
         </Field>
       </div>
+
+      <Field label="คำถามก่อน booking (ไม่บังคับ)">
+        <p className="text-xs text-[#64748B] mb-2">นักเรียนต้องตอบคำถามเหล่านี้ก่อนจอง เพื่อยืนยันความพร้อม</p>
+        {form.questions.map((q, i) => (
+          <div key={i} className="flex items-center gap-2 mb-2">
+            <span className="text-xs text-[#64748B] w-5 shrink-0">{i + 1}.</span>
+            <span className="flex-1 text-sm border border-[#DDE8E6] rounded-lg px-3 py-2 bg-[#F7FAFA]">{q}</span>
+            <button
+              type="button"
+              onClick={() => set("questions", form.questions.filter((_, j) => j !== i))}
+              className="text-xs text-red-400 hover:text-red-600 px-2"
+            >
+              ลบ
+            </button>
+          </div>
+        ))}
+        <div className="flex gap-2 mt-1">
+          <input
+            value={newQuestion}
+            onChange={(e) => setNewQuestion(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                const q = newQuestion.trim();
+                if (q) { set("questions", [...form.questions, q]); setNewQuestion(""); }
+              }
+            }}
+            placeholder="พิมพ์คำถาม แล้วกด Enter หรือปุ่ม +"
+            className={input(false)}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              const q = newQuestion.trim();
+              if (q) { set("questions", [...form.questions, q]); setNewQuestion(""); }
+            }}
+            className="rounded-lg border border-[#DDE8E6] px-3 py-2 text-sm hover:bg-[#F7FAFA] transition-colors"
+          >
+            +
+          </button>
+        </div>
+      </Field>
 
       <Field label="วันเวลาเริ่มเรียน (ไม่บังคับ)">
         <input

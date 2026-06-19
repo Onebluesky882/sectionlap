@@ -102,9 +102,15 @@ func main() {
 		cookieName,
 	)
 	sectionCtrl := controllers.NewSectionController(sectionSvc)
+	supervisorCtrl := controllers.NewSupervisorController(sectionSvc, sectionRepo)
 	bookingCtrl := controllers.NewBookingController(bookingSvc)
 	jitsiCtrl := controllers.NewJitsiController(jitsiSvc)
 	feedbackCtrl := controllers.NewFeedbackController(feedbackRepo)
+	teacherProfileRepo := repositories.NewTeacherProfileRepository(db)
+	teacherProfileCtrl := controllers.NewTeacherProfileController(teacherProfileRepo, userRoleRepo)
+	studentProfileRepo := repositories.NewStudentProfileRepository(db)
+	studentProfileCtrl := controllers.NewStudentProfileController(studentProfileRepo)
+	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, db)
 
 	authMw := middlewares.NewAuthMiddleware(
 		coreServices.SessionService,
@@ -115,7 +121,7 @@ func main() {
 
 	app := fiber.New(fiber.Config{AppName: "SectionLap Backend"})
 
-	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, authMw)
+	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, authMw)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("SectionLap backend listening on %s", addr)

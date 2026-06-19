@@ -6,14 +6,6 @@
 |-------|--------|--------|
 | 1 | Frontend Shell + Mock Data (Wails) | COMPLETE |
 | 2a | Jitsi Meet Self-host (infra) | COMPLETE |
-<<<<<<< HEAD
-| 2b | Jitsi Embed in Wails (integration) | IN PROGRESS |
-| 3 | Mock Logic (Booking / Payment / Enrollment) | PENDING |
-| 4a | Sync Service (Yjs infra) | IN PROGRESS |
-| 4b | Sync Service Integration (Wails) | PENDING |
-| 5 | Expo App (Student / Teacher) | PENDING |
-| 6 | Backend (Replace Mock Booking/Payment/Enrollment) | PENDING |
-=======
 | 2b | Jitsi Embed in Wails (integration) | COMPLETE |
 | 2c | Jitsi Live Stream (Jibri + RTMP out) | COMPLETE |
 | 3 | Mock Logic (Booking / Payment / Enrollment) | COMPLETE |
@@ -23,7 +15,7 @@
 | 6a | Backend Core (API + DB + Auth) | COMPLETE |
 | 6b | Wails Backend Integration | COMPLETE |
 | 6c | Expo Backend Integration | COMPLETE |
-| 7 | Website (Next.js + Cloudflare) | IN_PROGRESS |
+| 7 | Website (Next.js + Cloudflare) | COMPLETE |
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
@@ -42,11 +34,6 @@ Currently:
 - Stage 6b and Stage 6c both depend only on Stage 6a (+ their own prior
   stage: 6b on Stage 3, 6c on Stage 5) — they have no dependency on each
   other and run in parallel.
->>>>>>> wansing
-
-**Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
-and are dispatched in parallel with it. Their integration counterparts
-(2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to <conductor-branch>.
 
 ⸻
 
@@ -70,17 +57,10 @@ and are dispatched in parallel with it. Their integration counterparts
 - None (Stage 1 starts immediately)
 
 **Dispatch-In:** `tasks/state-1-desktop-app.md`
-<<<<<<< HEAD
-<!-- Conductor writes this AFTER prior stage PR is merged to <conductor-branch> -->
-=======
-<!-- Conductor writes this AFTER prior stage PR is merged to wansing -->
->>>>>>> wansing
 
 **Gate-Out:** `gate-out/state-1-desktop-app.md`
-<!-- Agent writes this when stage is complete -->
 
 **Merge-Approval:** `merge-approval/state-1-desktop-app.md`
-<!-- Conductor writes this after gate validation passes; triggers PR merge -->
 
 ⸻
 
@@ -110,17 +90,6 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-<<<<<<< HEAD
-**Status:** `IN PROGRESS`
-
-**Acceptance Criteria:**
-- [ ] "Live Class" screen in Wails app embeds local Jitsi room (webview/iframe)
-- [ ] Join/leave room works with mic/cam from the Wails app
-
-**Gate-In Requirements:**
-- Stage 1 merged to <conductor-branch> (Wails app shell exists)
-- Stage 2a merged to <conductor-branch> (Jitsi instance + config available)
-=======
 **Status:** `COMPLETE`
 
 **Acceptance Criteria:**
@@ -131,15 +100,12 @@ and are dispatched in parallel with it. Their integration counterparts
 **Gate-In Requirements:**
 - Stage 1 merged to wansing (Wails app shell exists)
 - Stage 2a merged to wansing (Jitsi instance + config available)
->>>>>>> wansing
 
 **Dispatch-In:** `tasks/state-2b-jitsi-embed.md`
 
 **Gate-Out:** `gate-out/state-2b-jitsi-embed.md`
 
 **Merge-Approval:** `merge-approval/state-2b-jitsi-embed.md`
-<<<<<<< HEAD
-=======
 
 ⸻
 
@@ -164,7 +130,6 @@ and are dispatched in parallel with it. Their integration counterparts
 **Gate-Out:** `gate-out/state-2c-jitsi-livestream.md`
 
 **Merge-Approval:** `merge-approval/state-2c-jitsi-livestream.md`
->>>>>>> wansing
 
 ⸻
 
@@ -183,11 +148,7 @@ and are dispatched in parallel with it. Their integration counterparts
 - [x] Logic interfaces documented for future backend replacement (input/output shapes)
 
 **Gate-In Requirements:**
-<<<<<<< HEAD
-- Stage 1 merged to <conductor-branch>
-=======
 - Stage 1 merged to wansing
->>>>>>> wansing
 
 **Dispatch-In:** `tasks/state-3-booking-logic.md`
 
@@ -201,16 +162,6 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/sync-service
 **Agent:** [assigned agent]
-<<<<<<< HEAD
-**Status:** `IN PROGRESS`
-
-**Acceptance Criteria:**
-- [ ] WebSocket sync server running locally (Yjs + y-websocket)
-- [ ] Whiteboard: collaborative drawing surface, real-time sync across connected clients
-- [ ] Document highlight: load PDF/image, draw/highlight annotations synced in real-time
-- [ ] Shared protocol/contract documented for Wails (Stage 4b) and Expo (Stage 5) to reuse
-- [ ] Setup/run instructions documented
-=======
 **Status:** `COMPLETE`
 
 **Acceptance Criteria:**
@@ -219,7 +170,6 @@ and are dispatched in parallel with it. Their integration counterparts
 - [x] Document highlight: load PDF/image, draw/highlight annotations synced in real-time
 - [x] Shared protocol/contract documented for Wails (Stage 4b) and Expo (Stage 5) to reuse
 - [x] Setup/run instructions documented
->>>>>>> wansing
 
 **Gate-In Requirements:**
 - None — runs in parallel with Stage 1, no dependency
@@ -236,17 +186,6 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/desktop-app
 **Agent:** [assigned agent]
-<<<<<<< HEAD
-**Status:** `PENDING`
-
-**Acceptance Criteria:**
-- [ ] Wails app integrated as a client connecting to the sync service
-- [ ] Whiteboard and document-highlight usable from within the Wails app
-
-**Gate-In Requirements:**
-- Stage 1 merged to <conductor-branch> (Wails app shell exists)
-- Stage 4a merged to <conductor-branch> (sync service + protocol available)
-=======
 **Status:** `COMPLETE`
 
 **Acceptance Criteria:**
@@ -256,7 +195,6 @@ and are dispatched in parallel with it. Their integration counterparts
 **Gate-In Requirements:**
 - Stage 1 merged to wansing (Wails app shell exists)
 - Stage 4a merged to wansing (sync service + protocol available)
->>>>>>> wansing
 
 **Dispatch-In:** `tasks/state-4b-sync-integration.md`
 
@@ -273,17 +211,6 @@ and are dispatched in parallel with it. Their integration counterparts
 **Status:** `COMPLETE`
 
 **Acceptance Criteria:**
-<<<<<<< HEAD
-- [ ] Expo app runs on Android and iPad
-- [ ] Student/Teacher flows mirrored from Wails (section list, booking, dashboard) using mock logic from Stage 3
-- [ ] Live class via Jitsi React Native SDK
-- [ ] Whiteboard & document-highlight connected to the same Sync Service from Stage 4a
-- [ ] Real-time sync verified between Wails and Expo clients
-
-**Gate-In Requirements:**
-- Stage 3 merged to <conductor-branch> (mock logic contracts available)
-- Stage 4a merged to <conductor-branch> (sync service + protocol available)
-=======
 - [x] Expo app runs on Android and iPad
 - [x] Student/Teacher flows mirrored from Wails (section list, booking, dashboard) using mock logic from Stage 3
 - [x] Live class via Jitsi React Native SDK
@@ -293,7 +220,6 @@ and are dispatched in parallel with it. Their integration counterparts
 **Gate-In Requirements:**
 - Stage 3 merged to wansing (mock logic contracts available)
 - Stage 4a merged to wansing (sync service + protocol available)
->>>>>>> wansing
 
 **Dispatch-In:** `tasks/state-5-mobile-app.md`
 
@@ -323,20 +249,10 @@ and are dispatched in parallel with it. Their integration counterparts
 - [x] Auth/session contract documented in CONTRACTS.md for Stage 6b/6c to consume
 
 **Gate-In Requirements:**
-<<<<<<< HEAD
-- Stage 3 merged to <conductor-branch> (contracts defined)
-- Stage 5 merged to <conductor-branch> (both clients exist to migrate)
-=======
 - Stage 3 merged to wansing (contracts defined)
->>>>>>> wansing
 
 **Dispatch-In:** `tasks/state-6a-backend-core.md`
 
-<<<<<<< HEAD
-**Gate-Out:** `gate-out/state-6-backend.md`
-
-**Merge-Approval:** `merge-approval/state-6-backend.md`
-=======
 **Gate-Out:** `gate-out/state-6a-backend-core.md`
 
 **Merge-Approval:** `merge-approval/state-6a-backend-core.md`
@@ -391,7 +307,7 @@ and are dispatched in parallel with it. Their integration counterparts
 
 **Domain:** modules/website
 **Agent:** [assigned agent]
-**Status:** `IN_PROGRESS`
+**Status:** `COMPLETE`
 
 **Tech Stack:**
 - Framework: Next.js 16 (App Router)
@@ -407,11 +323,16 @@ and are dispatched in parallel with it. Their integration counterparts
 - `src/components/` — pure presentational components
 
 **Acceptance Criteria:**
-- [ ] Home page (`/`) — landing with CTA to booking
-- [ ] Booking page (`/booking`) — date + time slot selection wired to POST /api/bookings
-- [ ] Zustand store for booking state
-- [ ] All pages pass TypeScript strict mode
-- [ ] Deployed to Cloudflare Workers via OpenNext
+- [x] Home page (`/`) — landing with CTA to booking
+- [x] Booking page (`/booking`) — date + time slot selection wired to POST /api/bookings
+- [x] Zustand store for booking state
+- [x] All pages pass TypeScript strict mode
+- [x] Deployed to Cloudflare Workers via OpenNext
+- [x] Auth pages (`/login`) — register + login for student/teacher roles
+- [x] Sections page (`/sections`) — browse available sections
+- [x] Dashboard + profile pages — teacher flows
+- [x] Roadmap page (`/roadmap`) — AI feature roadmap
+- [x] Student onboarding (`/onboarding`) — post-signup form (nickname, age, subjects of interest); backend `student_profiles` table + `POST/GET /api/student/profile`
 
 **Gate-In Requirements:**
 - Stage 6a merged to wansing (backend API available for `/api/bookings`)
@@ -421,7 +342,48 @@ and are dispatched in parallel with it. Their integration counterparts
 **Gate-Out:** `gate-out/stage-07-website.md`
 
 **Merge-Approval:** `merge-approval/stage-07-website.md`
->>>>>>> wansing
+
+⸻
+
+### Stage 8 — Role-Based Access Control Expansion (admin / supervisor / dev)
+
+**Domain:** modules/backend
+**Agent:** [assigned agent]
+**Status:** `COMPLETE`
+
+**Tech Stack:**
+- Same as Stage 6a (Fiber v3 / Bun / PostgreSQL)
+
+**Background:**
+Stage 6a introduced `teacher` and `student` roles. This stage adds three internal-operation roles:
+
+| Role | Purpose | Section Permissions |
+|------|---------|---------------------|
+| `admin` | Platform moderation — approve/reject teachers & sections, update any section's fields | `PUT /PATCH /api/admin/sections/:id` (no ownership check) |
+| `supervisor` | Full manual CRUD — operate sections on behalf of any teacher, including delete | `GET / POST / PUT / PATCH / DELETE /api/internal/sections` |
+| `dev` | Same permissions as supervisor — engineering access for debugging / seeding | `GET / POST / PUT / PATCH / DELETE /api/internal/sections` |
+
+**Key Design Decisions:**
+- `RequireAnyRole(roles...)` middleware helper: avoids duplicating route groups for supervisor & dev.
+- `SectionService.AdminUpdate` — shared by admin and supervisor; skips owner check.
+- `SectionService.Delete` — validates section existence; real deletion guarded by Postgres FK RESTRICT on `bookings.section_id` (prevents deleting sections with active bookings).
+- All new routes are under distinct path prefixes (`/api/admin/`, `/api/internal/`) — no collision with teacher/student routes.
+
+**Acceptance Criteria:**
+- [x] `RoleSupervisor` and `RoleDev` constants added to `models.UserRoleType`
+- [x] `RequireAnyRole` middleware added — supervisor and dev share the same route group
+- [x] `SectionRepository.Delete` implemented
+- [x] `SectionService.AdminUpdate` (no ownership check) and `SectionService.Delete` added
+- [x] Admin: `PUT/PATCH /api/admin/sections/:id` — update any section
+- [x] Supervisor/Dev: `GET/POST/PUT/PATCH/DELETE /api/internal/sections[/:id]` — full CRUD
+- [x] Backend builds clean (`go build ./...`) and all tests pass
+- [x] ADR 002 documents role permission matrix
+
+**Gate-In Requirements:**
+- Stage 6a merged (backend role system baseline exists)
+- Stage 7 merged (website consumes section API — ensure no breaking route changes)
+
+**Gate-Out:** All acceptance criteria checked, `go build ./...` and `go test ./...` green.
 
 ⸻
 

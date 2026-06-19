@@ -16,6 +16,10 @@ type SectionService interface {
 	GetByID(ctx context.Context, id string) (*models.Section, error)
 	Create(ctx context.Context, teacherID, teacherName string, input CreateSectionInput) (*models.Section, error)
 	Update(ctx context.Context, id, teacherID string, input UpdateSectionInput) (*models.Section, error)
+	// AdminUpdate updates any section regardless of ownership (admin/supervisor/dev).
+	AdminUpdate(ctx context.Context, id string, input UpdateSectionInput) (*models.Section, error)
+	// Delete removes a section. Fails if active bookings exist (FK RESTRICT).
+	Delete(ctx context.Context, id string) error
 }
 
 type CreateSectionInput struct {
@@ -25,6 +29,7 @@ type CreateSectionInput struct {
 	Category        string     `json:"category"`
 	DurationMinutes int        `json:"durationMinutes"`
 	Capacity        int        `json:"capacity"`
+	Questions       []string   `json:"questions"`
 	ScheduledAt     *time.Time `json:"scheduledAt,omitempty"`
 }
 
@@ -35,6 +40,7 @@ type UpdateSectionInput struct {
 	Category        *string    `json:"category,omitempty"`
 	DurationMinutes *int       `json:"durationMinutes,omitempty"`
 	Capacity        *int       `json:"capacity,omitempty"`
+	Questions       []string   `json:"questions,omitempty"`
 	ScheduledAt     *time.Time `json:"scheduledAt,omitempty"`
 }
 
@@ -55,6 +61,11 @@ func (s *sectionService) GetByID(ctx context.Context, id string) (*models.Sectio
 }
 
 func (s *sectionService) Create(ctx context.Context, teacherID, teacherName string, input CreateSectionInput) (*models.Section, error) {
+	questions := input.Questions
+	if questions == nil {
+		questions = []string{}
+	}
+
 	section := &models.Section{
 		ID:              uuid.New().String(),
 		Title:           input.Title,
@@ -65,6 +76,7 @@ func (s *sectionService) Create(ctx context.Context, teacherID, teacherName stri
 		Category:        input.Category,
 		DurationMinutes: input.DurationMinutes,
 		Capacity:        input.Capacity,
+		Questions:       questions,
 		ScheduledAt:     input.ScheduledAt,
 		CreatedAt:       time.Now().UTC(),
 		UpdatedAt:       time.Now().UTC(),
@@ -75,6 +87,21 @@ func (s *sectionService) Create(ctx context.Context, teacherID, teacherName stri
 	return section, nil
 }
 
+func (s *sectionService) AdminUpdate(ctx context.Context, id string, input UpdateSectionInput) (*models.Section, error) {
+	section, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("section not found: %w", err)
+	}
+	return s.applyUpdate(ctx, section, input)
+}
+
+func (s *sectionService) Delete(ctx context.Context, id string) error {
+	if _, err := s.repo.GetByID(ctx, id); err != nil {
+		return fmt.Errorf("section not found: %w", err)
+	}
+	return s.repo.Delete(ctx, id)
+}
+
 func (s *sectionService) Update(ctx context.Context, id, teacherID string, input UpdateSectionInput) (*models.Section, error) {
 	section, err := s.repo.GetByID(ctx, id)
 	if err != nil {
@@ -83,7 +110,10 @@ func (s *sectionService) Update(ctx context.Context, id, teacherID string, input
 	if section.TeacherID != teacherID {
 		return nil, fmt.Errorf("forbidden")
 	}
+	return s.applyUpdate(ctx, section, input)
+}
 
+func (s *sectionService) applyUpdate(ctx context.Context, section *models.Section, input UpdateSectionInput) (*models.Section, error) {
 	if input.Title != nil {
 		section.Title = *input.Title
 	}
@@ -104,6 +134,9 @@ func (s *sectionService) Update(ctx context.Context, id, teacherID string, input
 	}
 	if input.ScheduledAt != nil {
 		section.ScheduledAt = input.ScheduledAt
+	}
+	if input.Questions != nil {
+		section.Questions = input.Questions
 	}
 	section.UpdatedAt = time.Now().UTC()
 

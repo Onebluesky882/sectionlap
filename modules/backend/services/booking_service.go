@@ -24,7 +24,7 @@ type CreateBookingResult struct {
 }
 
 type BookingService interface {
-	Create(ctx context.Context, sectionID, studentID string) (*CreateBookingResult, error)
+	Create(ctx context.Context, sectionID, studentID string, answers []string) (*CreateBookingResult, error)
 	Pay(ctx context.Context, bookingID, studentID string) (*models.Booking, error)
 	Fail(ctx context.Context, bookingID string) (*models.Booking, error)
 	Retry(ctx context.Context, bookingID, studentID string) (*models.Booking, error)
@@ -41,7 +41,7 @@ func NewBookingService(bookingRepo repositories.BookingRepository, sectionRepo r
 	return &bookingService{bookingRepo: bookingRepo, sectionRepo: sectionRepo}
 }
 
-func (s *bookingService) Create(ctx context.Context, sectionID, studentID string) (*CreateBookingResult, error) {
+func (s *bookingService) Create(ctx context.Context, sectionID, studentID string, answers []string) (*CreateBookingResult, error) {
 	existing, err := s.bookingRepo.GetBySectionAndStudent(ctx, sectionID, studentID)
 	if err == nil && existing != nil {
 		e := ErrAlreadyBooked
@@ -53,6 +53,17 @@ func (s *bookingService) Create(ctx context.Context, sectionID, studentID string
 		return nil, fmt.Errorf("section not found: %w", err)
 	}
 
+	if len(section.Questions) > 0 {
+		if len(answers) != len(section.Questions) {
+			return nil, fmt.Errorf("must answer all %d questions", len(section.Questions))
+		}
+		for _, a := range answers {
+			if len([]rune(a)) == 0 {
+				return nil, fmt.Errorf("all answers must be non-empty")
+			}
+		}
+	}
+
 	activeCount, err := s.bookingRepo.CountActive(ctx, sectionID)
 	if err != nil {
 		return nil, err
@@ -62,11 +73,16 @@ func (s *bookingService) Create(ctx context.Context, sectionID, studentID string
 		return &CreateBookingResult{Booking: nil, Error: &e}, nil
 	}
 
+	if answers == nil {
+		answers = []string{}
+	}
+
 	booking := &models.Booking{
 		ID:        uuid.New().String(),
 		SectionID: sectionID,
 		StudentID: studentID,
 		Status:    models.PaymentPending,
+		Answers:   answers,
 		BookedAt:  time.Now().UTC(),
 	}
 	if err := s.bookingRepo.Create(ctx, booking); err != nil {

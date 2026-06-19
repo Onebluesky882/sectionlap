@@ -10,6 +10,7 @@ export type Section = {
   price: number;
   capacity: number;
   durationMinutes: number;
+  questions: string[];
   createdAt: string;
   updatedAt: string;
 };

@@ -247,6 +247,7 @@ export default function HomepagePreload() {
           <div className="flex gap-6">
             {[
               { href: "/sections", label: "Classes" },
+              { href: "/download", label: "Download" },
               { href: "/roadmap", label: "Roadmap" },
               { href: "/feedback", label: "Feedback" },
               { href: "/login", label: "Sign in" },

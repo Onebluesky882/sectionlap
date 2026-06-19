@@ -12,6 +12,7 @@ export type SectionFormData = {
   category: string;
   durationMinutes: number;
   capacity: number;
+  questions: string[];
   scheduledAt?: string;
 };
 
@@ -29,6 +30,7 @@ export function useSectionMutations() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
+          questions: data.questions ?? [],
           scheduledAt: data.scheduledAt || undefined,
         }),
       });
@@ -58,6 +60,7 @@ export function useSectionMutations() {
       if (data.category !== undefined) body.category = data.category;
       if (data.durationMinutes !== undefined) body.durationMinutes = data.durationMinutes;
       if (data.capacity !== undefined) body.capacity = data.capacity;
+      if (data.questions !== undefined) body.questions = data.questions;
       if (data.scheduledAt !== undefined) body.scheduledAt = data.scheduledAt;
 
       const res = await authFetch(`/api/sections/${id}`, {

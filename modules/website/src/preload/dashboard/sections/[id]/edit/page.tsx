@@ -54,6 +54,7 @@ export default function EditSectionPreload({ id }: { id: string }) {
           category: section.category,
           durationMinutes: section.durationMinutes,
           capacity: section.capacity,
+          questions: section.questions ?? [],
         }}
         onSubmit={handleSubmit}
         onCancel={() => router.push("/dashboard/sections")}
