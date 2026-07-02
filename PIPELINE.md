@@ -17,7 +17,7 @@
 | 6c | Expo Backend Integration | COMPLETE |
 | 7 | Website (Next.js + Cloudflare) | COMPLETE |
 | 8 | Role-Based Access Control (admin/supervisor/dev) | COMPLETE |
-| 9 | AI Visual Plan Generator (FlowLoop GIF/MP4 + R2) | PLANNING |
+| 9 | AI Visual Plan Generator (FlowLoop GIF/MP4 + R2) | IN_PROGRESS |
 
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
@@ -347,58 +347,6 @@ Currently:
 
 ⸻
 
-### Stage 9 — AI Visual Plan Generator (FlowLoop GIF/MP4 + R2)
-
-**Domain:** modules/visual-plan-service, modules/backend, modules/website
-**Agent:** [assigned agent]
-**Status:** `PLANNING`
-
-**Tech Stack:**
-- Python FastAPI microservice (frame generation)
-- Pillow + ffmpeg (draw frames → compile GIF/MP4)
-- Cloudflare R2 (object storage, S3-compatible)
-- Claude API claude-haiku-4-5 (parse text plan → structured JSON — Haiku chosen for low latency/cost on this simple extraction task)
-- Go backend: new visual_plans table + REST endpoints
-- Next.js website: `/visual-plan` page + embed component
-
-**Background:**
-Teacher/student inputs a text learning plan → Claude parses into structured steps →
-Python service draws animated frames (dark theme, teal accents) → ffmpeg compiles
-to GIF + MP4 → upload to R2 → shareable embed link returned to user.
-User can embed the GIF in any section description or share on social media.
-
-**Acceptance Criteria:**
-- [ ] `modules/visual-plan-service/` Python FastAPI service:
-  - `POST /generate` accepts structured JSON → returns `{ gifUrl, mp4Url }`
-  - Pillow draws frames: dark theme `#1A2332`, teal `#6AA098`, 2x supersample (1800×640 → 900×320)
-  - ffmpeg compiles frames → `.gif` (palettegen) + `.mp4` (libx264, yuv420p, framerate 12)
-  - boto3 uploads both files to R2 under `visual-plans/{user_id}/{plan_id}.*`
-  - `GET /health` returns 200
-- [ ] Backend (Go) `visual_plans` table: `id, user_id, title, prompt_text, structured_json, gif_url, mp4_url, r2_key, created_at`
-- [ ] Backend env vars added to config: `CLAUDE_API_KEY`, `VISUAL_SERVICE_URL`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_BASE_URL`
-- [ ] Backend routes:
-  - `POST   /api/visual-plans` — Claude parse + generate (auth required)
-  - `GET    /api/visual-plans` — list own plans
-  - `GET    /api/visual-plans/:id` — public view
-  - `DELETE /api/visual-plans/:id` — delete own
-- [ ] Website `/visual-plan` page: text input → loading state → preview GIF → copy embed link
-- [ ] Website `/visual-plan/[id]` page: public view + download GIF/MP4 buttons
-- [ ] `<VisualPlanEmbed>` component usable inside section descriptions
-- [ ] R2 public URL pattern: `{R2_PUBLIC_BASE_URL}/visual-plans/{user_id}/{plan_id}.gif`
-- [ ] `go build ./...` green; `pnpm build` green
-
-**Gate-In Requirements:**
-- Stage 6a merged (auth + user_id available)
-- Stage 7 merged (website base exists)
-- Stage 8 merged (role system stable — no breaking route changes)
-- Cloudflare R2 bucket created and CORS configured
-
-**Dispatch-In:** `tasks/stage-09-visual-plan.md`
-
-**Gate-Out:** All acceptance criteria checked, services start, end-to-end test (text → GIF download) passes.
-
-⸻
-
 ### Stage 8 — Role-Based Access Control Expansion (admin / supervisor / dev)
 
 **Domain:** modules/backend
@@ -438,6 +386,60 @@ Stage 6a introduced `teacher` and `student` roles. This stage adds three interna
 - Stage 7 merged (website consumes section API — ensure no breaking route changes)
 
 **Gate-Out:** All acceptance criteria checked, `go build ./...` and `go test ./...` green.
+
+⸻
+
+### Stage 9 — AI Visual Plan Generator (FlowLoop GIF/MP4 + R2)
+
+**Domain:** modules/visual-plan-service, modules/backend, modules/website
+**Agent:** [assigned agent]
+**Status:** `IN_PROGRESS`
+
+**Tech Stack:**
+- Python FastAPI microservice (frame generation)
+- Pillow + ffmpeg (draw frames → compile GIF/MP4)
+- Cloudflare R2 (object storage, S3-compatible)
+- Claude API claude-haiku-4-5 (parse text plan → structured JSON — Haiku chosen for low latency/cost on this simple extraction task; falls back to a local mock parser when `CLAUDE_API_KEY` is unset)
+- Go backend: new visual_plans table + REST endpoints
+- Next.js website: `/visual-plan` page + embed component
+
+**Background:**
+Teacher/student inputs a text learning plan → Claude parses into structured steps →
+Python service draws animated frames (dark theme, teal accents) → ffmpeg compiles
+to GIF + MP4 → upload to R2 → shareable embed link returned to user.
+User can embed the GIF in any section description or share on social media.
+
+**Acceptance Criteria:**
+- [ ] `modules/visual-plan-service/` Python FastAPI service:
+  - `POST /generate` accepts structured JSON → returns `{ gifUrl, mp4Url }`
+  - Pillow draws frames: dark theme `#1A2332`, teal `#6AA098`, 2x supersample (1800×640 → 900×320)
+  - ffmpeg compiles frames → `.gif` (palettegen) + `.mp4` (libx264, yuv420p, framerate 12)
+  - boto3 uploads both files to R2 under `visual-plans/{user_id}/{plan_id}.*`
+  - `GET /health` returns 200
+  *(code written, not yet run/tested — no Cloudflare R2 credentials configured yet)*
+- [x] Backend (Go) `visual_plans` table: `id, user_id, title, prompt_text, structured_json, gif_url, mp4_url, r2_key_gif, r2_key_mp4, created_at` — verified created in local Postgres via `\d visual_plans` (note: split into `r2_key_gif`/`r2_key_mp4` instead of a single `r2_key`)
+- [ ] Backend env vars added to config: `CLAUDE_API_KEY` ✅, `VISUAL_SERVICE_URL` ✅ — `R2_BUCKET`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_BASE_URL` not yet added to Go backend config (only present in the Python service's `.env.example`)
+- [x] Backend routes wired and responding:
+  - `POST   /api/visual-plans` — Claude parse + generate (auth required)
+  - `GET    /api/visual-plans` — list own plans
+  - `GET    /api/visual-plans/:id` — public view (verified: returns controller JSON `{"error":"not found"}` for unknown id, not a generic 404)
+  - `DELETE /api/visual-plans/:id` — delete own
+- [ ] Website `/visual-plan` page: text input → loading state → preview GIF → copy embed link *(files created, not yet exercised in a browser)*
+- [ ] Website `/visual-plan/[id]` page: public view + download GIF/MP4 buttons *(files created, not yet exercised in a browser)*
+- [ ] `<VisualPlanEmbed>` component usable inside section descriptions
+- [ ] R2 public URL pattern: `{R2_PUBLIC_BASE_URL}/visual-plans/{user_id}/{plan_id}.gif`
+- [x] `go build ./...` green
+- [ ] `pnpm build` green *(not yet run)*
+
+**Gate-In Requirements:**
+- Stage 6a merged (auth + user_id available)
+- Stage 7 merged (website base exists)
+- Stage 8 merged (role system stable — no breaking route changes)
+- Cloudflare R2 bucket created and CORS configured *(not yet done — blocks the R2 upload path end-to-end)*
+
+**Dispatch-In:** `tasks/stage-09-visual-plan.md`
+
+**Gate-Out:** All acceptance criteria checked, services start, end-to-end test (text → GIF download) passes.
 
 ⸻
 
