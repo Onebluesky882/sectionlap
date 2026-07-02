@@ -410,24 +410,23 @@ to GIF + MP4 → upload to R2 → shareable embed link returned to user.
 User can embed the GIF in any section description or share on social media.
 
 **Acceptance Criteria:**
-- [ ] `modules/visual-plan-service/` Python FastAPI service:
-  - `POST /generate` accepts structured JSON → returns `{ gifUrl, mp4Url }`
-  - Pillow draws frames: dark theme `#1A2332`, teal `#6AA098`, 2x supersample (1800×640 → 900×320)
-  - ffmpeg compiles frames → `.gif` (palettegen) + `.mp4` (libx264, yuv420p, framerate 12)
-  - boto3 uploads both files to R2 under `visual-plans/{user_id}/{plan_id}.*`
-  - `GET /health` returns 200
-  *(code written, not yet run/tested — no Cloudflare R2 credentials configured yet)*
+- [x] `modules/visual-plan-service/` Python FastAPI service:
+  - `POST /generate` accepts structured JSON → returns `{ gifUrl, mp4Url }` — verified end-to-end via a real `POST /api/visual-plans` call
+  - Pillow draws frames: dark theme `#1A2332`, teal `#6AA098`, 2x supersample (1800×640 → 900×320) — verified: downloaded the generated GIF, confirmed valid `GIF image data, 900 x 320`
+  - ffmpeg compiles frames → `.gif` (palettegen, confirmed valid) + `.mp4` (libx264, yuv420p, framerate 12 — upload succeeded, but the MP4 file itself was not independently downloaded/inspected)
+  - boto3 uploads both files to R2 under `visual-plans/{user_id}/{plan_id}.*` — verified via the returned object key path
+  - `GET /health` returns 200 — verified via curl
 - [x] Backend (Go) `visual_plans` table: `id, user_id, title, prompt_text, structured_json, gif_url, mp4_url, r2_key_gif, r2_key_mp4, created_at` — verified created in local Postgres via `\d visual_plans` (note: split into `r2_key_gif`/`r2_key_mp4` instead of a single `r2_key`)
-- [ ] Backend env vars added to config: `CLAUDE_API_KEY` ✅, `VISUAL_SERVICE_URL` ✅ — `R2_BUCKET`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_BASE_URL` not yet added to Go backend config (only present in the Python service's `.env.example`)
+- [x] Backend env vars added to config: `CLAUDE_API_KEY`, `VISUAL_SERVICE_URL`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` — all wired and verified working via a real generate call. (`R2_PUBLIC_BASE_URL` intentionally *not* added to the Go backend — superseded by presigned URLs, see below)
 - [x] Backend routes wired and responding:
-  - `POST   /api/visual-plans` — Claude parse + generate (auth required)
-  - `GET    /api/visual-plans` — list own plans
-  - `GET    /api/visual-plans/:id` — public view (verified: returns controller JSON `{"error":"not found"}` for unknown id, not a generic 404)
-  - `DELETE /api/visual-plans/:id` — delete own
+  - `POST   /api/visual-plans` — Claude parse + generate (auth required) — verified end-to-end
+  - `GET    /api/visual-plans` — list own plans (route registered, not exercised this session)
+  - `GET    /api/visual-plans/:id` — public view — verified end-to-end, including fresh presign on each read (Amz-Date differs between two calls to the same id)
+  - `DELETE /api/visual-plans/:id` — delete own (route registered, not exercised this session)
 - [ ] Website `/visual-plan` page: text input → loading state → preview GIF → copy embed link *(files created, not yet exercised in a browser)*
 - [ ] Website `/visual-plan/[id]` page: public view + download GIF/MP4 buttons *(files created, not yet exercised in a browser)*
 - [ ] `<VisualPlanEmbed>` component usable inside section descriptions
-- [ ] R2 public URL pattern: `{R2_PUBLIC_BASE_URL}/visual-plans/{user_id}/{plan_id}.gif`
+- [x] R2 access: design changed from a static public URL pattern to backend-presigned GET URLs (1h TTL, regenerated from `r2_key_gif`/`r2_key_mp4` on every read) since `sectionlap-bucket` is private with no custom domain — verified working via a real presigned URL fetch
 - [x] `go build ./...` green
 - [ ] `pnpm build` green *(not yet run)*
 
@@ -435,7 +434,7 @@ User can embed the GIF in any section description or share on social media.
 - Stage 6a merged (auth + user_id available)
 - Stage 7 merged (website base exists)
 - Stage 8 merged (role system stable — no breaking route changes)
-- Cloudflare R2 bucket created and CORS configured *(not yet done — blocks the R2 upload path end-to-end)*
+- Cloudflare R2 bucket created and CORS configured — done: `sectionlap-bucket` exists, CORS (`GET`, all origins) set via `wrangler r2 bucket cors set`
 
 **Dispatch-In:** `tasks/stage-09-visual-plan.md`
 
