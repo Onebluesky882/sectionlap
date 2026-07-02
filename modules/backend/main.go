@@ -113,7 +113,8 @@ func main() {
 	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, db)
 
 	visualPlanRepo := repositories.NewVisualPlanRepository(db)
-	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.ClaudeAPIKey, cfg.VisualServiceURL)
+	r2Presigner := services.NewR2Presigner(cfg.R2Endpoint, cfg.R2AccessKeyID, cfg.R2SecretAccessKey, cfg.R2Bucket)
+	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.ClaudeAPIKey, cfg.VisualServiceURL, r2Presigner)
 	visualPlanCtrl := controllers.NewVisualPlanController(visualPlanSvc)
 
 	authMw := middlewares.NewAuthMiddleware(

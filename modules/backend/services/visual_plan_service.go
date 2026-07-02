@@ -20,17 +20,35 @@ type VisualPlanService struct {
 	repo             *repositories.VisualPlanRepository
 	claudeAPIKey     string
 	visualServiceURL string
+	presigner        *R2Presigner
 }
 
 func NewVisualPlanService(
 	repo *repositories.VisualPlanRepository,
 	claudeAPIKey string,
 	visualServiceURL string,
+	presigner *R2Presigner,
 ) *VisualPlanService {
 	return &VisualPlanService{
 		repo:             repo,
 		claudeAPIKey:     claudeAPIKey,
 		visualServiceURL: strings.TrimRight(visualServiceURL, "/"),
+		presigner:        presigner,
+	}
+}
+
+// presignURLs replaces gif_url/mp4_url with fresh presigned URLs derived from
+// the stored r2_key_gif/r2_key_mp4 — stored URLs may be stale/expired, and
+// this is a no-op when R2 isn't configured (presigner is nil).
+func (s *VisualPlanService) presignURLs(ctx context.Context, plan *models.VisualPlan) {
+	if s.presigner == nil {
+		return
+	}
+	if url, err := s.presigner.PresignGetURL(ctx, plan.R2KeyGif); err == nil {
+		plan.GifURL = url
+	}
+	if url, err := s.presigner.PresignGetURL(ctx, plan.R2KeyMp4); err == nil {
+		plan.Mp4URL = url
 	}
 }
 
@@ -240,15 +258,28 @@ func (s *VisualPlanService) Generate(ctx context.Context, userID, promptText str
 	if err := s.repo.Create(ctx, record); err != nil {
 		return nil, fmt.Errorf("save to DB failed: %w", err)
 	}
+	s.presignURLs(ctx, record)
 	return record, nil
 }
 
 func (s *VisualPlanService) List(ctx context.Context, userID string) ([]models.VisualPlan, error) {
-	return s.repo.ListByUser(ctx, userID)
+	plans, err := s.repo.ListByUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range plans {
+		s.presignURLs(ctx, &plans[i])
+	}
+	return plans, nil
 }
 
 func (s *VisualPlanService) GetByID(ctx context.Context, id string) (*models.VisualPlan, error) {
-	return s.repo.GetByID(ctx, id)
+	plan, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	s.presignURLs(ctx, plan)
+	return plan, nil
 }
 
 func (s *VisualPlanService) Delete(ctx context.Context, id, userID string) error {
