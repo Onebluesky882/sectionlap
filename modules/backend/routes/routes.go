@@ -19,6 +19,7 @@ func Register(
 	studentProfileCtrl *controllers.StudentProfileController,
 	adminCtrl *controllers.AdminController,
 	supervisorCtrl *controllers.SupervisorController,
+	visualPlanCtrl *controllers.VisualPlanController,
 	authMw *middlewares.AuthMiddleware,
 ) {
 	api := app.Group("/api")
@@ -84,4 +85,11 @@ func Register(
 	sv.Put("/:id", supervisorCtrl.UpdateSection)
 	sv.Patch("/:id", supervisorCtrl.UpdateSection)
 	sv.Delete("/:id", supervisorCtrl.DeleteSection)
+
+	// Visual Plans — AI-generated animated flowcharts
+	vp := api.Group("/visual-plans")
+	vp.Post("/", authMw.Require(), visualPlanCtrl.Generate)
+	vp.Get("/", authMw.Require(), visualPlanCtrl.List)
+	vp.Get("/:id", visualPlanCtrl.GetByID)
+	vp.Delete("/:id", authMw.Require(), visualPlanCtrl.Delete)
 }

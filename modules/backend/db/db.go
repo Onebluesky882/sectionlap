@@ -44,6 +44,9 @@ func Migrate(db *bun.DB) error {
 	if _, err := db.NewCreateTable().Model((*models.StudentProfile)(nil)).IfNotExists().Exec(ctx); err != nil {
 		return err
 	}
+	if _, err := db.NewCreateTable().Model((*models.VisualPlan)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
 
 	// Additive migrations for new columns
 	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'approved'`)

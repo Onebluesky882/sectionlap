@@ -379,6 +379,102 @@ Breakdown ของ features ที่ Dev วางแผนไว้ใน Pla
 
 ⸻
 
+## VISUAL FEATURES
+
+⸻
+
+### VIS1 — AI Visual Plan Generator (FlowLoop GIF/MP4)
+> ผู้ใช้ป้อนแผนการเรียน → AI วิเคราะห์ → สร้าง animated flowchart → เก็บใน R2 → embed link
+
+**Use Case:**
+นักเรียน, bootcamp learner, self-learner ต้องการ visualize แผนการเรียนและ share progress
+ครูใช้แนบใน section description เพื่อแสดง learning path แก่นักเรียน
+
+**Flow:**
+```
+User input (text plan)
+      ↓
+Go Backend → Claude API
+  (parse + structure: steps / milestones / timeline)
+      ↓
+Go Backend → Python Visual Service
+  (POST /generate with structured JSON)
+      ↓
+Python: Pillow วาด frames (dark theme, custom font, 2x supersample)
+Python: ffmpeg compile → .gif + .mp4
+Python: upload → Cloudflare R2
+      ↓
+Go Backend: save visual_plan record (user_id, title, r2_key, gif_url, mp4_url)
+      ↓
+Response: { id, gifUrl, mp4Url, embedUrl }
+```
+
+**สิ่งที่ต้องทำ:**
+
+_New Module — `modules/visual-plan-service/` (Python FastAPI)_
+* `POST /generate` — รับ structured JSON → วาด frames → ffmpeg → upload R2 → return URLs
+* Frame renderer: Pillow + ImageFont (dark theme `#1A2332`, teal `#6AA098`)
+* 2x supersampling (วาดที่ 1800×640 → resize ลง 900×320 เพื่อ anti-alias)
+* ffmpeg: `framerate 12`, libx264, yuv420p → `.mp4`; palettegen → `.gif`
+* R2 upload via boto3 (S3-compatible endpoint)
+* `GET /health` — health check สำหรับ Go backend
+
+_Backend (Go) — new components_
+* `models/visual_plan.go` — `visual_plans` table: `id, user_id, title, prompt_text, structured_json, gif_url, mp4_url, r2_key, created_at`
+* `repositories/visual_plan_repo.go` — Create / ListByUser / GetByID / Delete
+* `services/visual_plan_service.go` — orchestrate: Claude call → Python service call → DB save
+* `controllers/visual_plan_controller.go` — HTTP handlers
+* Routes:
+  * `POST   /api/visual-plans`      — generate (auth required)
+  * `GET    /api/visual-plans`      — list own plans (auth required)
+  * `GET    /api/visual-plans/:id`  — get one (public หรือ owner)
+  * `DELETE /api/visual-plans/:id`  — delete own (auth required)
+* Config env vars: `CLAUDE_API_KEY`, `VISUAL_SERVICE_URL`, `R2_BUCKET`, `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_PUBLIC_BASE_URL`
+
+_Website (Next.js) — new pages_
+* `/visual-plan` — input text plan → call `POST /api/visual-plans` → preview GIF → copy embed link
+* `/visual-plan/[id]` — public page แสดง plan + download buttons (GIF / MP4)
+* Component: `<VisualPlanEmbed url={gifUrl} />` — `<img>` tag สำหรับ embed ใน section description
+* Zustand store: `useVisualPlanStore` — list of own plans
+
+_R2 Storage Layout_
+```
+bucket: sectionlap-media
+  visual-plans/
+    {user_id}/
+      {plan_id}.gif
+      {plan_id}.mp4
+```
+Public URL: `https://media.sectionlap.com/visual-plans/{user_id}/{plan_id}.gif`
+Embed snippet ที่ user copy ได้:
+```html
+<img src="https://media.sectionlap.com/visual-plans/{user_id}/{plan_id}.gif" />
+```
+
+_Claude Prompt Contract_
+Input: raw text plan
+Output JSON:
+```json
+{
+  "title": "string",
+  "steps": [
+    { "label": "string", "sublabel": "string", "milestone": true/false, "durationDays": 7 }
+  ],
+  "totalDays": 30
+}
+```
+
+**Dependency:**
+* Stage 6a (auth + user_id)
+* Backend AI Gateway (shared pattern จาก VIS1)
+* Cloudflare R2 bucket (ต้องสร้าง + CORS config)
+* Python 3.11+ + Pillow + ffmpeg (ติดตั้งใน Docker)
+
+**ระดับ:** Hard
+**Priority:** HIGH — differentiator ที่ชัด, share บน social ได้, ใช้ร่วมกับ Teacher features
+
+⸻
+
 ## สรุป Priority และ Sequence แนะนำ
 
 ### Phase A — หลัง Stage 6a เสร็จ (Foundation)
@@ -392,26 +488,27 @@ Breakdown ของ features ที่ Dev วางแผนไว้ใน Pla
 5. **S4** AI Expand Example (ต่อยอด Stage 4b)
 6. **S1** Remark + Private Chat
 7. **S3** Private AI Tutor
+8. **VIS1** AI Visual Plan Generator (R2 + embed)
 
 ### Phase C — Live Class AI
-8. **T5** AI Quiz Generator
-9. **S8** AI Question Merge
-10. **SYS4** Public Q&A Remark List
-11. **S2** Public Chat + Auto Questions
+9. **T5** AI Quiz Generator
+10. **S8** AI Question Merge
+11. **SYS4** Public Q&A Remark List
+12. **S2** Public Chat + Auto Questions
 
 ### Phase D — Advanced
-12. **T2** Lesson Scope Checker
-13. **S5** Personalized Roadmap
-14. **S6** AI Auto Notes
-15. **SYS2** AI Reports
-16. **SYS3** Invite by Email
-17. **SYS5** Class Participant Email
+13. **T2** Lesson Scope Checker
+14. **S5** Personalized Roadmap
+15. **S6** AI Auto Notes
+16. **SYS2** AI Reports
+17. **SYS3** Invite by Email
+18. **SYS5** Class Participant Email
 
 ### Phase E — Infra Heavy
-18. **T4** AI Demo Project Builder
-19. **SYS6** Portfolio/Sandbox
+19. **T4** AI Demo Project Builder
+20. **SYS6** Portfolio/Sandbox
 
 ⸻
 
-ทั้งหมด: 19 features
-Phase A–C (MVP AI): 11 features
+ทั้งหมด: 20 features
+Phase A–C (MVP AI): 12 features

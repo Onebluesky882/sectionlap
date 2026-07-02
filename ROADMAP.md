@@ -4,7 +4,7 @@ Status: ACTIVE
 
 Owner: CONDUCTOR
 
-Last Updated: 2026-06-18 (Stage 7 website complete — all pipeline stages COMPLETE)
+Last Updated: 2026-06-29 (Stage 9 Visual Plan Generator added — PLANNING)
 
 ⸻
 
@@ -64,6 +64,22 @@ Success Criteria:
 * [x] Teachers can post and manage individual sections
 * [x] Students can browse, book, and pay per section (mock logic)
 * [x] Real payment + persistence via backend (Stage 6a)
+
+⸻
+
+Goal 3 — AI-Powered Learning Visualization
+
+Description:
+
+Enable teachers and students to generate animated flowcharts from text-based
+learning plans. The output (GIF/MP4) is stored on Cloudflare R2 and can be
+embedded anywhere — section descriptions, social media, personal portfolios.
+
+Success Criteria:
+
+* [ ] User submits text plan → Claude structures it → Python generates GIF/MP4
+* [ ] Files stored on Cloudflare R2 with stable public URLs
+* [ ] Embed link copyable and renderable via `<img>` tag (Stage 9)
 
 ⸻
 
@@ -164,9 +180,9 @@ Done
 * [x] Stage 5 — Expo App (Student / Teacher)
 * [x] Stage 6a — Backend Core (API + DB + Auth)
 * [x] Stage 6b — Wails Backend Integration
-
 * [x] Stage 6c — Expo Backend Integration
 * [x] Stage 7 — Website (Next.js + Cloudflare)
+* [x] Stage 8 — Role-Based Access Control (admin/supervisor/dev)
 
 In Progress
 
@@ -174,7 +190,7 @@ In Progress
 
 Next Up
 
-* (none)
+* [ ] Stage 9 — AI Visual Plan Generator (FlowLoop GIF/MP4 + R2)
 
 
 
@@ -189,6 +205,7 @@ M-003	Mobile App (Expo)	Goal 2 / Objective 2	COMPLETE
 M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	COMPLETE
 M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	COMPLETE
 M-006	Website (Next.js + Cloudflare)	Goal 1	COMPLETE
+M-007	AI Visual Plan Generator (FlowLoop + R2)	Goal 3	PLANNING
 
 Status Values:
 
@@ -210,6 +227,7 @@ The project will be considered successful when:
 * [x] Mobile client wired to real backend with no mock logic remaining (Stage 6c)
 * [x] All pipeline stages COMPLETE on wansing branch (merge to main pending)
 * [x] Website live on Cloudflare Workers (Stage 7)
+* [ ] Visual Plan Generator: text → GIF/MP4 → R2 embed link live (Stage 9)
 
 ⸻
 

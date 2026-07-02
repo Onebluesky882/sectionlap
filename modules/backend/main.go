@@ -112,6 +112,10 @@ func main() {
 	studentProfileCtrl := controllers.NewStudentProfileController(studentProfileRepo)
 	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, db)
 
+	visualPlanRepo := repositories.NewVisualPlanRepository(db)
+	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.ClaudeAPIKey, cfg.VisualServiceURL)
+	visualPlanCtrl := controllers.NewVisualPlanController(visualPlanSvc)
+
 	authMw := middlewares.NewAuthMiddleware(
 		coreServices.SessionService,
 		coreServices.TokenService,
@@ -121,7 +125,7 @@ func main() {
 
 	app := fiber.New(fiber.Config{AppName: "SectionLap Backend"})
 
-	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, authMw)
+	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, visualPlanCtrl, authMw)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("SectionLap backend listening on %s", addr)
