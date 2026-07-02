@@ -20,7 +20,7 @@ nano .env
 psql -U postgres -c "CREATE DATABASE sectionlap;"
 
 # 4. Run the server (runs migrations automatically on startup)
-go run ./cmd/server/
+go run .
 ```
 
 ## Environment Variables
@@ -146,6 +146,6 @@ go test ./... -v
 ## Build
 
 ```bash
-go build -o backend ./cmd/server/
+go build -o backend .
 ./backend
 ```
