@@ -19,6 +19,20 @@
 | 8 | Role-Based Access Control (admin/supervisor/dev) | COMPLETE |
 | 9 | AI Visual Plan Generator (FlowLoop GIF/MP4 + R2) | IN_PROGRESS |
 
+**Incident — desktop-app frontend broken since 2026-06-18:** The merge commit
+`ce056f7` ("merge dev into main (resolve conflicts)") left literal
+`<<<<<<< HEAD` / `=======` / `>>>>>>> wansing` conflict markers committed in
+18 files under `modules/desktop-app/frontend/` (including `package.json`,
+`App.tsx`, `tsconfig.json`, `vite.config.ts`) plus `wails.json` itself —
+undetected for ~2 weeks since nobody ran `wails dev` or a frontend build in
+that window. Fixed 2026-07-03: resolved every conflict to the `wansing` side
+(verified as a strict superset of `HEAD` — auth/role/capacity fields, Tailwind
+v4, per-user booking filtering that `HEAD` was missing), removed the stray
+`package-lock.json`/`package.json.md5` (project uses pnpm here). Verified via
+`tsc --noEmit`, `pnpm run build`, and `go build ./...`, all clean. This does
+not change any Stage's acceptance criteria — it restores the state Stage 1/2b/
+3/4b were already supposed to be in.
+
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
 (2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to wansing.

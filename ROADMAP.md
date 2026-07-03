@@ -4,7 +4,7 @@ Status: ACTIVE
 
 Owner: CONDUCTOR
 
-Last Updated: 2026-06-29 (Stage 9 Visual Plan Generator added — PLANNING)
+Last Updated: 2026-07-03 (Stage 9 in progress + end-to-end verified; desktop-app build fixed — see PIPELINE.md)
 
 ⸻
 
@@ -186,11 +186,11 @@ Done
 
 In Progress
 
-* (none)
+* [ ] Stage 9 — AI Visual Plan Generator (FlowLoop GIF/MP4 + R2) — core flow verified end-to-end (Claude parse, GIF/MP4 render, R2 upload, presigned embed link); website pages + Delete/List routes not yet exercised
 
 Next Up
 
-* [ ] Stage 9 — AI Visual Plan Generator (FlowLoop GIF/MP4 + R2)
+* (none)
 
 
 
@@ -205,7 +205,7 @@ M-003	Mobile App (Expo)	Goal 2 / Objective 2	COMPLETE
 M-004	Real Backend (API + DB + Auth)	Goal 1 / Objective 2	COMPLETE
 M-005	Full Backend Integration (Desktop + Mobile)	Objective 2	COMPLETE
 M-006	Website (Next.js + Cloudflare)	Goal 1	COMPLETE
-M-007	AI Visual Plan Generator (FlowLoop + R2)	Goal 3	PLANNING
+M-007	AI Visual Plan Generator (FlowLoop + R2)	Goal 3	IN_PROGRESS
 
 Status Values:
 
