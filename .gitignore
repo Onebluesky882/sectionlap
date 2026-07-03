@@ -15,3 +15,10 @@
 # Environment
 .env
 .env.local
+
+# Claude Code local/session-specific settings (contains personal permission
+# allowlists tied to this session — not a team convention to share)
+.claude/settings.local.json
+
+# Wrangler local cache
+.wrangler/
