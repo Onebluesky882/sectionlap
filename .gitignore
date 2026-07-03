@@ -16,9 +16,9 @@
 .env
 .env.local
 
-# Claude Code local/session-specific settings (contains personal permission
-# allowlists tied to this session — not a team convention to share)
-.claude/settings.local.json
+# Claude Code local/session-specific config (personal permissions, hooks
+# copied from an unrelated template — not a team convention to share)
+.claude/*
 
 # Wrangler local cache
 .wrangler/
