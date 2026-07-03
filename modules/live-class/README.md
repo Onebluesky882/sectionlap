@@ -91,8 +91,6 @@ http://localhost:8000/section-123
   self-signed cert at `https://localhost:8443`, which will require the OS
   webview to trust/accept the certificate.
 
-<<<<<<< HEAD
-=======
 ## Live Streaming with Jibri
 
 Jibri (Jitsi Broadcasting Infrastructure) captures the Jitsi conference and pushes an
@@ -171,7 +169,6 @@ docker compose restart jibri
 - Verify `JIBRI_XMPP_USER` / `JIBRI_XMPP_PASSWORD` match in `.env` and that Prosody is
   running (`docker compose ps prosody`).
 
->>>>>>> wansing
 ## Production Deployment
 
 This setup is local-only (docker-compose on localhost). Any production

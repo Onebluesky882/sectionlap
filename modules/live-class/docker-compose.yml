@@ -34,11 +34,8 @@ services:
       - XMPP_RECORDER_DOMAIN
       - XMPP_CROSS_DOMAIN
       - LOG_LEVEL
-<<<<<<< HEAD
-=======
       - JIBRI_XMPP_USER
       - JIBRI_XMPP_PASSWORD
->>>>>>> wansing
     networks:
       meet.jitsi:
         aliases:
@@ -136,8 +133,6 @@ services:
     networks:
       meet.jitsi:
 
-<<<<<<< HEAD
-=======
   jibri:
     image: jitsi/jibri:stable-9646
     container_name: jitsi-jibri
@@ -166,6 +161,5 @@ services:
     networks:
       meet.jitsi:
 
->>>>>>> wansing
 networks:
   meet.jitsi:

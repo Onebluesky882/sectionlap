@@ -45,22 +45,7 @@ full Conductor-side process.
 
 Gate Validation Rules (worker perspective)
 
-<<<<<<< HEAD
-1. Read gate-out/state-[N]-<domain>.md from the completed stage
-2. Validate all gate criteria (see Gate Validation Rules below)
-3. If REJECT: write rejection reason to rejection/state-[N]-<domain>.md; halt; do not advance
-4. If PASS: update PIPELINE.md — set Stage [N] Status = COMPLETE
-5. Write merge-approval/state-[N]-<domain>.md
-6. Wait for PR (feature/[domain]) to squash-merge into main
-7. After merge confirmed: update PIPELINE.md — set Stage [N+1] Status = IN PROGRESS
-8. Write tasks/state-[N+1]-<domain>.md
-
-Gate Validation Rules
-
-PASS only when ALL of the following are true:
-=======
 A stage PASSES when ALL are true:
->>>>>>> wansing
 
 * gate-out.md Status = PASS
 * gate-out.md Ready For Next Stage = YES
@@ -90,40 +75,8 @@ IN PROGRESS → COMPLETE  Gate-out PASS + PR squash-merged to main
 IN PROGRESS → BLOCKED   Gate-out FAIL or gate criteria not met
 BLOCKED → IN PROGRESS   Dev resolves issue; Conductor re-dispatches
 
-<<<<<<< HEAD
-PENDING → IN PROGRESS
-  Condition: prior stage Status = COMPLETE and PR merged to main
-  Action:    conductor writes tasks/state-[N]-<domain>.md
-  Exception: Stage 1 starts as IN PROGRESS immediately (no prior stage)
-
-IN PROGRESS → COMPLETE
-  Condition: gate-out.md Status = PASS and PR squash-merged to main
-  Action:    conductor writes merge-approval.md; updates PIPELINE.md
-
-IN PROGRESS → BLOCKED
-  Condition: gate-out.md Status = FAIL or any gate criteria not met
-  Action:    conductor writes rejection/state-[N]-<domain>.md; updates PIPELINE.md
-
-BLOCKED → IN PROGRESS
-  Condition: human resolves blocking issue and explicitly approves re-dispatch
-  Action:    conductor re-writes tasks/state-[N]-<domain>.md with updated context
-
-Immutability Rules
-
-COMPLETE stages are immutable.
-
-Once a stage is COMPLETE:
-* No agent may modify files in that stage's domain
-* No agent may re-open or re-run that stage
-* PIPELINE.md Status must remain COMPLETE
-
-If a bug is found in a completed stage:
-* Create a new stage entry in PIPELINE.md
-* Do not revert the COMPLETE status
-=======
 COMPLETE stages are immutable. No agent may modify a COMPLETE stage's
 domain files or revert its status. If a bug is found: create a new stage.
->>>>>>> wansing
 
 Gate Artifact → State Mapping
 
@@ -140,13 +93,7 @@ Conductor Output Formats
 See CONDUCTOR.md → "Dispatch Procedure" for the dispatch-in.md format
 (conductor writes, workers receive).
 
-<<<<<<< HEAD
-merge-approval/state-[N]-<domain>.md
-
-Format:
-=======
 merge-approval/state-[N]-<domain>.md format (conductor writes):
->>>>>>> wansing
 
 Stage: [N]
 Domain: [module/domain]
@@ -159,46 +106,6 @@ Ready to Merge: YES
 
 ⸻
 
-<<<<<<< HEAD
-Conductor Output — dispatch-in.md
-
-Only after merge-approval.md is confirmed merged, create:
-
-tasks/state-[N+1]-<domain>.md
-
-Format:
-
-Stage: [N+1]
-Domain: [module/domain]
-Status: ASSIGNED
-Model: claude-opus-4-8
-
-Workspace: branch from main (after stage-[N] merged)
-
-Context Files:
-- PROJECT.md
-- PIPELINE.md (Stage [N+1])
-- ARCHITECTURE.md
-- CONTRACTS.md
-- DECISIONS.md
-
-Task:
-[Clear description of what the agent must implement]
-
-Gate-In Verified: YES
-Prior Gate-Out: gate-out/state-[N]-<domain>.md  (N/A if this is Stage 1)
-Prior Merge: merge-approval/state-[N]-<domain>.md  (N/A if this is Stage 1)
-
-Constraints:
-- Branch from main only — do NOT branch from feature/[prior-domain]
-- STOP after assigned work is complete
-- Do NOT merge to dev/main directly
-- Create PR targeting main via feature/[domain]
-
-⸻
-
-=======
->>>>>>> wansing
 Required Reading
 
 See START_HERE.md → "Required Reading Order" for the full, authoritative
@@ -421,11 +328,6 @@ Stage Completion
 When work is complete, create:
 
 gate-out/state-[N]-<domain>.md
-<<<<<<< HEAD
-
-Replace [N] with your assigned stage number from dispatch-in.md.
-=======
->>>>>>> wansing
 
 Format:
 
