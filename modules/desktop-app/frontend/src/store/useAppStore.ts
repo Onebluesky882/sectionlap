@@ -1,17 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-<<<<<<< HEAD
-import type { BookingRecord, Section } from "../types";
-import { mockSections } from "../data/mockSections";
-
-interface AppStore {
-  sections: Section[];
-  bookings: BookingRecord[];
-  addSection: (section: Section) => void;
-  updateSection: (section: Section) => void;
-  createBooking: (sectionId: string) => void;
-  payBooking: (sectionId: string) => void;
-=======
 import type { BookingRecord, CreateBookingResult, Section, User, UserRole } from "../types";
 import { setToken, clearToken, setUserName, clearUserName } from "../lib/api";
 import * as authService from "../services/authService";
@@ -50,48 +38,10 @@ interface AppStore {
   failBooking: (bookingId: string) => Promise<void>;
   retryBooking: (bookingId: string) => Promise<void>;
   cancelBooking: (bookingId: string) => Promise<void>;
->>>>>>> wansing
 }
 
 export const useAppStore = create<AppStore>()(
   persist(
-<<<<<<< HEAD
-    (set) => ({
-      sections: mockSections,
-      bookings: [],
-
-      addSection: (section) =>
-        set((state) => ({ sections: [...state.sections, section] })),
-
-      updateSection: (section) =>
-        set((state) => ({
-          sections: state.sections.map((s) =>
-            s.id === section.id ? section : s
-          ),
-        })),
-
-      createBooking: (sectionId) =>
-        set((state) => {
-          if (state.bookings.some((b) => b.sectionId === sectionId)) {
-            return state;
-          }
-          return {
-            bookings: [
-              ...state.bookings,
-              { sectionId, status: "pending", bookedAt: new Date().toISOString() },
-            ],
-          };
-        }),
-
-      payBooking: (sectionId) =>
-        set((state) => ({
-          bookings: state.bookings.map((b) =>
-            b.sectionId === sectionId ? { ...b, status: "paid" } : b
-          ),
-        })),
-    }),
-    { name: "sectionlap-store" }
-=======
     (set, get) => ({
       sections: [],
       bookings: [],
@@ -252,6 +202,5 @@ export const useAppStore = create<AppStore>()(
       name: "sectionlap-auth",
       partialize: (state) => ({ token: state.token }),
     }
->>>>>>> wansing
   )
 );

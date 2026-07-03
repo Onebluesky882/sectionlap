@@ -4,7 +4,6 @@ export interface User {
   id: string;
   name: string;
   role: UserRole;
-  verified: boolean;
 }
 
 export interface Section {
@@ -13,16 +12,6 @@ export interface Section {
   description: string;
   price: number;
   teacher: string;
-<<<<<<< HEAD
-  category: string;
-  durationMinutes: number;
-}
-
-export interface BookingRecord {
-  sectionId: string;
-  status: "pending" | "paid";
-  bookedAt: string;
-=======
   teacherId: string;
   category: string;
   durationMinutes: number;
@@ -53,5 +42,4 @@ export interface Stroke {
   color: string;
   width: number;
   points: { x: number; y: number }[];
->>>>>>> wansing
 }

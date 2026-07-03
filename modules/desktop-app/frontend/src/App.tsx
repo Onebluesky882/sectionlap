@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-import { HashRouter, Route, Routes } from "react-router-dom";
-import "./App.css";
-import { Layout } from "./components/Layout";
-import { SectionListPage } from "./pages/SectionListPage";
-import { SectionDetailPage } from "./pages/SectionDetailPage";
-import { CheckoutPage } from "./pages/CheckoutPage";
-import { TeacherDashboardPage } from "./pages/TeacherDashboardPage";
-
-function App() {
-  return (
-    <HashRouter>
-      <Routes>
-=======
 import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
@@ -41,17 +27,10 @@ function App() {
       <ConfirmModal />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
->>>>>>> wansing
         <Route element={<Layout />}>
           <Route index element={<SectionListPage />} />
           <Route path="sections/:sectionId" element={<SectionDetailPage />} />
           <Route path="sections/:sectionId/checkout" element={<CheckoutPage />} />
-<<<<<<< HEAD
-          <Route path="dashboard" element={<TeacherDashboardPage />} />
-        </Route>
-      </Routes>
-    </HashRouter>
-=======
           <Route path="sections/:sectionId/live-class" element={<LiveClassPage />} />
           <Route path="dashboard" element={<TeacherDashboardPage />} />
           <Route path="my-enrollments" element={<MyEnrollmentsPage />} />
@@ -59,7 +38,6 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
->>>>>>> wansing
   );
 }
 

@@ -1,10 +1,5 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
-    "composite": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-=======
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -15,7 +10,6 @@
     "ignoreDeprecations": "6.0",
     "moduleResolution": "bundler",
     "module": "ESNext",
->>>>>>> wansing
     "allowSyntheticDefaultImports": true
   },
   "include": [
