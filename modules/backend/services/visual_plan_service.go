@@ -69,6 +69,19 @@ type structuredPlan struct {
 
 const claudeModel = "claude-haiku-4-5-20251001"
 
+// stripMarkdownFence removes a ```json / ``` wrapper Claude sometimes adds
+// despite being told to return raw JSON.
+func stripMarkdownFence(s string) string {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "```") {
+		return s
+	}
+	s = strings.TrimPrefix(s, "```json")
+	s = strings.TrimPrefix(s, "```")
+	s = strings.TrimSuffix(s, "```")
+	return strings.TrimSpace(s)
+}
+
 // mockParse builds a naive structured plan without calling Claude — used when
 // no CLAUDE_API_KEY is configured (e.g. local dev before an API subscription exists).
 func mockParse(promptText string) *structuredPlan {
@@ -169,7 +182,7 @@ Rules:
 	}
 
 	var plan structuredPlan
-	if err := json.Unmarshal([]byte(claudeResp.Content[0].Text), &plan); err != nil {
+	if err := json.Unmarshal([]byte(stripMarkdownFence(claudeResp.Content[0].Text)), &plan); err != nil {
 		return nil, fmt.Errorf("parse structured plan JSON: %w", err)
 	}
 	return &plan, nil
