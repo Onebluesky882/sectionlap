@@ -14,10 +14,15 @@ func NewVisualPlanController(svc *services.VisualPlanService) *VisualPlanControl
 	return &VisualPlanController{svc: svc}
 }
 
+// anonymousUserID is used for unauthenticated generations — no real account is
+// tied to these, so they never appear in anyone's List(), but the direct
+// GetByID link (already public) still works for viewing/downloading.
+const anonymousUserID = "anonymous"
+
 func (c *VisualPlanController) Generate(ctx fiber.Ctx) error {
-	userID, ok := ctx.Locals("userID").(string)
-	if !ok || userID == "" {
-		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "unauthorized"})
+	userID, _ := ctx.Locals("userID").(string)
+	if userID == "" {
+		userID = anonymousUserID
 	}
 
 	var body struct {

@@ -85,7 +85,10 @@ func main() {
 
 	// Services
 	sectionSvc := services.NewSectionService(sectionRepo)
-	bookingSvc := services.NewBookingService(bookingRepo, sectionRepo)
+	walletRepo := repositories.NewTeacherWalletRepository(db)
+	r2Presigner := services.NewR2Presigner(cfg.R2Endpoint, cfg.R2AccessKeyID, cfg.R2SecretAccessKey, cfg.R2Bucket)
+	slip2goClient := services.NewSlip2GoClient(cfg.Slip2GoAPIURL, cfg.Slip2GoSecret)
+	bookingSvc := services.NewBookingService(bookingRepo, sectionRepo, walletRepo, slip2goClient)
 	jitsiSvc := services.NewJitsiService(
 		cfg.JitsiAppID, cfg.JitsiAppSecret, cfg.JitsiDomain,
 		sectionRepo, bookingRepo,
@@ -113,9 +116,17 @@ func main() {
 	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, db)
 
 	visualPlanRepo := repositories.NewVisualPlanRepository(db)
-	r2Presigner := services.NewR2Presigner(cfg.R2Endpoint, cfg.R2AccessKeyID, cfg.R2SecretAccessKey, cfg.R2Bucket)
 	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.ClaudeAPIKey, cfg.VisualServiceURL, r2Presigner)
 	visualPlanCtrl := controllers.NewVisualPlanController(visualPlanSvc)
+
+	lessonRepo := repositories.NewLessonRepository(db)
+	lessonClipRepo := repositories.NewLessonClipRepository(db)
+	lessonSvc := services.NewLessonService(lessonRepo, lessonClipRepo, sectionRepo)
+	lessonClipSvc := services.NewLessonClipService(lessonClipRepo, lessonRepo, sectionRepo, r2Presigner)
+	lessonCtrl := controllers.NewLessonController(lessonSvc)
+	lessonClipCtrl := controllers.NewLessonClipController(lessonClipSvc)
+
+	walletCtrl := controllers.NewTeacherWalletController(walletRepo, sectionRepo, r2Presigner, slip2goClient)
 
 	authMw := middlewares.NewAuthMiddleware(
 		coreServices.SessionService,
@@ -126,7 +137,7 @@ func main() {
 
 	app := fiber.New(fiber.Config{AppName: "SectionLap Backend"})
 
-	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, visualPlanCtrl, authMw)
+	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, visualPlanCtrl, lessonCtrl, lessonClipCtrl, walletCtrl, authMw)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("SectionLap backend listening on %s", addr)

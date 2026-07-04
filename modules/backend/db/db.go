@@ -47,6 +47,15 @@ func Migrate(db *bun.DB) error {
 	if _, err := db.NewCreateTable().Model((*models.VisualPlan)(nil)).IfNotExists().Exec(ctx); err != nil {
 		return err
 	}
+	if _, err := db.NewCreateTable().Model((*models.Lesson)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
+	if _, err := db.NewCreateTable().Model((*models.LessonClip)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
+	if _, err := db.NewCreateTable().Model((*models.TeacherWallet)(nil)).IfNotExists().Exec(ctx); err != nil {
+		return err
+	}
 
 	// Additive migrations for new columns
 	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'approved'`)
@@ -54,6 +63,9 @@ func Migrate(db *bun.DB) error {
 	_, _ = db.ExecContext(ctx, `ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE`)
 	_, _ = db.ExecContext(ctx, `ALTER TABLE sections ADD COLUMN IF NOT EXISTS questions JSONB NOT NULL DEFAULT '[]'`)
 	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS answers JSONB NOT NULL DEFAULT '[]'`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS payment_slip_r2_key TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slip_verification_raw TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS declared_at TIMESTAMPTZ`)
 
 	// Drop old CASCADE constraints if they exist (replaced by RESTRICT below)
 	drops := []string{
@@ -76,6 +88,18 @@ func Migrate(db *bun.DB) error {
 		 FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE RESTRICT`,
 	}
 	for _, fk := range fks {
+		_, _ = db.ExecContext(ctx, fk) // ignored if constraint already exists
+	}
+
+	// Lessons/clips are owned content, not booking-style relations — CASCADE
+	// deletion is correct here (unlike the RESTRICT constraints above).
+	cascadeFks := []string{
+		`ALTER TABLE lessons ADD CONSTRAINT fk_lessons_section
+		 FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE`,
+		`ALTER TABLE lesson_clips ADD CONSTRAINT fk_lesson_clips_lesson
+		 FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE`,
+	}
+	for _, fk := range cascadeFks {
 		_, _ = db.ExecContext(ctx, fk) // ignored if constraint already exists
 	}
 

@@ -3,9 +3,13 @@ import { create } from "zustand";
 export type Booking = {
   id: string;
   sectionId: string;
-  date: string;
-  timeSlot: string;
-  status: "pending" | "confirmed" | "cancelled";
+  studentId: string;
+  status: "pending" | "paid" | "failed";
+  answers: string[];
+  bookedAt: string;
+  paidAt?: string;
+  paymentSlipR2Key?: string;
+  declaredAt?: string;
 };
 
 type BookingStore = {

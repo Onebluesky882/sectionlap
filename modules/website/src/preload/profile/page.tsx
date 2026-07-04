@@ -5,14 +5,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { useBookingStore } from "@/store/useBookingStore";
 
 const statusStyle: Record<string, string> = {
-  confirmed: "bg-[#EAF4F2] text-[#4D8078]",
-  cancelled:  "bg-red-50 text-red-500",
-  pending:    "bg-[#EBF2F7] text-[#4A7294]",
+  paid:    "bg-[#EAF4F2] text-[#4D8078]",
+  failed:  "bg-red-50 text-red-500",
+  pending: "bg-[#EBF2F7] text-[#4A7294]",
 };
 const statusLabel: Record<string, string> = {
-  confirmed: "ยืนยันแล้ว",
-  cancelled:  "ยกเลิก",
-  pending:    "รอดำเนินการ",
+  paid:    "ชำระเงินแล้ว",
+  failed:  "ล้มเหลว",
+  pending: "รอชำระเงิน",
 };
 
 export default function ProfilePreload() {
@@ -86,7 +86,9 @@ export default function ProfilePreload() {
               >
                 <div>
                   <p className="text-sm font-medium text-[#1A2332]">Section: {b.sectionId}</p>
-                  <p className="text-xs text-[#64748B] mt-0.5">{b.date} · {b.timeSlot}</p>
+                  <p className="text-xs text-[#64748B] mt-0.5">
+                    {new Date(b.bookedAt).toLocaleDateString("th-TH", { dateStyle: "medium" })}
+                  </p>
                 </div>
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyle[b.status] ?? "bg-gray-100 text-gray-500"}`}>
                   {statusLabel[b.status] ?? b.status}

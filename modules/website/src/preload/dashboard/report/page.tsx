@@ -46,9 +46,9 @@ const DEV_RECS = [
     tag: "backend",
   },
   {
-    priority: "HIGH",
-    title: "Payment Gateway Integration",
-    desc: "payBooking ปัจจุบันเปลี่ยน status เป็น paid โดยตรง — ต้อง integrate Stripe/Omise/PromptPay",
+    priority: "MED",
+    title: "Manual Payment Confirmation Fallback",
+    desc: "ตอนนี้ verify-slip ผ่าน Slip2Go อัตโนมัติเท่านั้น — ยังไม่มีทางให้ครู manual override ถ้า Slip2Go match ไม่ผ่านแต่จริงๆ จ่ายแล้ว",
     tag: "backend",
   },
   {
@@ -128,8 +128,8 @@ export default function ReportPreload() {
   const bookingStats = useMemo(() => ({
     total: bookings.length,
     pending: bookings.filter((b) => b.status === "pending").length,
-    confirmed: bookings.filter((b) => b.status === "confirmed").length,
-    cancelled: bookings.filter((b) => b.status === "cancelled").length,
+    paid: bookings.filter((b) => b.status === "paid").length,
+    failed: bookings.filter((b) => b.status === "failed").length,
   }), [bookings]);
 
   return (
@@ -169,9 +169,9 @@ export default function ReportPreload() {
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Bookings (session นี้)</h2>
           <div className="grid grid-cols-3 gap-3">
-            <StatCard label="รอดำเนินการ" value={bookingStats.pending} accent="bg-yellow-50" />
-            <StatCard label="ยืนยันแล้ว" value={bookingStats.confirmed} accent="bg-green-50" />
-            <StatCard label="ยกเลิก" value={bookingStats.cancelled} accent="bg-red-50" />
+            <StatCard label="รอชำระเงิน" value={bookingStats.pending} accent="bg-yellow-50" />
+            <StatCard label="ชำระแล้ว" value={bookingStats.paid} accent="bg-green-50" />
+            <StatCard label="ล้มเหลว" value={bookingStats.failed} accent="bg-red-50" />
           </div>
         </section>
       )}

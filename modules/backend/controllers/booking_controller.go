@@ -95,6 +95,33 @@ func (ctrl *BookingController) Retry(c fiber.Ctx) error {
 	return c.JSON(fiber.Map{"data": booking, "error": nil, "status": "success"})
 }
 
+type VerifySlipBody struct {
+	QrCode       string  `json:"qrCode"`
+	SlipImageKey *string `json:"slipImageKey,omitempty"`
+}
+
+func (ctrl *BookingController) VerifySlip(c fiber.Ctx) error {
+	userID := middlewares.GetUserID(c)
+	bookingID := c.Params("id")
+
+	var body VerifySlipBody
+	if err := c.Bind().JSON(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request body"})
+	}
+	if body.QrCode == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "qrCode is required"})
+	}
+
+	booking, err := ctrl.bookingService.VerifySlip(c.Context(), bookingID, userID, body.QrCode, body.SlipImageKey)
+	if err != nil {
+		if err.Error() == "forbidden" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "forbidden"})
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+	return c.JSON(fiber.Map{"data": booking, "error": nil, "status": "success"})
+}
+
 func (ctrl *BookingController) Cancel(c fiber.Ctx) error {
 	userID := middlewares.GetUserID(c)
 	bookingID := c.Params("id")

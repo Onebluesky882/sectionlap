@@ -18,6 +18,8 @@
 | 7 | Website (Next.js + Cloudflare) | COMPLETE |
 | 8 | Role-Based Access Control (admin/supervisor/dev) | COMPLETE |
 | 9 | AI Visual Plan Generator (FlowLoop GIF/MP4 + R2) | IN_PROGRESS |
+| 10 | Lessons/Topics + Video Clip Upload (Teacher Dashboard) | COMPLETE |
+| 11 | Teacher Wallet (QR + Bank Account) + Slip2Go Auto-Verification | IN_PROGRESS |
 
 **Incident — desktop-app frontend broken since 2026-06-18:** The merge commit
 `ce056f7` ("merge dev into main (resolve conflicts)") left literal
@@ -453,6 +455,129 @@ User can embed the GIF in any section description or share on social media.
 **Dispatch-In:** `tasks/stage-09-visual-plan.md`
 
 **Gate-Out:** All acceptance criteria checked, services start, end-to-end test (text → GIF download) passes.
+
+⸻
+
+### Stage 10 — Lessons/Topics + Video Clip Upload (Teacher Dashboard)
+
+**Domain:** modules/backend, modules/website
+**Agent:** [assigned agent]
+**Status:** `COMPLETE`
+
+**Background:**
+Teachers previously created a flat `Section` with no internal structure. This stage adds ordered
+`Lesson` (topic) sub-entities under a section, each holding one or more video `LessonClip`s, so a
+teacher can break a section into a syllabus with per-topic video content.
+
+**Key Design Decisions:**
+- Reused the existing chunked video-upload pipeline built for `classId`-scoped video
+  (`useVideoFileUpload`/`VideoFileUploader`/`upload-ticket`/`r2Presign.ts`) as-is — a synthetic
+  `lesson-{lessonId}-clip-{uuid}` id is passed in as `classId`, so no changes were needed to that
+  pipeline at all.
+- `lessons`/`lesson_clips` use `ON DELETE CASCADE` from `sections`/`lessons` respectively (owned
+  content, unlike the `RESTRICT` used for bookings).
+- No R2 object cleanup on delete — matches the existing `VisualPlanService.Delete` precedent
+  (DB-only delete).
+
+**Acceptance Criteria:**
+- [x] Backend: `lessons`/`lesson_clips` tables, full CRUD + reorder + clip registration + presigned
+      playback endpoint, all teacher-ownership gated
+- [x] Website: `LessonList` component wired into `/dashboard/sections/[id]/edit`, reusing
+      `VideoFileUploader` unchanged
+- [x] `go build ./...` / `go test ./...` clean
+- [x] `pnpm build` clean (strict TypeScript, all routes registered)
+- [x] End-to-end verified against local Postgres: create/list/reorder/delete lesson, register/delete
+      clip, playback presign, ownership 403s, reorder IDOR guard — all passed
+- [x] Found + fixed a real bug during verification: empty `clips` serialized as `null` instead of
+      `[]`, which would have crashed the frontend's `.map()` — fixed in `lesson_service.go`
+
+**Gate-In Requirements:**
+- Stage 6a merged (backend API/DB pattern established)
+- Stage 7 merged (website 3-layer page pattern + upload pipeline exist)
+
+**Gate-Out:** All acceptance criteria checked, `go build`/`go test`/`pnpm build` green, manual
+end-to-end curl walkthrough passed.
+
+⸻
+
+### Stage 11 — Teacher Wallet (QR + Bank Account) + Slip2Go Auto-Verification
+
+**Domain:** modules/backend, modules/website
+**Agent:** [assigned agent]
+**Status:** `IN_PROGRESS`
+
+**Tech Stack:**
+- Slip2Go (`https://connect.slip2go.com`) — Thai bank-slip verification API, `SLIP_2GO_SECRET`
+  already present in `modules/backend/.env`
+- `jsqr` (website) — client-side QR decode from an uploaded slip photo, no server round-trip of
+  raw image bytes needed for decoding
+
+**Background:**
+First slice of a larger "how to earn / teacher wallet" request. Exploration surfaced that the
+booking→payment flow was fully mocked with a real gap: `Booking.Pay()` was a bare state flip with
+no gateway, and **the frontend never called it at all** — students could book but never reach
+`paid`, so `bookingRepo.IsEnrolled` (which gates Jitsi access) could never pass through the real
+flow. This stage closes that gap using Slip2Go instead of a manual "teacher confirms" step: student
+uploads a photo of their transfer slip → browser decodes its QR client-side → backend sends it to
+Slip2Go with `checkCondition` (receiver name/account from the teacher's wallet + exact section
+price) → Slip2Go itself confirms the match → booking flips straight to `paid`.
+
+**Key Design Decisions:**
+- New `TeacherWallet` entity, not bolted onto `TeacherProfile` — `TeacherProfile.Submit()` does a
+  full-replace `Upsert` from 4 hardcoded fields; adding QR/bank fields there would silently wipe the
+  QR whenever a teacher edits verification info (or vice versa).
+- No manual "teacher confirms payment" step/dashboard — Slip2Go decode + our own matching (see
+  below) replaces that for this slice. A failed match just leaves the booking `pending` for retry;
+  no override/dispute UI built yet (see Manual Payment Confirmation Fallback dev-rec on the Report
+  page).
+- **Matching is done in our own backend code, not via Slip2Go's `checkCondition`** — live calibration
+  (real PromptPay transfer + real slip) found `checkCondition.checkReceiver` fails to match a
+  PromptPay-proxy receiver (`bank.account` is `null` for those; Slip2Go only exposes the masked
+  proxy number) and Slip2Go truncates receiver names, so exact name matching isn't reliable either.
+  `slip2go_client.go`'s `GetSlipInfo` now just decodes the slip (no `checkCondition` sent); matching
+  is `SlipInfo.MatchesWallet` — **last-4-digits of the account/PromptPay number + exact transferred
+  amount only**. Receiver *name* is deliberately not compared: Slip2Go's name is Thai-title-prefixed
+  and truncated, and teachers can be foreign nationals with English names, so name isn't a reliable
+  match signal — last-4 + amount is what actually identifies "this transfer, to this teacher, for
+  this course."
+- Added `POST /api/teacher/wallet/test-slip` — a teacher uploads any slip where they were the
+  receiver; the backend saves the exact name/last-4 Slip2Go reports (sidesteps mismatches from
+  manually-typed names/spacing/titles). The name is still stored and shown to students during
+  checkout for their own visual double-check, just not used by the automated matcher.
+
+**Acceptance Criteria:**
+- [x] Backend: `TeacherWallet` model/repo/controller (Upsert + Get, mirrors `TeacherProfile`) +
+      `POST /api/teacher/wallet/test-slip` calibration endpoint
+- [x] Backend: `Slip2GoClient.GetSlipInfo` — decodes a slip QR, extracts receiver name/last-4/amount/
+      transRef; `SlipInfo.MatchesWallet` does last-4 + amount matching in Go
+- [x] Backend: `Booking.VerifySlip` service method — ownership check, loads teacher's wallet +
+      section price, decodes + matches, flips to `paid` on match, stores raw response either way
+- [x] Routes: `PUT/GET /api/teacher/wallet`, `POST /api/teacher/wallet/test-slip`,
+      `GET /api/sections/:id/wallet` (public), `POST /api/bookings/:id/verify-slip`
+- [x] `go build ./...` / `go test ./...` clean
+- [x] Website: `/dashboard/wallet` page (QR upload via existing `ImageUpload`, bank fields)
+- [x] Website: section detail page shows the teacher's QR/bank info once a pending booking exists,
+      with a slip-upload button that decodes + auto-submits for verification
+- [x] Migrated `useBookingStore`'s `Booking` type off Stage-1 mock shape
+      (`pending/confirmed/cancelled` with `date`/`timeSlot`) to the real backend enum
+      (`pending/paid/failed`) — fixes `/profile` and `/dashboard/report` status displays that were
+      silently always showing zero for "confirmed"/"cancelled" since those values never occurred in
+      real data
+- [x] `pnpm build` clean (strict TypeScript, all new routes registered)
+- [x] **Live Slip2Go calibration** — real PromptPay transfer + real slip QR decoded and run through
+      the full flow: teacher `test-slip` → wallet saved with real name/last-4 → student books a
+      1-baht section → `verify-slip` with the real QR → booking flips `pending` → `paid` →
+      `GET /api/sections/:id/jitsi-token` succeeds. First time this project's booking→payment→
+      enrollment gate has worked end-to-end with real data.
+- [ ] "How to Earn" marketing page — deferred, separate follow-up not part of this slice
+
+**Gate-In Requirements:**
+- Stage 6a merged (backend API/DB pattern established)
+- Stage 7 merged (website 3-layer page pattern, `ImageUpload`/`useUpload` exist)
+- `SLIP_2GO_SECRET` present in `modules/backend/.env` — done, package active
+
+**Gate-Out:** All acceptance criteria checked including the live calibration call; full booking →
+QR display → slip upload → auto-verify → Jitsi-access-unlocked path exercised end-to-end.
 
 ⸻
 

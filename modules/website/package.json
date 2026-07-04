@@ -18,6 +18,7 @@
 		"@aws-sdk/client-s3": "^3.1071.0",
 		"@aws-sdk/s3-request-presigner": "^3.1071.0",
 		"@opennextjs/cloudflare": "^1.19.9",
+		"jsqr": "^1.4.0",
 		"mp4box": "^2.3.0",
 		"next": "16.2.6",
 		"react": "^19.1.7",

@@ -2,6 +2,7 @@ package services_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -110,6 +111,22 @@ func (m *mockBookingRepo) IsEnrolled(ctx context.Context, sectionID, studentID s
 	return false, nil
 }
 
+type mockTeacherWalletRepo struct {
+	wallets map[string]*models.TeacherWallet
+}
+
+func (m *mockTeacherWalletRepo) Upsert(ctx context.Context, wallet *models.TeacherWallet) error {
+	m.wallets[wallet.TeacherID] = wallet
+	return nil
+}
+
+func (m *mockTeacherWalletRepo) GetByTeacherID(ctx context.Context, teacherID string) (*models.TeacherWallet, error) {
+	if w, ok := m.wallets[teacherID]; ok {
+		return w, nil
+	}
+	return nil, fmt.Errorf("wallet not found")
+}
+
 func newTestService() (services.BookingService, *mockBookingRepo, *mockSectionRepo) {
 	sectionRepo := &mockSectionRepo{
 		sections: map[string]*models.Section{
@@ -120,7 +137,8 @@ func newTestService() (services.BookingService, *mockBookingRepo, *mockSectionRe
 		},
 	}
 	bookingRepo := &mockBookingRepo{bookings: map[string]*models.Booking{}}
-	svc := services.NewBookingService(bookingRepo, sectionRepo)
+	walletRepo := &mockTeacherWalletRepo{wallets: map[string]*models.TeacherWallet{}}
+	svc := services.NewBookingService(bookingRepo, sectionRepo, walletRepo, nil)
 	return svc, bookingRepo, sectionRepo
 }
 

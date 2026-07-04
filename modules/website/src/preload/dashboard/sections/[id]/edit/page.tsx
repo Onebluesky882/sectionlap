@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SectionForm from "@/components/SectionForm";
+import LessonList from "@/components/LessonList";
 import { useSection } from "@/hooks/useSection";
 import { useSectionMutations } from "@/hooks/useSectionMutations";
 
@@ -62,6 +63,8 @@ export default function EditSectionPreload({ id }: { id: string }) {
         error={error}
         submitLabel="บันทึกการแก้ไข"
       />
+
+      <LessonList sectionId={id} />
     </main>
   );
 }

@@ -81,6 +81,32 @@ func (m *AuthMiddleware) RequireRole(role models.UserRoleType) fiber.Handler {
 	}
 }
 
+// OptionalAuth populates CtxUserID/CtxUserRole when a valid session is present,
+// but always calls Next() — anonymous requests are allowed through with no locals set.
+func (m *AuthMiddleware) OptionalAuth() fiber.Handler {
+	return func(c fiber.Ctx) error {
+		token := m.extractToken(c)
+		if token == "" {
+			return c.Next()
+		}
+
+		hashed := m.tokenService.Hash(token)
+		session, err := m.sessionService.GetByToken(c.Context(), hashed)
+		if err != nil || session == nil {
+			return c.Next()
+		}
+
+		userRole, err := m.userRoleRepo.GetByUserID(c.Context(), session.UserID)
+		if err != nil {
+			return c.Next()
+		}
+
+		c.Locals(string(CtxUserID), session.UserID)
+		c.Locals(string(CtxUserRole), userRole.Role)
+		return c.Next()
+	}
+}
+
 // RequireAnyRole passes if the authenticated user holds at least one of the given roles.
 func (m *AuthMiddleware) RequireAnyRole(roles ...models.UserRoleType) fiber.Handler {
 	set := make(map[models.UserRoleType]struct{}, len(roles))

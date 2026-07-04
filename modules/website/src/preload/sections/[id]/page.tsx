@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSection } from "@/hooks/useSection";
 import { useBooking } from "@/hooks/useBooking";
 import { useBookingStore } from "@/store/useBookingStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useSectionWallet } from "@/hooks/useWallet";
+import { useSlipVerification } from "@/hooks/useSlipVerification";
 import { useRouter } from "next/navigation";
 
 export default function SectionDetailPreload({ id }: { id: string }) {
@@ -17,8 +19,12 @@ export default function SectionDetailPreload({ id }: { id: string }) {
 
   const [showModal, setShowModal] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const isEnrolled = bookings.some((b) => b.sectionId === id && b.status === "confirmed");
+  const myBooking = bookings.find((b) => b.sectionId === id);
+  const isEnrolled = myBooking?.status === "paid";
+  const { wallet } = useSectionWallet(id);
+  const slip = useSlipVerification(myBooking?.id ?? "");
 
   function openBooking() {
     if (!section) return;
@@ -33,7 +39,6 @@ export default function SectionDetailPreload({ id }: { id: string }) {
   async function handleBook(ans: string[]) {
     await submitBooking(id, ans);
     setShowModal(false);
-    router.push("/profile");
   }
 
   if (isLoading) {
@@ -125,6 +130,10 @@ export default function SectionDetailPreload({ id }: { id: string }) {
             >
               เข้าห้องเรียน
             </Link>
+          ) : myBooking ? (
+            <span className="rounded-full bg-[#EBF2F7] text-[#4A7294] px-6 py-3 text-sm font-semibold">
+              รอชำระเงิน
+            </span>
           ) : (
             <button
               disabled={booking}
@@ -136,6 +145,67 @@ export default function SectionDetailPreload({ id }: { id: string }) {
           )}
         </div>
       </div>
+
+      {/* Payment step — shown once a pending booking exists */}
+      {myBooking && myBooking.status === "pending" && (
+        <div className="rounded-2xl border border-[#DDE8E6] p-6 space-y-5">
+          <div>
+            <h2 className="text-lg font-bold text-[#1A2332]">ชำระเงิน</h2>
+            <p className="text-sm text-[#64748B] mt-1">
+              โอนเงินตรงเข้าบัญชีผู้สอนตาม QR/เลขบัญชีด้านล่าง แล้วอัปโหลดรูปสลิปเพื่อยืนยันอัตโนมัติ
+            </p>
+          </div>
+
+          {wallet ? (
+            <div className="flex items-start gap-6 flex-wrap">
+              {wallet.qrCodeUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={wallet.qrCodeUrl}
+                  alt="QR code รับเงิน"
+                  className="w-40 h-40 object-contain rounded-xl border border-[#DDE8E6]"
+                />
+              )}
+              <div className="text-sm space-y-1">
+                <p className="text-[#64748B]">ชื่อบัญชี: <span className="font-medium text-[#1A2332]">{wallet.bankAccountNameTh}</span></p>
+                <p className="text-[#64748B]">เลขบัญชี/พร้อมเพย์: <span className="font-medium text-[#1A2332]">{wallet.bankAccountNumber}</span></p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-red-500">ครูยังไม่ได้ตั้งค่าช่องทางรับเงิน</p>
+          )}
+
+          <div className="space-y-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) slip.verify(file);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={slip.phase === "decoding" || slip.phase === "verifying"}
+              className="rounded-full bg-[#6AA098] text-white px-6 py-2.5 text-sm font-semibold disabled:opacity-40 hover:bg-[#4D8078] transition-colors"
+            >
+              {slip.phase === "decoding" ? "กำลังอ่าน QR จากสลิป..."
+                : slip.phase === "verifying" ? "กำลังตรวจสอบ..."
+                : "อัปโหลดสลิปโอนเงิน"}
+            </button>
+
+            {slip.phase === "done" && (
+              <p className="text-sm text-[#6AA098]">✓ ยืนยันการชำระเงินสำเร็จ — รีเฟรชหน้าเพื่อเข้าห้องเรียน</p>
+            )}
+            {slip.phase === "error" && (
+              <p className="text-sm text-red-500">{slip.error}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Pre-booking questions modal */}
       {showModal && hasQuestions && (

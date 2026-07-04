@@ -2,12 +2,18 @@
 
 import { useCallback, useEffect } from "react";
 import { authFetch } from "@/lib/authFetch";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useVisualPlanStore, type VisualPlan } from "@/store/useVisualPlanStore";
 
 export function useVisualPlans() {
   const { plans, isLoading, error, setPlans, setLoading, setError } = useVisualPlanStore();
+  const token = useAuthStore((s) => s.token);
 
   useEffect(() => {
+    // Anonymous visitors have no account to list history for — skip the call
+    // entirely rather than surfacing a 401 as an error.
+    if (!token) return;
+
     setLoading(true);
     authFetch("/api/visual-plans")
       .then((r) => {
@@ -17,7 +23,7 @@ export function useVisualPlans() {
       .then(({ data }) => setPlans(data ?? []))
       .catch((e) => setError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [token]);
 
   return { plans, isLoading, error };
 }

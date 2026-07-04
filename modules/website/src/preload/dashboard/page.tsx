@@ -44,6 +44,12 @@ export default function DashboardPreload() {
         <h2 className="font-bold text-[#1A2332]">Section ของฉัน</h2>
         <div className="flex gap-2">
           <Link
+            href="/dashboard/wallet"
+            className="rounded-full border border-[#DDE8E6] px-4 py-1.5 text-xs font-semibold text-[#64748B] hover:border-[#6C93B2] hover:text-[#6C93B2] transition-all"
+          >
+            กระเป๋าเงิน
+          </Link>
+          <Link
             href="/dashboard/report"
             className="rounded-full border border-[#DDE8E6] px-4 py-1.5 text-xs font-semibold text-[#64748B] hover:border-[#6C93B2] hover:text-[#6C93B2] transition-all"
           >

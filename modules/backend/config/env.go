@@ -20,6 +20,8 @@ type Config struct {
 	R2AccessKeyID     string
 	R2SecretAccessKey string
 	R2Bucket          string
+	Slip2GoAPIURL     string
+	Slip2GoSecret     string
 }
 
 func Load() *Config {
@@ -44,6 +46,8 @@ func Load() *Config {
 		R2AccessKeyID:     getEnv("R2_ACCESS_KEY_ID", ""),
 		R2SecretAccessKey: getEnv("R2_SECRET_ACCESS_KEY", ""),
 		R2Bucket:          getEnv("R2_BUCKET", ""),
+		Slip2GoAPIURL:     getEnv("SLIP2GO_API_URL", "https://connect.slip2go.com"),
+		Slip2GoSecret:     getEnv("SLIP_2GO_SECRET", ""),
 	}
 }
 

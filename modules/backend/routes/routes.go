@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/limiter"
 
 	"sectionlap/backend/controllers"
 	"sectionlap/backend/middlewares"
@@ -20,6 +23,9 @@ func Register(
 	adminCtrl *controllers.AdminController,
 	supervisorCtrl *controllers.SupervisorController,
 	visualPlanCtrl *controllers.VisualPlanController,
+	lessonCtrl *controllers.LessonController,
+	lessonClipCtrl *controllers.LessonClipController,
+	walletCtrl *controllers.TeacherWalletController,
 	authMw *middlewares.AuthMiddleware,
 ) {
 	api := app.Group("/api")
@@ -41,6 +47,18 @@ func Register(
 	// Jitsi token (requires auth + enrollment or teacher)
 	sections.Get("/:id/jitsi-token", authMw.Require(), jitsiCtrl.GetToken)
 
+	// Lessons (mixed auth) — topics + video clips within a section
+	sections.Get("/:sectionId/lessons", lessonCtrl.List)
+	sections.Post("/:sectionId/lessons", authMw.Require(), authMw.RequireRole(models.RoleTeacher), lessonCtrl.Create)
+	sections.Patch("/:sectionId/lessons/reorder", authMw.Require(), authMw.RequireRole(models.RoleTeacher), lessonCtrl.Reorder)
+
+	lessons := api.Group("/lessons")
+	lessons.Put("/:lessonId", authMw.Require(), authMw.RequireRole(models.RoleTeacher), lessonCtrl.Update)
+	lessons.Delete("/:lessonId", authMw.Require(), authMw.RequireRole(models.RoleTeacher), lessonCtrl.Delete)
+	lessons.Post("/:lessonId/clips", authMw.Require(), authMw.RequireRole(models.RoleTeacher), lessonClipCtrl.Create)
+	lessons.Delete("/:lessonId/clips/:clipId", authMw.Require(), authMw.RequireRole(models.RoleTeacher), lessonClipCtrl.Delete)
+	lessons.Get("/:lessonId/clips/:clipId/playback", lessonClipCtrl.Playback)
+
 	// Bookings (student only)
 	bookings := api.Group("/bookings", authMw.Require())
 	bookings.Post("/", bookingCtrl.Create)
@@ -49,6 +67,10 @@ func Register(
 	bookings.Post("/:id/fail", bookingCtrl.Fail)
 	bookings.Post("/:id/retry", bookingCtrl.Retry)
 	bookings.Post("/:id/cancel", bookingCtrl.Cancel)
+	bookings.Post("/:id/verify-slip", bookingCtrl.VerifySlip)
+
+	// Wallet — section-scoped lookup is public so a paying student can see it
+	sections.Get("/:id/wallet", walletCtrl.GetForSection)
 
 	// Feedback (requires auth)
 	feedback := api.Group("/feedback", authMw.Require())
@@ -58,6 +80,9 @@ func Register(
 	teacher := api.Group("/teacher", authMw.Require(), authMw.RequireRole(models.RoleTeacher))
 	teacher.Post("/profile", teacherProfileCtrl.Submit)
 	teacher.Get("/profile", teacherProfileCtrl.Get)
+	teacher.Get("/wallet", walletCtrl.Get)
+	teacher.Put("/wallet", walletCtrl.Upsert)
+	teacher.Post("/wallet/test-slip", walletCtrl.TestSlip)
 
 	// Student profile (student only)
 	student := api.Group("/student", authMw.Require(), authMw.RequireRole(models.RoleStudent))
@@ -86,9 +111,15 @@ func Register(
 	sv.Patch("/:id", supervisorCtrl.UpdateSection)
 	sv.Delete("/:id", supervisorCtrl.DeleteSection)
 
-	// Visual Plans — AI-generated animated flowcharts
+	// Visual Plans — AI-generated animated flowcharts. Generation is open to
+	// anyone (no login required) but rate-limited per IP since each call costs
+	// real money (Claude + render service + R2 storage).
 	vp := api.Group("/visual-plans")
-	vp.Post("/", authMw.Require(), visualPlanCtrl.Generate)
+	genLimiter := limiter.New(limiter.Config{
+		Max:        5,
+		Expiration: 10 * time.Minute,
+	})
+	vp.Post("/", authMw.OptionalAuth(), genLimiter, visualPlanCtrl.Generate)
 	vp.Get("/", authMw.Require(), visualPlanCtrl.List)
 	vp.Get("/:id", visualPlanCtrl.GetByID)
 	vp.Delete("/:id", authMw.Require(), visualPlanCtrl.Delete)

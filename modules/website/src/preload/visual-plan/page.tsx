@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useGenerateVisualPlan, useVisualPlans, useDeleteVisualPlan } from "@/hooks/useVisualPlan";
+import { useAuthStore } from "@/store/useAuthStore";
 import type { VisualPlan } from "@/store/useVisualPlanStore";
 
 function PlanCard({ plan, onDelete }: { plan: VisualPlan; onDelete: (id: string) => void }) {
@@ -63,6 +64,7 @@ export default function VisualPlanPreload() {
   const { generate, isGenerating, error: genError } = useGenerateVisualPlan();
   const { plans, isLoading } = useVisualPlans();
   const deletePlan = useDeleteVisualPlan();
+  const isLoggedIn = !!useAuthStore((s) => s.token);
 
   async function handleGenerate() {
     if (!prompt.trim()) return;
@@ -115,7 +117,17 @@ export default function VisualPlanPreload() {
       </div>
 
       {/* ── My Plans ── */}
-      <h2 className="text-lg font-bold text-[#1A2332] mb-4">แผนของฉัน</h2>
+      <h2 className="text-lg font-bold text-[#1A2332] mb-1">
+        {isLoggedIn ? "แผนของฉัน" : "ผลลัพธ์ล่าสุด"}
+      </h2>
+      {!isLoggedIn && (
+        <p className="text-xs text-[#64748B] mb-4">
+          ไม่ต้อง login ก็สร้างได้ — แต่ผลลัพธ์จะหายไปเมื่อรีเฟรชหน้า ดาวน์โหลดหรือคัดลอกลิงก์ไว้ก่อน
+          {" "}
+          <Link href="/login" className="text-[#6AA098] underline underline-offset-2">login</Link> เพื่อบันทึกประวัติ
+        </p>
+      )}
+      {isLoggedIn && <div className="mb-4" />}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
