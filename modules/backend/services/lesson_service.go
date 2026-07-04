@@ -23,7 +23,16 @@ type LessonService interface {
 	Update(ctx context.Context, lessonID, teacherID, title string) (*models.Lesson, error)
 	Delete(ctx context.Context, lessonID, teacherID string) error
 	Reorder(ctx context.Context, sectionID, teacherID string, orderedIDs []string) error
+	// GetOrCreateLiveRecordingsLesson is used by the internal recording-ingest
+	// path (see internal_recording_controller.go) — no teacher context exists
+	// there (the caller is Jibri's finalize script, not a logged-in user), so
+	// this intentionally skips the ownership check the other methods do.
+	GetOrCreateLiveRecordingsLesson(ctx context.Context, sectionID string) (*models.Lesson, error)
 }
+
+// LiveRecordingsLessonTitle is the fixed title used to find/create the one
+// shared lesson that auto-captured live-class recordings are appended to.
+const LiveRecordingsLessonTitle = "การบันทึกสด"
 
 type lessonService struct {
 	lessonRepo     repositories.LessonRepository
@@ -143,4 +152,29 @@ func (s *lessonService) Reorder(ctx context.Context, sectionID, teacherID string
 		}
 	}
 	return s.lessonRepo.UpdateOrder(ctx, orderedIDs)
+}
+
+func (s *lessonService) GetOrCreateLiveRecordingsLesson(ctx context.Context, sectionID string) (*models.Lesson, error) {
+	existing, err := s.lessonRepo.GetBySectionID(ctx, sectionID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range existing {
+		if existing[i].Title == LiveRecordingsLessonTitle {
+			return &existing[i], nil
+		}
+	}
+
+	lesson := &models.Lesson{
+		ID:         uuid.New().String(),
+		SectionID:  sectionID,
+		Title:      LiveRecordingsLessonTitle,
+		OrderIndex: len(existing),
+		CreatedAt:  time.Now().UTC(),
+		UpdatedAt:  time.Now().UTC(),
+	}
+	if err := s.lessonRepo.Create(ctx, lesson); err != nil {
+		return nil, err
+	}
+	return lesson, nil
 }

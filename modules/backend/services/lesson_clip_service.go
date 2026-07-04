@@ -15,6 +15,12 @@ type LessonClipService interface {
 	RegisterClip(ctx context.Context, lessonID, teacherID, r2KeyPrefix string, chunkCount int) (*models.LessonClip, error)
 	Delete(ctx context.Context, clipID, teacherID string) error
 	Playback(ctx context.Context, clipID string) ([]string, error)
+	// CreatePendingClip and MarkReady back the internal recording-ingest path
+	// (see internal_recording_controller.go) — no teacher context exists there
+	// (the caller is Jibri's finalize script), so both skip the ownership
+	// check RegisterClip/Delete do.
+	CreatePendingClip(ctx context.Context, lessonID, r2KeyPrefix string) (*models.LessonClip, error)
+	MarkReady(ctx context.Context, clipID string) (*models.LessonClip, error)
 }
 
 type lessonClipService struct {
@@ -86,6 +92,40 @@ func (s *lessonClipService) Delete(ctx context.Context, clipID, teacherID string
 		return err
 	}
 	return s.lessonClipRepo.Delete(ctx, clipID)
+}
+
+func (s *lessonClipService) CreatePendingClip(ctx context.Context, lessonID, r2KeyPrefix string) (*models.LessonClip, error) {
+	existing, err := s.lessonClipRepo.GetByLessonID(ctx, lessonID)
+	if err != nil {
+		return nil, err
+	}
+	clip := &models.LessonClip{
+		ID:          uuid.New().String(),
+		LessonID:    lessonID,
+		OrderIndex:  len(existing),
+		R2KeyPrefix: r2KeyPrefix,
+		ChunkCount:  1,
+		Status:      "uploading",
+		CreatedAt:   time.Now().UTC(),
+		UpdatedAt:   time.Now().UTC(),
+	}
+	if err := s.lessonClipRepo.Create(ctx, clip); err != nil {
+		return nil, err
+	}
+	return clip, nil
+}
+
+func (s *lessonClipService) MarkReady(ctx context.Context, clipID string) (*models.LessonClip, error) {
+	clip, err := s.lessonClipRepo.GetByID(ctx, clipID)
+	if err != nil {
+		return nil, fmt.Errorf("clip not found: %w", err)
+	}
+	clip.Status = "ready"
+	clip.UpdatedAt = time.Now().UTC()
+	if err := s.lessonClipRepo.Update(ctx, clip); err != nil {
+		return nil, err
+	}
+	return clip, nil
 }
 
 func (s *lessonClipService) Playback(ctx context.Context, clipID string) ([]string, error) {

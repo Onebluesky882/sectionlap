@@ -13,6 +13,7 @@ import (
 	email_password "github.com/Authula/authula/plugins/email-password"
 	email_password_types "github.com/Authula/authula/plugins/email-password/types"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/joho/godotenv"
 
 	"sectionlap/backend/config"
@@ -128,6 +129,8 @@ func main() {
 
 	walletCtrl := controllers.NewTeacherWalletController(walletRepo, sectionRepo, r2Presigner, slip2goClient)
 
+	internalRecordingCtrl := controllers.NewInternalRecordingController(lessonSvc, lessonClipSvc, r2Presigner)
+
 	authMw := middlewares.NewAuthMiddleware(
 		coreServices.SessionService,
 		coreServices.TokenService,
@@ -137,7 +140,14 @@ func main() {
 
 	app := fiber.New(fiber.Config{AppName: "SectionLap Backend"})
 
-	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, visualPlanCtrl, lessonCtrl, lessonClipCtrl, walletCtrl, authMw)
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     cfg.CORSAllowOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
+
+	routes.Register(app, authCtrl, sectionCtrl, bookingCtrl, jitsiCtrl, feedbackCtrl, teacherProfileCtrl, studentProfileCtrl, adminCtrl, supervisorCtrl, visualPlanCtrl, lessonCtrl, lessonClipCtrl, walletCtrl, internalRecordingCtrl, authMw, cfg.InternalIngestSecret)
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("SectionLap backend listening on %s", addr)

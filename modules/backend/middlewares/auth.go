@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"crypto/subtle"
 	"strings"
 
 	"github.com/Authula/authula/services"
@@ -19,9 +20,9 @@ const (
 )
 
 type AuthMiddleware struct {
-	sessionService  services.SessionService
-	tokenService    services.TokenService
-	userRoleRepo    repositories.UserRoleRepository
+	sessionService    services.SessionService
+	tokenService      services.TokenService
+	userRoleRepo      repositories.UserRoleRepository
 	sessionCookieName string
 }
 
@@ -103,6 +104,22 @@ func (m *AuthMiddleware) OptionalAuth() fiber.Handler {
 
 		c.Locals(string(CtxUserID), session.UserID)
 		c.Locals(string(CtxUserRole), userRole.Role)
+		return c.Next()
+	}
+}
+
+// RequireInternalSecret gates machine-to-machine endpoints (no logged-in user
+// exists for these callers — e.g. the Jibri finalize script) behind a shared
+// secret passed in the X-Internal-Secret header, compared in constant time.
+func (m *AuthMiddleware) RequireInternalSecret(secret string) fiber.Handler {
+	return func(c fiber.Ctx) error {
+		if secret == "" {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "INTERNAL_INGEST_SECRET is not configured"})
+		}
+		got := c.Get("X-Internal-Secret")
+		if subtle.ConstantTimeCompare([]byte(got), []byte(secret)) != 1 {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "forbidden"})
+		}
 		return c.Next()
 	}
 }

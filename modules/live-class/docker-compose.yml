@@ -145,6 +145,8 @@ services:
       - /dev/snd:/dev/snd
     volumes:
       - ${CONFIG}/jibri:/config:Z
+      - ${CONFIG}/jibri/recordings:/config/recordings:Z
+      - ${CONFIG}/jibri/finalize.sh:/config/finalize.sh:Z
     environment:
       - XMPP_SERVER=prosody
       - XMPP_DOMAIN
@@ -155,6 +157,13 @@ services:
       - JIBRI_XMPP_PASSWORD
       - JIBRI_BREWERY_MUC
       - TZ
+      # Auto-attach recordings as lesson clips (see README "Auto-Record ->
+      # Lesson Clip") — local file recording + a finalize hook that uploads
+      # to the backend when a recording finishes.
+      - JIBRI_RECORDING_DIR=/config/recordings
+      - JIBRI_FINALIZE_RECORDING_SCRIPT_PATH=/config/finalize.sh
+      - BACKEND_URL
+      - INTERNAL_INGEST_SECRET
     depends_on:
       - prosody
       - jicofo

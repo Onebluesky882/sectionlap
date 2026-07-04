@@ -3,25 +3,28 @@ package config
 import (
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
 type Config struct {
-	Port              string
-	DatabaseURL       string
-	AuthSecret        string
-	JitsiAppID        string
-	JitsiAppSecret    string
-	JitsiDomain       string
-	SessionMaxAge     time.Duration
-	ClaudeAPIKey      string
-	VisualServiceURL  string
-	R2Endpoint        string
-	R2AccessKeyID     string
-	R2SecretAccessKey string
-	R2Bucket          string
-	Slip2GoAPIURL     string
-	Slip2GoSecret     string
+	Port                 string
+	DatabaseURL          string
+	AuthSecret           string
+	JitsiAppID           string
+	JitsiAppSecret       string
+	JitsiDomain          string
+	SessionMaxAge        time.Duration
+	ClaudeAPIKey         string
+	VisualServiceURL     string
+	R2Endpoint           string
+	R2AccessKeyID        string
+	R2SecretAccessKey    string
+	R2Bucket             string
+	Slip2GoAPIURL        string
+	Slip2GoSecret        string
+	CORSAllowOrigins     []string
+	InternalIngestSecret string
 }
 
 func Load() *Config {
@@ -48,6 +51,11 @@ func Load() *Config {
 		R2Bucket:          getEnv("R2_BUCKET", ""),
 		Slip2GoAPIURL:     getEnv("SLIP2GO_API_URL", "https://connect.slip2go.com"),
 		Slip2GoSecret:     getEnv("SLIP_2GO_SECRET", ""),
+		CORSAllowOrigins: strings.Split(getEnv(
+			"CORS_ALLOW_ORIGINS",
+			"http://localhost:3000,http://localhost:3002,https://section-lap-web.onebluesky882.workers.dev",
+		), ","),
+		InternalIngestSecret: getEnv("INTERNAL_INGEST_SECRET", ""),
 	}
 }
 

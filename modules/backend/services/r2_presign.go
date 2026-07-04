@@ -54,3 +54,19 @@ func (p *R2Presigner) PresignGetURL(ctx context.Context, key string) (string, er
 	}
 	return req.URL, nil
 }
+
+// PresignPutURL returns a time-limited PUT URL for the given R2 object key —
+// used by server-side/machine callers (e.g. the Jibri finalize script) that
+// upload directly via a plain `curl -T file <url>` rather than through the
+// website's own presign flow. Deliberately doesn't sign a Content-Type, so
+// the caller doesn't need to set a matching header.
+func (p *R2Presigner) PresignPutURL(ctx context.Context, key string) (string, error) {
+	req, err := p.client.PresignPutObject(ctx, &s3.PutObjectInput{
+		Bucket: aws.String(p.bucket),
+		Key:    aws.String(key),
+	}, s3.WithPresignExpires(presignTTL))
+	if err != nil {
+		return "", err
+	}
+	return req.URL, nil
+}

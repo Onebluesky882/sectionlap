@@ -11,6 +11,7 @@ import { getJitsiToken } from "../../services/sectionService";
 
 type Tab = "video" | "whiteboard" | "highlight";
 type StreamStatus = "idle" | "live";
+type RecordStatus = "idle" | "recording";
 
 const inputClass =
   "bg-input/30 border border-border rounded-md text-foreground px-2 py-2 text-sm";
@@ -24,6 +25,7 @@ export function LiveClassPage() {
   const [status, setStatus] = useState<"connecting" | "joined" | "left">("connecting");
   const [tab, setTab] = useState<Tab>("video");
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("idle");
+  const [recordStatus, setRecordStatus] = useState<RecordStatus>("idle");
   const [rtmpKey, setRtmpKey] = useState(DEFAULT_RTMP_STREAM_KEY);
   const isTeacher = useAppStore((s) => s.currentUser?.role === "teacher");
 
@@ -53,6 +55,9 @@ export function LiveClassPage() {
         if (e.mode === "stream") {
           setStreamStatus(e.on ? "live" : "idle");
         }
+        if (e.mode === "file") {
+          setRecordStatus(e.on ? "recording" : "idle");
+        }
       });
     }).catch(() => {
       // Token fetch failed — fall back to unauthenticated join using section.id
@@ -75,6 +80,7 @@ export function LiveClassPage() {
       apiRef.current?.dispose();
       apiRef.current = null;
       setStreamStatus("idle");
+      setRecordStatus("idle");
     };
   }, [ready, section, sectionId]);
 
@@ -89,6 +95,16 @@ export function LiveClassPage() {
   function handleStopStream() {
     if (!apiRef.current) return;
     apiRef.current.executeCommand("stopRecording", "stream");
+  }
+
+  function handleStartRecording() {
+    if (!apiRef.current) return;
+    apiRef.current.executeCommand("startRecording", { mode: "file" });
+  }
+
+  function handleStopRecording() {
+    if (!apiRef.current) return;
+    apiRef.current.executeCommand("stopRecording", "file");
   }
 
   if (!section) {
@@ -171,6 +187,31 @@ export function LiveClassPage() {
             <Button variant="outline" onClick={handleStopStream}>
               Stop Live Stream
             </Button>
+          )}
+
+          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border">
+            <span className="text-sm font-medium text-foreground">Record</span>
+            {recordStatus === "recording" && (
+              <span className="text-sm font-medium text-destructive">● Recording</span>
+            )}
+            {recordStatus === "idle" && (
+              <span className="text-sm text-muted-foreground">Idle</span>
+            )}
+          </div>
+          {recordStatus === "idle" && (
+            <Button onClick={handleStartRecording} disabled={status !== "joined"}>
+              Start Recording
+            </Button>
+          )}
+          {recordStatus === "recording" && (
+            <Button variant="outline" onClick={handleStopRecording}>
+              Stop Recording
+            </Button>
+          )}
+          {recordStatus === "recording" && (
+            <p className="text-xs text-muted-foreground">
+              Recording will automatically appear as a lesson clip under "การบันทึกสด" once it finishes processing.
+            </p>
           )}
         </div>
       )}

@@ -26,7 +26,9 @@ func Register(
 	lessonCtrl *controllers.LessonController,
 	lessonClipCtrl *controllers.LessonClipController,
 	walletCtrl *controllers.TeacherWalletController,
+	internalRecordingCtrl *controllers.InternalRecordingController,
 	authMw *middlewares.AuthMiddleware,
+	internalIngestSecret string,
 ) {
 	api := app.Group("/api")
 
@@ -71,6 +73,12 @@ func Register(
 
 	// Wallet — section-scoped lookup is public so a paying student can see it
 	sections.Get("/:id/wallet", walletCtrl.GetForSection)
+
+	// Internal — machine-to-machine only (Jibri's finalize script), gated by
+	// a shared secret rather than a user session.
+	internal := api.Group("/internal", authMw.RequireInternalSecret(internalIngestSecret))
+	internal.Post("/recordings/presign", internalRecordingCtrl.Presign)
+	internal.Post("/recordings/:clipId/complete", internalRecordingCtrl.Complete)
 
 	// Feedback (requires auth)
 	feedback := api.Group("/feedback", authMw.Require())

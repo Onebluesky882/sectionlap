@@ -12,6 +12,7 @@ type LessonClipRepository interface {
 	GetByLessonID(ctx context.Context, lessonID string) ([]models.LessonClip, error)
 	GetByID(ctx context.Context, id string) (*models.LessonClip, error)
 	Create(ctx context.Context, clip *models.LessonClip) error
+	Update(ctx context.Context, clip *models.LessonClip) error
 	Delete(ctx context.Context, id string) error
 }
 
@@ -40,6 +41,11 @@ func (r *lessonClipRepository) GetByID(ctx context.Context, id string) (*models.
 
 func (r *lessonClipRepository) Create(ctx context.Context, clip *models.LessonClip) error {
 	_, err := r.db.NewInsert().Model(clip).Exec(ctx)
+	return err
+}
+
+func (r *lessonClipRepository) Update(ctx context.Context, clip *models.LessonClip) error {
+	_, err := r.db.NewUpdate().Model(clip).Where("id = ?", clip.ID).Exec(ctx)
 	return err
 }
 

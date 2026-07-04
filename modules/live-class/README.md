@@ -155,6 +155,54 @@ curl http://localhost:2222/jibri/api/v1.0/health
 **/dev/snd errors:**
 - On Linux: ensure the Docker daemon can access `/dev/snd`. Add your user to the `audio`
   group (`sudo usermod -aG audio $USER`) and restart Docker.
+
+## Auto-Record → Lesson Clip
+
+In addition to RTMP streaming, Jibri can record a live class to a local file. When recording
+finishes, a finalize script uploads it to R2 and auto-attaches it as a `LessonClip` (see
+`modules/backend`'s lesson/lesson-clip feature) under a dedicated, auto-created lesson titled
+"การบันทึกสด" (Live Recordings) — one per section, every recording appended to it as a new clip.
+No manual download/upload step.
+
+### Setup
+
+1. Copy `modules/live-class/jibri/finalize.sh` to `${CONFIG}/jibri/finalize.sh` and make it
+   executable (`chmod +x`) — `docker-compose.yml` bind-mounts that path into the Jibri container.
+2. Set in `.env`:
+
+   | Variable | Description |
+   |---|---|
+   | `BACKEND_URL` | Reachable from inside the Jibri container, e.g. `http://host.docker.internal:8080` for a locally-running backend |
+   | `INTERNAL_INGEST_SECRET` | Must match the backend's own `INTERNAL_INGEST_SECRET` env var exactly |
+
+3. Restart the stack (`docker compose up -d`) so Jibri picks up `JIBRI_RECORDING_DIR` /
+   `JIBRI_FINALIZE_RECORDING_SCRIPT_PATH`.
+
+### How it works
+
+Jitsi's room name is deterministically `section-<sectionId>` (set by the backend when issuing the
+Jitsi JWT). Jibri names its recording output directory after the room, so `finalize.sh` recovers
+the section id straight from that directory name, then:
+1. `POST /api/internal/recordings/presign` — backend finds/creates the "การบันทึกสด" lesson for
+   that section, creates a pending `LessonClip`, returns a presigned R2 upload URL.
+2. `curl -T <file> <presigned-url>` — uploads the recording directly to R2.
+3. `POST /api/internal/recordings/:clipId/complete` — marks the clip `ready`.
+
+These endpoints are gated by a shared-secret header (`X-Internal-Secret`), not a user session —
+there's no logged-in teacher in this flow, only Jibri itself.
+
+### Starting a recording
+
+In the Wails Live Class screen, use the separate **Record** toggle next to the RTMP stream
+controls (independent of streaming — starting one doesn't require the other).
+
+### Troubleshooting
+
+- Check Jibri logs for `finalize.sh` output: `docker compose logs jibri | grep finalize.sh`.
+- If nothing gets uploaded, confirm the recording directory name actually matches
+  `section-<uuid>_<timestamp>` — Jibri's naming convention has changed across versions before.
+- Whether Jitsi/Jibri support streaming and file-recording simultaneously on the same session
+  hasn't been verified here — treat them as mutually exclusive until confirmed otherwise.
 - On macOS / Docker Desktop: `/dev/snd` passthrough is not supported. Jibri requires a
   real Linux kernel for ALSA. Use a Linux VM or a remote Linux Docker host for live
   streaming in development.
