@@ -119,6 +119,32 @@ Format for new pins:
 
 ⸻
 
+013 — R2/Bucket Uploads Must Use Presigned URLs (Date: 2026-07-05)
+
+Any code path that writes a file to the R2 bucket (`sectionlap-bucket`) —
+from any service, in any language — must transfer the bytes via a
+presigned PUT URL and a plain HTTP client. SDK-managed uploads (e.g. boto3
+`upload_file`/`put_object`, AWS SDK `manager.Uploader`) are prohibited.
+
+Why: `modules/visual-plan-service` originally uploaded via boto3
+`upload_file()` directly. Under FastAPI/uvicorn (an active asyncio event
+loop in the main thread), boto3's internal `s3transfer` thread pool hung
+indefinitely on every upload — no error, no timeout, reproduced in
+isolation with credentials/network/ffmpeg all ruled out. The same boto3
+call is fine as a bare synchronous script with no event loop running.
+Presigning (`generate_presigned_url`) is pure local HMAC signing — no
+network, no thread — so it doesn't hit the bug; the actual transfer then
+goes through a plain async HTTP client (`httpx`) instead of boto3's
+managed transfer. Fixed in `r2_uploader.py` (see git history 2026-07-05).
+
+This already matches the existing convention on the Go backend
+(`services/r2_presign.go`) and the website upload pipeline
+(`r2Presign.ts` + `/api/upload-ticket`) — both already presign-only, never
+transfer bytes server-side themselves. This decision makes that the
+explicit, binding rule for every domain, not just precedent.
+
+⸻
+
 Technology Compliance
 
 Before a stage can PASS, the implementation must comply with every

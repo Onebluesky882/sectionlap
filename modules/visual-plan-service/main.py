@@ -47,7 +47,7 @@ def health():
 
 
 @app.post("/generate", response_model=GenerateResponse)
-def generate(req: GenerateRequest):
+async def generate(req: GenerateRequest):
     if not req.steps:
         raise HTTPException(status_code=400, detail="steps must not be empty")
     if len(req.steps) > 12:
@@ -61,7 +61,7 @@ def generate(req: GenerateRequest):
 
     with tempfile.TemporaryDirectory() as out_dir:
         try:
-            paths = renderer.render(plan, out_dir)
+            paths = await renderer.render(plan, out_dir)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"render failed: {e}")
 
@@ -69,8 +69,8 @@ def generate(req: GenerateRequest):
         mp4_key = f"visual-plans/{req.userId}/{req.planId}.mp4"
 
         try:
-            gif_url = r2_uploader.upload(paths["gif"], gif_key, "image/gif")
-            mp4_url = r2_uploader.upload(paths["mp4"], mp4_key, "video/mp4")
+            gif_url = await r2_uploader.upload(paths["gif"], gif_key, "image/gif")
+            mp4_url = await r2_uploader.upload(paths["mp4"], mp4_key, "video/mp4")
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"R2 upload failed: {e}")
 

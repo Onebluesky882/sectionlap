@@ -42,7 +42,9 @@
 		}
 	],
 	"vars": {
-		"BACKEND_URL": "http://localhost:8080"
+		// Temporary Cloudflare quick tunnel → local backend on :8080.
+		// Ephemeral: URL changes whenever the tunnel restarts (see /tmp/cloudflared-tunnel.log).
+		"BACKEND_URL": "https://salem-annie-reviewed-stations.trycloudflare.com"
 	}
 	// Secrets (set via `wrangler secret put`):
 	//   R2_ACCESS_KEY_ID      — R2 API token Access Key ID

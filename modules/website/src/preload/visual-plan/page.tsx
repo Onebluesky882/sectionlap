@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useGenerateVisualPlan, useVisualPlans, useDeleteVisualPlan } from "@/hooks/useVisualPlan";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -55,6 +55,32 @@ function PlanCard({ plan, onDelete }: { plan: VisualPlan; onDelete: (id: string)
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+const GENERATE_STAGES = [
+  "AI กำลังวิเคราะห์แผนการเรียนของคุณ...",
+  "กำลังวาดภาพเคลื่อนไหว...",
+  "กำลังอัปโหลดไฟล์...",
+];
+
+function GeneratingCard() {
+  const [stageIndex, setStageIndex] = useState(0);
+
+  useEffect(() => {
+    setStageIndex(0);
+    const id = setInterval(() => {
+      setStageIndex((i) => Math.min(i + 1, GENERATE_STAGES.length - 1));
+    }, 3500);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="border border-[#DDE8E6] rounded-2xl bg-[#F7FAFA] p-8 flex flex-col items-center text-center mb-6">
+      <span className="w-8 h-8 border-[3px] border-[#DDE8E6] border-t-[#6AA098] rounded-full animate-spin mb-4" />
+      <p className="text-sm font-semibold text-[#1A2332]">{GENERATE_STAGES[stageIndex]}</p>
+      <p className="text-xs text-[#64748B] mt-1">อาจใช้เวลาสักครู่ (10-20 วินาที)</p>
     </div>
   );
 }
@@ -115,6 +141,8 @@ export default function VisualPlanPreload() {
           </button>
         </div>
       </div>
+
+      {isGenerating && <GeneratingCard />}
 
       {/* ── My Plans ── */}
       <h2 className="text-lg font-bold text-[#1A2332] mb-1">

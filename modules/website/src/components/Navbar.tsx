@@ -29,6 +29,7 @@ export default function Navbar() {
         <nav className="hidden sm:flex items-center gap-1">
           {[
             { href: "/sections", label: "Classes" },
+            { href: "/visual-plan", label: "Visual Plan" },
             ...(user?.role === "teacher" ? [{ href: "/dashboard", label: "Dashboard" }] : []),
             ...(user ? [{ href: "/profile", label: "Profile" }] : []),
             { href: "/download", label: "Download" },

@@ -4,9 +4,9 @@ Draw animated flowchart frames from structured plan data, then compile to GIF + 
 Frame size: 900x320 (drawn at 1800x640 for 2x supersampling, then downscaled).
 """
 
+import asyncio
 import os
 import math
-import subprocess
 import tempfile
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -172,7 +172,24 @@ def _draw_frame(
     return img.resize((W, H), Image.LANCZOS)
 
 
-def render(plan: dict, output_dir: str) -> dict[str, str]:
+async def _run_ffmpeg(args: list[str]) -> None:
+    """Run ffmpeg via asyncio's subprocess machinery — plain subprocess.run()
+    called from FastAPI's sync-endpoint worker thread deadlocks under the
+    active event loop's child watcher (reproduced: renderer/upload each work
+    fine standalone, but the full /generate request hangs forever with no
+    output). Native async subprocess avoids that thread/loop race.
+    """
+    proc = await asyncio.create_subprocess_exec(
+        *args,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    _, stderr = await proc.communicate()
+    if proc.returncode != 0:
+        raise RuntimeError(f"ffmpeg failed ({proc.returncode}): {stderr.decode(errors='replace')}")
+
+
+async def render(plan: dict, output_dir: str) -> dict[str, str]:
     """
     plan = { "title": str, "steps": [...], "totalDays": int }
     Returns { "gif": "/abs/path/out.gif", "mp4": "/abs/path/out.mp4" }
@@ -214,7 +231,7 @@ def render(plan: dict, output_dir: str) -> dict[str, str]:
         gif_path = str(out_dir / "out.gif")
 
         # MP4
-        subprocess.run([
+        await _run_ffmpeg([
             "ffmpeg", "-y",
             "-framerate", str(FPS),
             "-i", os.path.join(tmp, "frame_%04d.png"),
@@ -223,24 +240,24 @@ def render(plan: dict, output_dir: str) -> dict[str, str]:
             "-pix_fmt", "yuv420p",
             "-movflags", "+faststart",
             mp4_path,
-        ], check=True, capture_output=True)
+        ])
 
         # GIF (palettegen for quality)
         palette_path = os.path.join(tmp, "palette.png")
-        subprocess.run([
+        await _run_ffmpeg([
             "ffmpeg", "-y",
             "-framerate", str(FPS),
             "-i", os.path.join(tmp, "frame_%04d.png"),
             "-vf", f"scale={W}:{H}:flags=lanczos,palettegen=stats_mode=diff",
             palette_path,
-        ], check=True, capture_output=True)
-        subprocess.run([
+        ])
+        await _run_ffmpeg([
             "ffmpeg", "-y",
             "-framerate", str(FPS),
             "-i", os.path.join(tmp, "frame_%04d.png"),
             "-i", palette_path,
             "-lavfi", f"scale={W}:{H}:flags=lanczos [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5",
             gif_path,
-        ], check=True, capture_output=True)
+        ])
 
     return {"gif": gif_path, "mp4": mp4_path}
