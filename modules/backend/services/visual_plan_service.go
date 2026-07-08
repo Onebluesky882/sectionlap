@@ -115,27 +115,33 @@ func (s *VisualPlanService) parseWithClaude(ctx context.Context, promptText stri
 		return mockParse(promptText), nil
 	}
 
-	systemPrompt := `You are a learning plan parser. Given a user's text description of a learning plan or roadmap, extract it into structured JSON.
+	systemPrompt := `You are an expert educational flow-diagram designer. Given a user's text
+description of a learning plan, roadmap, process, or concept (including a formula or
+equation), break it down into a clear, logical sequence of steps a learner can follow
+visually.
 
 Return ONLY valid JSON with this exact shape (no markdown, no explanation):
 {
   "title": "short title for the plan (max 40 chars)",
-  "totalDays": <total number of days as integer>,
+  "totalDays": <total number of days as integer, 0 if not time-based>,
   "steps": [
     {
-      "label": "short step name (max 20 chars)",
+      "label": "short step name (max 16 chars, 1-3 words)",
       "sublabel": "optional detail (max 30 chars, empty string if none)",
       "milestone": <true if this is a key milestone, false otherwise>,
-      "durationDays": <days for this step as integer, or null>
+      "durationDays": <days for this step as integer, or null if not time-based>
     }
   ]
 }
 
 Rules:
 - Maximum 12 steps
-- Steps must flow logically
-- Keep labels concise
-- Mark 2-3 steps as milestones`
+- Steps must flow logically, each one building on the last
+- Keep labels very short and punchy — they render inside a small circle
+- Mark 2-3 steps as milestones
+- If the input is a formula or equation, break it into the concepts/terms a learner
+  needs to understand it, in a sensible teaching order — not a literal restatement of
+  the symbols`
 
 	body, _ := json.Marshal(map[string]any{
 		"model":       claudeModel,

@@ -16,7 +16,6 @@ BG = "#1A2332"
 TEAL = "#6AA098"
 TEAL_DIM = "#3D6B65"
 BORDER = "#DDE8E6"
-MUTED = "#64748B"
 WHITE = "#F7FAFA"
 MILESTONE_BG = "#243447"
 STEP_BG = "#1E2D3E"
@@ -25,20 +24,18 @@ STEP_BG = "#1E2D3E"
 W2, H2 = 1800, 640          # draw size
 W, H   = 900,  320          # final output size
 FPS    = 12
-FRAMES_PER_STEP   = 8       # frames to animate one step appearing
-HOLD_FRAMES        = 24     # hold after all steps shown
+FRAMES_PER_STEP   = 10      # frames to animate one step appearing
+HOLD_FRAMES        = 36     # hold after all steps shown
 
-# ── Box geometry (at 2x scale) ───────────────────────────────────────────────
-BOX_W   = 240
-BOX_H   = 130
-BOX_R   = 18                # corner radius
-ARROW_W = 40
-GAP_X   = BOX_W + ARROW_W
-TITLE_H = 80
-PAD_X   = 60
-PAD_Y   = 40
+# ── Node geometry (at 2x scale) ───────────────────────────────────────────────
+CIRCLE_D = 170
+ARROW_W  = 50
+GAP_X    = CIRCLE_D + ARROW_W
+TITLE_H  = 80
+PAD_X    = 60
+PAD_Y    = 40
 
-COLS_PER_ROW = 6            # max boxes per row
+COLS_PER_ROW = 6            # max nodes per row
 
 def _try_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     candidates = [
@@ -69,11 +66,6 @@ def _blend(fg: str, alpha: float, bg: str = BG) -> tuple[int, int, int]:
     )
 
 
-def _rounded_rect(draw: ImageDraw.ImageDraw, xy: tuple, radius: int, fill, outline=None, width=2):
-    x0, y0, x1, y1 = xy
-    draw.rounded_rectangle([x0, y0, x1, y1], radius=radius, fill=fill, outline=outline, width=width)
-
-
 def _draw_arrow(draw: ImageDraw.ImageDraw, x0: int, x1: int, y: int, alpha: float):
     color = _blend(TEAL, alpha)
     mid_y = y
@@ -86,14 +78,41 @@ def _draw_arrow(draw: ImageDraw.ImageDraw, x0: int, x1: int, y: int, alpha: floa
     ], fill=color)
 
 
+def _wrap_label(draw: ImageDraw.ImageDraw, text: str, font, max_width: int, max_lines: int = 2) -> list[str]:
+    """Greedy word-wrap into at most max_lines, truncating the last line with an ellipsis if words remain."""
+    words = text.split()
+    lines: list[str] = []
+    current = ""
+    i = 0
+    while i < len(words) and len(lines) < max_lines:
+        candidate = f"{current} {words[i]}".strip()
+        if draw.textlength(candidate, font=font) <= max_width or not current:
+            current = candidate
+            i += 1
+        else:
+            lines.append(current)
+            current = ""
+    if current:
+        lines.append(current)
+    if not lines:
+        return [text]
+
+    if i < len(words):
+        last = lines[-1]
+        while last and draw.textlength(last + "…", font=font) > max_width:
+            last = last[:-1]
+        lines[-1] = last + "…"
+    return lines
+
+
 def _step_positions(n_steps: int) -> list[tuple[int, int]]:
-    """Return (cx, cy) for each step box at 2x scale."""
+    """Return (cx, cy) for each step node at 2x scale."""
     positions = []
     for i in range(n_steps):
         col = i % COLS_PER_ROW
         row = i // COLS_PER_ROW
-        cx = PAD_X + col * GAP_X + BOX_W // 2
-        cy = TITLE_H + PAD_Y + row * (BOX_H + 60) + BOX_H // 2
+        cx = PAD_X + col * GAP_X + CIRCLE_D // 2
+        cy = TITLE_H + PAD_Y + row * (CIRCLE_D + 60) + CIRCLE_D // 2
         positions.append((cx, cy))
     return positions
 
@@ -101,30 +120,21 @@ def _step_positions(n_steps: int) -> list[tuple[int, int]]:
 def _draw_frame(
     steps: list[dict],
     title: str,
-    total_days: int,
     visible_count: int,       # how many steps are fully visible
     partial_alpha: float,     # alpha for the step currently fading in (0..1)
     font_title,
     font_label,
-    font_sub,
-    font_tiny,
 ) -> Image.Image:
     img = Image.new("RGB", (W2, H2), _hex(BG))
     draw = ImageDraw.Draw(img)
 
-    # Title
-    draw.text((PAD_X, 24), title, font=font_title, fill=_hex(WHITE))
-    days_label = f"{total_days} วัน"
-    draw.text((PAD_X, 72), days_label, font=font_tiny, fill=_hex(TEAL))
+    draw.text((PAD_X, 32), title, font=font_title, fill=_hex(WHITE))
 
     positions = _step_positions(len(steps))
+    r = CIRCLE_D // 2
 
     for i, step in enumerate(steps):
         cx, cy = positions[i]
-        x0 = cx - BOX_W // 2
-        y0 = cy - BOX_H // 2
-        x1 = cx + BOX_W // 2
-        y1 = cy + BOX_H // 2
 
         if i < visible_count:
             alpha = 1.0
@@ -136,38 +146,32 @@ def _draw_frame(
         if alpha <= 0:
             continue
 
-        box_fill  = _blend(MILESTONE_BG if step.get("milestone") else STEP_BG, alpha)
+        fill_col   = _blend(MILESTONE_BG if step.get("milestone") else STEP_BG, alpha)
         border_col = _blend(TEAL if step.get("milestone") else TEAL_DIM, alpha)
         text_col   = _blend(WHITE, alpha)
-        sub_col    = _blend(MUTED, alpha)
 
-        _rounded_rect(draw, (x0, y0, x1, y1), BOX_R, fill=box_fill, outline=border_col, width=4)
+        draw.ellipse([(cx - r, cy - r), (cx + r, cy + r)], fill=fill_col, outline=border_col, width=4)
 
         if step.get("milestone"):
-            dot_r = 10
-            draw.ellipse([(cx - dot_r, y0 + 16 - dot_r), (cx + dot_r, y0 + 16 + dot_r)],
+            dot_r = 9
+            draw.ellipse([(cx - dot_r, cy - r + 18 - dot_r), (cx + dot_r, cy - r + 18 + dot_r)],
                          fill=_blend(TEAL, alpha))
 
         label = step.get("label", "")
-        sub   = step.get("sublabel", "")
-        dur   = step.get("durationDays")
-
-        text_y = cy - 30
-        draw.text((cx, text_y), label, font=font_label, fill=text_col, anchor="mm")
-        if sub:
-            draw.text((cx, text_y + 38), sub, font=font_sub, fill=sub_col, anchor="mm")
-        if dur:
-            draw.text((cx, y1 - 20), f"{dur}d", font=font_tiny, fill=_blend(TEAL, alpha), anchor="mm")
+        lines = _wrap_label(draw, label, font_label, max_width=r * 1.6)
+        line_h = 36
+        start_y = cy - (len(lines) - 1) * line_h / 2
+        for j, line in enumerate(lines):
+            draw.text((cx, start_y + j * line_h), line, font=font_label, fill=text_col, anchor="mm")
 
         # Arrow to next (same row)
         if i < len(steps) - 1:
-            next_col = (i + 1) % COLS_PER_ROW
             same_row = (i + 1) // COLS_PER_ROW == i // COLS_PER_ROW
             if same_row:
                 nx, _ = positions[i + 1]
                 next_alpha = 1.0 if i + 1 < visible_count else (partial_alpha if i + 1 == visible_count else 0.0)
                 arr_alpha = min(alpha, next_alpha) if next_alpha > 0 else alpha * 0.3
-                _draw_arrow(draw, x1, nx - BOX_W // 2, cy, arr_alpha)
+                _draw_arrow(draw, cx + r, nx - r, cy, arr_alpha)
 
     return img.resize((W, H), Image.LANCZOS)
 
@@ -194,17 +198,14 @@ async def render(plan: dict, output_dir: str) -> dict[str, str]:
     plan = { "title": str, "steps": [...], "totalDays": int }
     Returns { "gif": "/abs/path/out.gif", "mp4": "/abs/path/out.mp4" }
     """
-    title      = plan.get("title", "Learning Plan")
-    steps      = plan.get("steps", [])
-    total_days = plan.get("totalDays", 0)
+    title = plan.get("title", "Learning Plan")
+    steps = plan.get("steps", [])
 
     if not steps:
         raise ValueError("plan must have at least one step")
 
     font_title = _try_font(52)
-    font_label = _try_font(32)
-    font_sub   = _try_font(24)
-    font_tiny  = _try_font(20)
+    font_label = _try_font(28)
 
     total_frames = len(steps) * FRAMES_PER_STEP + HOLD_FRAMES
 
@@ -217,9 +218,9 @@ async def render(plan: dict, output_dir: str) -> dict[str, str]:
             partial_alpha = math.sin((step_phase - int(step_phase)) * math.pi / 2) if visible_count < len(steps) else 1.0
 
             img = _draw_frame(
-                steps, title, total_days,
+                steps, title,
                 visible_count, partial_alpha,
-                font_title, font_label, font_sub, font_tiny,
+                font_title, font_label,
             )
             path = os.path.join(tmp, f"frame_{f:04d}.png")
             img.save(path, "PNG")
