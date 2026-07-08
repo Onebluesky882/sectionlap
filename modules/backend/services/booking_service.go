@@ -204,7 +204,7 @@ func (s *bookingService) VerifySlip(ctx context.Context, bookingID, studentID, q
 
 	wallet, err := s.walletRepo.GetByTeacherID(ctx, section.TeacherID)
 	if err != nil {
-		return nil, fmt.Errorf("ครูยังไม่ได้ตั้งค่า wallet: %w", err)
+		return nil, fmt.Errorf("ครูยังไม่ได้ตั้งค่าช่องทางรับเงิน กรุณาลองใหม่ภายหลัง")
 	}
 
 	if s.slip2go == nil {

@@ -189,7 +189,7 @@ export default function SectionDetailPreload({ id }: { id: string }) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              disabled={slip.phase === "decoding" || slip.phase === "verifying"}
+              disabled={!wallet || slip.phase === "decoding" || slip.phase === "verifying"}
               className="rounded-full bg-[#6AA098] text-white px-6 py-2.5 text-sm font-semibold disabled:opacity-40 hover:bg-[#4D8078] transition-colors"
             >
               {slip.phase === "decoding" ? "กำลังอ่าน QR จากสลิป..."
