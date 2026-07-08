@@ -22,6 +22,7 @@ type BookingStore = {
   setSelectedDate: (date: string) => void;
   setSelectedTimeSlot: (slot: string) => void;
   addBooking: (booking: Booking) => void;
+  setBookings: (bookings: Booking[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   reset: () => void;
@@ -41,6 +42,7 @@ export const useBookingStore = create<BookingStore>((set) => ({
   setSelectedDate: (date) => set({ selectedDate: date, selectedTimeSlot: null }),
   setSelectedTimeSlot: (slot) => set({ selectedTimeSlot: slot }),
   addBooking: (booking) => set((s) => ({ bookings: [...s.bookings, booking] })),
+  setBookings: (bookings) => set({ bookings }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
   reset: () => set(initialState),

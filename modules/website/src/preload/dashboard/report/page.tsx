@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSections } from "@/hooks/useSections";
 import { useAuth } from "@/hooks/useAuth";
+import { useBooking } from "@/hooks/useBooking";
 import { useBookingStore } from "@/store/useBookingStore";
 import DataTable from "@/components/DataTable";
 import type { Column } from "@/components/DataTable";
@@ -113,6 +114,12 @@ export default function ReportPreload() {
   const { user } = useAuth();
   const { sections, isLoading } = useSections();
   const bookings = useBookingStore((s) => s.bookings);
+  const { fetchBookings } = useBooking();
+
+  useEffect(() => {
+    fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const stats = useMemo(() => {
     const total = sections.length;
@@ -167,7 +174,7 @@ export default function ReportPreload() {
 
       {bookingStats.total > 0 && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Bookings (session นี้)</h2>
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Bookings</h2>
           <div className="grid grid-cols-3 gap-3">
             <StatCard label="รอชำระเงิน" value={bookingStats.pending} accent="bg-yellow-50" />
             <StatCard label="ชำระแล้ว" value={bookingStats.paid} accent="bg-green-50" />

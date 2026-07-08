@@ -14,10 +14,26 @@ export function useBooking() {
     setSelectedDate,
     setSelectedTimeSlot,
     addBooking,
+    setBookings,
     setLoading,
     setError,
     reset,
   } = useBookingStore();
+
+  async function fetchBookings() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await authFetch("/api/bookings");
+      if (!res.ok) throw new Error("โหลดประวัติการจองไม่สำเร็จ");
+      const { data } = (await res.json()) as { data: Booking[] };
+      setBookings(data ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function submitBooking(sectionId: string, answers?: string[]) {
     setLoading(true);
@@ -50,6 +66,7 @@ export function useBooking() {
     setSelectedDate,
     setSelectedTimeSlot,
     submitBooking,
+    fetchBookings,
     reset,
   };
 }

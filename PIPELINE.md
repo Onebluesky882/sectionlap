@@ -36,6 +36,33 @@ v4, per-user booking filtering that `HEAD` was missing), removed the stray
 not change any Stage's acceptance criteria — it restores the state Stage 1/2b/
 3/4b were already supposed to be in.
 
+**Incident — website API proxy layer largely missing since Stage 7:** Discovered 2026-07-08 while
+verifying Stage 12. `modules/website/src/app/api/` never had `route.ts` proxy files for
+`/api/auth/*` (signup/signin/signout/me), `/api/sections` (list + create), `/api/sections/:id`
+(detail + update), `/api/sections/:id/jitsi-token`, `/api/bookings` (create + list), `/api/student/
+profile`, and `/api/feedback` — the frontend hooks called these paths and 404'd through Next.js
+before ever reaching the Go backend, meaning a real user on the deployed website could not sign up,
+browse classes, book, view their booking history, or submit feedback, despite the backend for all of
+these being real and working (confirmed via direct backend calls during Stage 11's calibration and
+this incident's own investigation). Only `/api/upload-ticket`, `/api/visual-plans`, `/api/lessons/*`,
+`/api/sections/:id/wallet`, `/api/sections/:id/lessons`, and `/api/bookings/:id/verify-slip` existed.
+`/api/teacher/profile` had the same gap, fixed earlier the same day as part of Stage 12.
+Fixed 2026-07-08: added all 12 missing `route.ts` proxies following the existing pattern (forward
+`Authorization` header, forward body, pass through backend status code — see `/api/teacher/wallet/
+route.ts` as the reference implementation). Also fixed a related bug this gap was masking: `/profile`
+and `/dashboard/report` read booking history exclusively from `useBookingStore`, which was only ever
+populated in-memory by a successful `POST /api/bookings` — since that endpoint 404'd, and even once
+fixed there was still no `GET /api/bookings` call anywhere on mount, booking history reset to empty on
+every page load. Added `setBookings`/`fetchBookings` and wired both pages to fetch on mount. Verified
+end-to-end via curl against the live local stack: signup → sections list/detail → create booking →
+fresh `GET /api/bookings` returns the persisted booking (not empty) → student profile submit → feedback
+submit → signout, all through the website's own `:3000` proxy layer, not direct-to-backend. `tsc
+--noEmit` and `pnpm run build` both clean, all 12 new routes appear in the build's route manifest.
+Does not change any Stage's acceptance criteria — restores what Stage 7 was already supposed to
+deliver. **Not yet fixed / out of scope for this pass:** mobile and desktop payment flows are still on
+the pre-Stage-11 unverified "simulate payment" button (see Stage 11 background) — that's a missing
+feature port, not a proxy-layer bug, and wasn't part of this incident.
+
 **Parallel work note:** Stage 2a and Stage 4a have no dependency on Stage 1
 and are dispatched in parallel with it. Their integration counterparts
 (2b, 4b) are gated on Stage 1 (and 2a/4a respectively) merging to wansing.

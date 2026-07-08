@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useBooking } from "@/hooks/useBooking";
 import { useBookingStore } from "@/store/useBookingStore";
 
 const statusStyle: Record<string, string> = {
@@ -18,6 +20,12 @@ const statusLabel: Record<string, string> = {
 export default function ProfilePreload() {
   const { user, signOut } = useAuth();
   const bookings = useBookingStore((s) => s.bookings);
+  const { fetchBookings } = useBooking();
+
+  useEffect(() => {
+    fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="min-h-[calc(100vh-56px)] max-w-2xl mx-auto px-4 py-10 space-y-8">
