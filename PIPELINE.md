@@ -20,6 +20,7 @@
 | 9 | AI Visual Plan Generator (FlowLoop GIF/MP4 + R2) | IN_PROGRESS |
 | 10 | Lessons/Topics + Video Clip Upload (Teacher Dashboard) | COMPLETE |
 | 11 | Teacher Wallet (QR + Bank Account) + Slip2Go Auto-Verification | IN_PROGRESS |
+| 12 | Teacher Identity Verification (Document Upload + AI-Assisted Approval) | IN_PROGRESS |
 
 **Incident — desktop-app frontend broken since 2026-06-18:** The merge commit
 `ce056f7` ("merge dev into main (resolve conflicts)") left literal
@@ -578,6 +579,98 @@ price) → Slip2Go itself confirms the match → booking flips straight to `paid
 
 **Gate-Out:** All acceptance criteria checked including the live calibration call; full booking →
 QR display → slip upload → auto-verify → Jitsi-access-unlocked path exercised end-to-end.
+
+⸻
+
+### Stage 12 — Teacher Identity Verification (Document Upload + AI-Assisted Approval)
+
+**Domain:** modules/backend, modules/website, modules/admin
+**Agent:** [assigned agent]
+**Status:** `IN_PROGRESS`
+
+**Tech Stack:**
+- Claude API `claude-haiku-4-5-20251001`, vision input — same raw-HTTP pattern as Stage 9's
+  `parseWithClaude`, same `CLAUDE_API_KEY`, no new SDK
+- Cloudflare R2 (presigned PUT/GET, same pipeline as Stage 9/10/11)
+
+**Background:**
+Teachers (including foreign/adult applicants) previously verified identity with a free-text ID
+*number* only — no document photo — and `/teacher-verify` optimistically marked the user verified
+client-side regardless of actual backend state (bug). `POST /api/sections` also had no
+`is_verified` check at all, so verification was cosmetic even when granted. This stage adds a real
+passport/ID-photo upload, an AI extraction+match step (name + age ≥18) for instant auto-approval on
+a confident match, a three-state status model (`pending`/`approved`/`rejected` + rejection reason)
+for the existing admin queue on anything less than confident, and closes the section-creation gate.
+Applies identically to Thai and foreign teachers — no separate work-permit/visa check.
+
+**Key Design Decisions:**
+- Status lives on `teacher_profiles.verification_status`, not by widening `user_roles.is_verified`
+  (which stays a derived boolean, synced by the service layer) — avoids rippling into
+  `auth_controller.go`'s three response payloads and the desktop-app/mobile-app `User` types for no
+  functional gain. See ADR 003.
+- AI extraction and the approve/reject decision are separated: Claude only extracts structured
+  fields (name/DOB/doc type/confidence); the actual match/age/threshold logic runs in our own Go
+  code (`evaluateExtraction`), never delegated to the model's own judgment — same principle as
+  Stage 11's `SlipInfo.MatchesWallet`.
+- Any failure, ambiguity, or missing `CLAUDE_API_KEY`/R2 config fails safe to `pending` (admin
+  queue) — never auto-approves on uncertainty, never hard-fails the submission.
+- Bundled fix: `POST /api/sections` now actually enforces `is_verified` via
+  `middlewares.GetIsVerified` — previously absent entirely.
+
+**Acceptance Criteria:**
+- [x] Backend: `teacher_profiles` additive columns (doc R2 key, status, rejection reason, AI
+      extraction fields, raw response, reviewer) + backfill for pre-existing verified teachers
+- [x] Backend: `TeacherVerificationService` (Submit/Approve/Reject) + `name_match.go` (Levenshtein +
+      token-set name matching, dependency-free)
+- [x] Backend: `POST /api/teacher/profile` requires `documentKey`, returns real status;
+      `POST /api/admin/teachers/:id/reject` requires a reason; admin list presigns a document
+      preview URL
+- [x] Backend: section-creation gate (`SectionController.Create` now checks `IsVerified`)
+- [x] Backend: 11 unit tests (name matching, age calc, decision-matrix branches, AI-unconfigured
+      fail-safe, approve/reject sync) — `go build ./...` / `go test ./...` clean
+- [x] Website: `/teacher-verify` document upload step (`identity-document` upload type reusing the
+      Stage 7/10 R2 presign pipeline), status-aware UI (pending/rejected-with-reason+resubmit/
+      approved), fixed the optimistic-verified bug in `useTeacherVerify.ts`
+- [x] Website: found + fixed a pre-existing gap — `/api/teacher/profile` had no Next.js proxy route
+      at all (the old form silently failed); added `src/app/api/teacher/profile/route.ts`
+- [x] Admin: `/teachers` page shows document preview link, three-state status badge, plain-language
+      AI verdict note, required-reason reject flow
+- [x] ADR 003 written (`docs/adrs/003-ai-assisted-teacher-identity-verification.md`)
+- [x] `go build`/`go vet`/`go test` (backend), `tsc --noEmit` + `pnpm build` (website, admin) all
+      clean
+- [x] **End-to-end verification run 2026-07-08** against local Postgres + rebuilt backend, real R2
+      bucket, real Claude API key — full path exercised via curl: signup → upload-ticket
+      (`identity-document` type, correct `identity/user-{id}-{date}-{name}` key) → PUT to R2 → 200 →
+      submit profile → admin queue shows the case with a presigned document-preview URL that
+      round-trips the real uploaded JPEG → reject with empty reason correctly 400s, reject with a
+      reason correctly 200s and the teacher sees the exact reason on `GET /api/teacher/profile` →
+      resubmission clears the stale `rejection_reason`/`reviewed_by`/`ai_verdict` (confirmed via
+      direct DB query) → section-creation gate correctly 403s the unverified teacher and 201s the
+      same teacher immediately after admin approval — real positive+negative control, not assumed.
+      **One item not exercised live:** the Claude vision call itself hit a real `invalid_request_error`
+      ("Your credit balance is too low") from the configured `CLAUDE_API_KEY` — an account billing
+      issue, not a code defect. This incidentally became a real (not synthetic) test of the
+      fail-safe path: the raw error was persisted to `ai_raw_response` for audit and the case routed
+      to `pending` rather than crashing or auto-approving, exactly as designed. The auto-approve and
+      AI-driven name-mismatch/underage branches remain verified only at the unit-test level
+      (`evaluateExtraction` table tests) until `CLAUDE_API_KEY` has credit — re-run once topped up.
+      Also found + fixed during this pass: `modules/website/.dev.vars`'s `BACKEND_URL` pointed at a
+      stale Docker image (`sectionlap-backend-local`, built 3 days prior, predating this stage's
+      code) — rebuilt the image but redirected local dev to a freshly-built binary on :8080 instead
+      of recreating the container (recreating it would have required re-injecting secrets as plain
+      `docker run -e` flags, which the environment correctly refused); the Docker image itself is
+      rebuilt and tagged `sectionlap-backend:local` and ready to redeploy whenever convenient.
+
+**Gate-In Requirements:**
+- Stage 6a merged (backend API/DB pattern established)
+- Stage 7 merged (website 3-layer pattern, R2 presign pipeline exist)
+- Stage 8 merged (admin role/route group exists)
+- `CLAUDE_API_KEY` present (reused from Stage 9, no new key)
+
+**Gate-Out:** All acceptance criteria checked; real end-to-end pass completed 2026-07-08 for every
+branch except the live Claude auto-approve/name-mismatch/underage verdicts, which are blocked on
+`CLAUDE_API_KEY` billing (account credit, not code) — re-run that one slice once credit is topped
+up, then flip to `COMPLETE`.
 
 ⸻
 

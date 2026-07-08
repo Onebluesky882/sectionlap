@@ -37,6 +37,10 @@ func (ctrl *SectionController) GetByID(c fiber.Ctx) error {
 func (ctrl *SectionController) Create(c fiber.Ctx) error {
 	userID := middlewares.GetUserID(c)
 
+	if !middlewares.GetIsVerified(c) {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{"error": "identity verification required before opening a class"})
+	}
+
 	var input services.CreateSectionInput
 	if err := c.Bind().JSON(&input); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request body"})

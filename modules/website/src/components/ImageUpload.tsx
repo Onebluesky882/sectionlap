@@ -3,16 +3,26 @@
 import { useRef, useState, useCallback } from "react";
 import { useUpload } from "@/hooks/useUpload";
 import UploadProgressBar from "@/components/UploadProgressBar";
+import type { UploadType } from "@/lib/r2Presign";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
-const ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
+const DEFAULT_ACCEPT = "image/jpeg,image/png,image/webp,image/gif";
 
 type Props = {
   onUploaded?: (key: string) => void;
   label?: string;
+  accept?: string;
+  helpText?: string;
+  uploadType?: UploadType;
 };
 
-export default function ImageUpload({ onUploaded, label = "อัปโหลดรูปภาพ" }: Props) {
+export default function ImageUpload({
+  onUploaded,
+  label = "อัปโหลดรูปภาพ",
+  accept = DEFAULT_ACCEPT,
+  helpText = "JPG, PNG, WEBP, GIF · สูงสุด 10 MB",
+  uploadType = "image",
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -26,7 +36,7 @@ export default function ImageUpload({ onUploaded, label = "อัปโหลด
       return;
     }
     setPreview(URL.createObjectURL(file));
-    uploadImage(file).then((k) => {
+    uploadImage(file, uploadType).then((k) => {
       if (k) onUploaded?.(k);
     });
   }
@@ -73,7 +83,7 @@ export default function ImageUpload({ onUploaded, label = "อัปโหลด
           <div className="flex flex-col items-center gap-2 p-6 text-center select-none">
             <span className="text-3xl">🖼️</span>
             <p className="text-sm text-gray-500">ลากรูปมาวางที่นี่ หรือคลิกเพื่อเลือก</p>
-            <p className="text-xs text-gray-400">JPG, PNG, WEBP, GIF · สูงสุด 10 MB</p>
+            <p className="text-xs text-gray-400">{helpText}</p>
           </div>
         )}
 
@@ -98,7 +108,7 @@ export default function ImageUpload({ onUploaded, label = "อัปโหลด
       <input
         ref={inputRef}
         type="file"
-        accept={ACCEPT}
+        accept={accept}
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

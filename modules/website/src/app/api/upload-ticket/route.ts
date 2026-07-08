@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as RequestBody;
   const { type, name, classId, chunkIndex, contentType } = body;
 
-  if (!type || !["image", "video-chunk"].includes(type)) {
+  if (!type || !["image", "video-chunk", "identity-document"].includes(type)) {
     return NextResponse.json({ error: "invalid type" }, { status: 400 });
   }
 
@@ -45,6 +45,13 @@ export async function POST(req: NextRequest) {
   // Teacher-only for video
   if (type === "video-chunk" && user.role !== "teacher") {
     return NextResponse.json({ error: "only teachers can upload videos" }, { status: 403 });
+  }
+
+  // Teacher-only for identity documents — students never need this, and the
+  // key is derived from the authenticated user's own id server-side, so this
+  // is inherently self-scoped (no other user's document can be requested).
+  if (type === "identity-document" && user.role !== "teacher") {
+    return NextResponse.json({ error: "only teachers can upload identity documents" }, { status: 403 });
   }
 
   const result = await createPresignedPut({

@@ -2,11 +2,19 @@
 
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useAdminTeachers } from "@/hooks/useAdminTeachers";
+import { useAdminTeachers, aiVerdictLabel } from "@/hooks/useAdminTeachers";
+
+const statusLabels: Record<string, { text: string; className: string }> = {
+  approved: { text: "อนุมัติแล้ว", className: "bg-green-100 text-green-700" },
+  pending: { text: "รอการอนุมัติ", className: "bg-yellow-100 text-yellow-700" },
+  rejected: { text: "ถูกปฏิเสธ", className: "bg-red-100 text-red-700" },
+};
 
 export default function TeachersPreload() {
   const { teachers, isLoading, error, fetchTeachers, approveTeacher, rejectTeacher } = useAdminTeachers();
   const [actionError, setActionError] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   useEffect(() => {
     fetchTeachers();
@@ -20,9 +28,12 @@ export default function TeachersPreload() {
     }
   }
 
-  async function handleReject(id: string) {
+  async function handleConfirmReject(id: string) {
+    if (!rejectReason.trim()) return;
     try {
-      await rejectTeacher(id);
+      await rejectTeacher(id, rejectReason.trim());
+      setRejectingId(null);
+      setRejectReason("");
     } catch (e) {
       setActionError(e instanceof Error ? e.message : "เกิดข้อผิดพลาด");
     }
@@ -52,59 +63,109 @@ export default function TeachersPreload() {
                 <th className="text-left px-4 py-3 text-[#64748B] font-medium">User ID</th>
                 <th className="text-left px-4 py-3 text-[#64748B] font-medium">วิชาเชี่ยวชาญ</th>
                 <th className="text-left px-4 py-3 text-[#64748B] font-medium">วันที่ยื่น</th>
+                <th className="text-left px-4 py-3 text-[#64748B] font-medium">เอกสาร</th>
                 <th className="text-left px-4 py-3 text-[#64748B] font-medium">สถานะ</th>
                 <th className="text-left px-4 py-3 text-[#64748B] font-medium">การดำเนินการ</th>
               </tr>
             </thead>
             <tbody>
-              {teachers.map((t) => (
-                <tr key={t.userId} className="border-b border-[#DDE8E6] last:border-0">
-                  <td className="px-4 py-3 text-[#1A2332] font-medium">
-                    {t.profile?.fullName ?? "-"}
-                  </td>
-                  <td className="px-4 py-3 text-[#64748B] font-mono text-xs">{t.userId}</td>
-                  <td className="px-4 py-3 text-[#64748B]">{t.profile?.expertise ?? "-"}</td>
-                  <td className="px-4 py-3 text-[#64748B]">
-                    {t.profile?.submittedAt
-                      ? new Date(t.profile.submittedAt).toLocaleDateString("th-TH")
-                      : "-"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        t.isVerified
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {t.isVerified ? "อนุมัติแล้ว" : "รอการอนุมัติ"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
-                      {!t.isVerified && (
-                        <button
-                          onClick={() => handleApprove(t.userId)}
-                          className="px-3 py-1.5 rounded-lg bg-[#6AA098] text-white text-xs font-medium hover:bg-[#4D8078] transition-colors"
+              {teachers.map((t) => {
+                const status = t.profile?.verificationStatus ?? (t.isVerified ? "approved" : "pending");
+                const statusInfo = statusLabels[status] ?? statusLabels.pending;
+                const verdictNote = aiVerdictLabel(t.profile?.aiVerdict);
+
+                return (
+                  <tr key={t.userId} className="border-b border-[#DDE8E6] last:border-0 align-top">
+                    <td className="px-4 py-3 text-[#1A2332] font-medium">
+                      {t.profile?.fullName ?? "-"}
+                    </td>
+                    <td className="px-4 py-3 text-[#64748B] font-mono text-xs">{t.userId}</td>
+                    <td className="px-4 py-3 text-[#64748B]">{t.profile?.expertise ?? "-"}</td>
+                    <td className="px-4 py-3 text-[#64748B]">
+                      {t.profile?.submittedAt
+                        ? new Date(t.profile.submittedAt).toLocaleDateString("th-TH")
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {t.documentUrl ? (
+                        <a
+                          href={t.documentUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[#6AA098] underline underline-offset-2 text-xs"
                         >
-                          อนุมัติ
-                        </button>
+                          ดูเอกสาร
+                        </a>
+                      ) : (
+                        <span className="text-[#64748B]/50 text-xs">-</span>
                       )}
-                      {t.isVerified && (
-                        <button
-                          onClick={() => handleReject(t.userId)}
-                          className="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200 transition-colors"
-                        >
-                          ยกเลิก
-                        </button>
+                    </td>
+                    <td className="px-4 py-3 space-y-1.5">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.className}`}
+                      >
+                        {statusInfo.text}
+                      </span>
+                      {status === "pending" && verdictNote && (
+                        <p className="text-xs text-amber-600 max-w-[16rem]">AI ตรวจพบ: {verdictNote}</p>
                       )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      {status === "rejected" && t.profile?.rejectionReason && (
+                        <p className="text-xs text-red-500 max-w-[16rem]">{t.profile.rejectionReason}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {rejectingId === t.userId ? (
+                        <div className="flex flex-col gap-2 max-w-[14rem]">
+                          <input
+                            autoFocus
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                            placeholder="เหตุผลการปฏิเสธ"
+                            className="border border-[#DDE8E6] rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-red-200"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleConfirmReject(t.userId)}
+                              disabled={!rejectReason.trim()}
+                              className="px-3 py-1 rounded-lg bg-red-600 text-white text-xs font-medium disabled:opacity-40 hover:bg-red-700 transition-colors"
+                            >
+                              ยืนยันปฏิเสธ
+                            </button>
+                            <button
+                              onClick={() => { setRejectingId(null); setRejectReason(""); }}
+                              className="px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-xs font-medium hover:bg-gray-200 transition-colors"
+                            >
+                              ยกเลิก
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          {status !== "approved" && (
+                            <button
+                              onClick={() => handleApprove(t.userId)}
+                              className="px-3 py-1.5 rounded-lg bg-[#6AA098] text-white text-xs font-medium hover:bg-[#4D8078] transition-colors"
+                            >
+                              อนุมัติ
+                            </button>
+                          )}
+                          {status !== "rejected" && (
+                            <button
+                              onClick={() => setRejectingId(t.userId)}
+                              className="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200 transition-colors"
+                            >
+                              ปฏิเสธ
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
               {!isLoading && teachers.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-[#64748B]">
+                  <td colSpan={7} className="px-4 py-8 text-center text-[#64748B]">
                     ไม่มีข้อมูลครูผู้สอน
                   </td>
                 </tr>

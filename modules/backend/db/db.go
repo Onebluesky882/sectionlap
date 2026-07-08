@@ -66,6 +66,25 @@ func Migrate(db *bun.DB) error {
 	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS payment_slip_r2_key TEXT`)
 	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS slip_verification_raw TEXT`)
 	_, _ = db.ExecContext(ctx, `ALTER TABLE bookings ADD COLUMN IF NOT EXISTS declared_at TIMESTAMPTZ`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS identity_doc_r2_key TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS verification_status TEXT NOT NULL DEFAULT 'pending'`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS rejection_reason TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS ai_extracted_name TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS ai_extracted_dob TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS ai_document_type TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS ai_confidence DOUBLE PRECISION`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS ai_verdict TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS ai_raw_response TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS reviewed_by TEXT`)
+	_, _ = db.ExecContext(ctx, `ALTER TABLE teacher_profiles ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMPTZ`)
+
+	// Backfill: teachers already verified under the old boolean-only model
+	// should not suddenly appear "pending" once verification_status defaults in.
+	_, _ = db.ExecContext(ctx, `
+		UPDATE teacher_profiles SET verification_status = 'approved'
+		WHERE verification_status = 'pending'
+		  AND teacher_id IN (SELECT user_id FROM user_roles WHERE is_verified = true)
+	`)
 
 	// Drop old CASCADE constraints if they exist (replaced by RESTRICT below)
 	drops := []string{

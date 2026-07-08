@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
+import type { UploadType } from "@/lib/r2Presign";
 
 export type UploadState = {
   isUploading: boolean;
@@ -19,7 +20,7 @@ export function useUpload() {
     error: null,
   });
 
-  async function uploadImage(file: File): Promise<string | null> {
+  async function uploadImage(file: File, type: UploadType = "image"): Promise<string | null> {
     setState({ isUploading: true, progress: 0, key: null, error: null });
     try {
       // 1. Get presigned PUT URL
@@ -30,7 +31,7 @@ export function useUpload() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          type: "image",
+          type,
           name: file.name,
           contentType: file.type,
         }),

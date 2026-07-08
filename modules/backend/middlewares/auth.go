@@ -14,9 +14,10 @@ import (
 type contextKey string
 
 const (
-	CtxUserID   contextKey = "userID"
-	CtxUserName contextKey = "userName"
-	CtxUserRole contextKey = "userRole"
+	CtxUserID     contextKey = "userID"
+	CtxUserName   contextKey = "userName"
+	CtxUserRole   contextKey = "userRole"
+	CtxIsVerified contextKey = "isVerified"
 )
 
 type AuthMiddleware struct {
@@ -67,6 +68,7 @@ func (m *AuthMiddleware) Require() fiber.Handler {
 
 		c.Locals(string(CtxUserID), session.UserID)
 		c.Locals(string(CtxUserRole), userRole.Role)
+		c.Locals(string(CtxIsVerified), userRole.IsVerified)
 
 		return c.Next()
 	}
@@ -149,5 +151,10 @@ func GetUserID(c fiber.Ctx) string {
 
 func GetUserRole(c fiber.Ctx) models.UserRoleType {
 	v, _ := c.Locals(string(CtxUserRole)).(models.UserRoleType)
+	return v
+}
+
+func GetIsVerified(c fiber.Ctx) bool {
+	v, _ := c.Locals(string(CtxIsVerified)).(bool)
 	return v
 }

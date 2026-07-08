@@ -8,13 +8,17 @@ export type PresignResult = {
   expiresAt: string;
 };
 
-export type UploadType = "image" | "video-chunk";
+export type UploadType = "image" | "video-chunk" | "identity-document";
 
 function makeKey(type: UploadType, opts: { userId: string; name?: string; classId?: string; chunkIndex?: number }): string {
   const date = new Date().toISOString().slice(0, 10);
   if (type === "image") {
     const safeName = (opts.name ?? "file").replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
     return `image/user-${opts.userId}-${safeName}-${date}`;
+  }
+  if (type === "identity-document") {
+    const safeName = (opts.name ?? "file").replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+    return `identity/user-${opts.userId}-${date}-${safeName}`;
   }
   // video-chunk: video/{classId}/{chunkIndex:04d}.webm
   const idx = String(opts.chunkIndex ?? 0).padStart(4, "0");
@@ -55,7 +59,7 @@ export async function createPresignedPut(
   const command = new PutObjectCommand({
     Bucket: opts.bucketName,
     Key: key,
-    ContentType: opts.contentType ?? (opts.type === "image" ? "image/jpeg" : "video/webm"),
+    ContentType: opts.contentType ?? (opts.type === "video-chunk" ? "video/webm" : "image/jpeg"),
   });
 
   const url = await getSignedUrl(client, command, { expiresIn: expiresInSeconds });

@@ -111,10 +111,11 @@ func main() {
 	jitsiCtrl := controllers.NewJitsiController(jitsiSvc)
 	feedbackCtrl := controllers.NewFeedbackController(feedbackRepo)
 	teacherProfileRepo := repositories.NewTeacherProfileRepository(db)
-	teacherProfileCtrl := controllers.NewTeacherProfileController(teacherProfileRepo, userRoleRepo)
+	teacherVerificationSvc := services.NewTeacherVerificationService(teacherProfileRepo, userRoleRepo, cfg.ClaudeAPIKey, r2Presigner)
+	teacherProfileCtrl := controllers.NewTeacherProfileController(teacherProfileRepo, userRoleRepo, teacherVerificationSvc, r2Presigner)
 	studentProfileRepo := repositories.NewStudentProfileRepository(db)
 	studentProfileCtrl := controllers.NewStudentProfileController(studentProfileRepo)
-	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, db)
+	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, teacherVerificationSvc, r2Presigner, db)
 
 	visualPlanRepo := repositories.NewVisualPlanRepository(db)
 	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.ClaudeAPIKey, cfg.VisualServiceURL, r2Presigner)

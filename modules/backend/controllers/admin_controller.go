@@ -4,17 +4,20 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/uptrace/bun"
 
+	"sectionlap/backend/middlewares"
 	"sectionlap/backend/models"
 	"sectionlap/backend/repositories"
 	"sectionlap/backend/services"
 )
 
 type AdminController struct {
-	userRoleRepo       repositories.UserRoleRepository
-	teacherProfileRepo repositories.TeacherProfileRepository
-	sectionRepo        repositories.SectionRepository
-	sectionService     services.SectionService
-	db                 *bun.DB
+	userRoleRepo        repositories.UserRoleRepository
+	teacherProfileRepo  repositories.TeacherProfileRepository
+	sectionRepo         repositories.SectionRepository
+	sectionService      services.SectionService
+	verificationService *services.TeacherVerificationService
+	presigner           *services.R2Presigner
+	db                  *bun.DB
 }
 
 func NewAdminController(
@@ -22,14 +25,18 @@ func NewAdminController(
 	teacherProfileRepo repositories.TeacherProfileRepository,
 	sectionRepo repositories.SectionRepository,
 	sectionService services.SectionService,
+	verificationService *services.TeacherVerificationService,
+	presigner *services.R2Presigner,
 	db *bun.DB,
 ) *AdminController {
 	return &AdminController{
-		userRoleRepo:       userRoleRepo,
-		teacherProfileRepo: teacherProfileRepo,
-		sectionRepo:        sectionRepo,
-		sectionService:     sectionService,
-		db:                 db,
+		userRoleRepo:        userRoleRepo,
+		teacherProfileRepo:  teacherProfileRepo,
+		sectionRepo:         sectionRepo,
+		sectionService:      sectionService,
+		verificationService: verificationService,
+		presigner:           presigner,
+		db:                  db,
 	}
 }
 
@@ -118,18 +125,26 @@ func (ctrl *AdminController) ListTeachers(c fiber.Ctx) error {
 	}
 
 	type TeacherRow struct {
-		UserID     string                 `json:"userId"`
-		IsVerified bool                   `json:"isVerified"`
-		Profile    *models.TeacherProfile `json:"profile"`
+		UserID      string                 `json:"userId"`
+		IsVerified  bool                   `json:"isVerified"`
+		Profile     *models.TeacherProfile `json:"profile"`
+		DocumentURL string                 `json:"documentUrl,omitempty"`
 	}
 
 	rows := make([]TeacherRow, 0, len(roles))
 	for _, r := range roles {
-		rows = append(rows, TeacherRow{
+		profile := profileMap[r.UserID]
+		row := TeacherRow{
 			UserID:     r.UserID,
 			IsVerified: r.IsVerified,
-			Profile:    profileMap[r.UserID],
-		})
+			Profile:    profile,
+		}
+		if ctrl.presigner != nil && profile != nil && profile.IdentityDocR2Key != "" {
+			if url, err := ctrl.presigner.PresignGetURL(ctx, profile.IdentityDocR2Key); err == nil {
+				row.DocumentURL = url
+			}
+		}
+		rows = append(rows, row)
 	}
 
 	return c.JSON(fiber.Map{
@@ -141,15 +156,28 @@ func (ctrl *AdminController) ListTeachers(c fiber.Ctx) error {
 
 func (ctrl *AdminController) ApproveTeacher(c fiber.Ctx) error {
 	id := c.Params("id")
-	if err := ctrl.userRoleRepo.SetVerified(c.Context(), id, true); err != nil {
+	reviewerID := middlewares.GetUserID(c)
+	if err := ctrl.verificationService.Approve(c.Context(), id, reviewerID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to approve teacher"})
 	}
 	return c.JSON(fiber.Map{"data": nil, "error": nil, "status": "success"})
 }
 
+type RejectTeacherBody struct {
+	Reason string `json:"reason"`
+}
+
 func (ctrl *AdminController) RejectTeacher(c fiber.Ctx) error {
 	id := c.Params("id")
-	if err := ctrl.userRoleRepo.SetVerified(c.Context(), id, false); err != nil {
+	reviewerID := middlewares.GetUserID(c)
+
+	var body RejectTeacherBody
+	_ = c.Bind().JSON(&body)
+	if body.Reason == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "rejection reason is required"})
+	}
+
+	if err := ctrl.verificationService.Reject(c.Context(), id, reviewerID, body.Reason); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "failed to reject teacher"})
 	}
 	return c.JSON(fiber.Map{"data": nil, "error": nil, "status": "success"})
