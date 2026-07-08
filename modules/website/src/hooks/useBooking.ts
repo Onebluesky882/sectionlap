@@ -48,8 +48,8 @@ export function useBooking() {
         const body = await res.json() as { error?: string };
         throw new Error(body.error ?? "Booking failed");
       }
-      const { data } = (await res.json()) as { data: { booking: Booking } };
-      addBooking(data.booking);
+      const { data } = (await res.json()) as { data: Booking };
+      addBooking(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unknown error");
     } finally {
