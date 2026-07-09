@@ -214,11 +214,15 @@ Rules:
 - If the image is not a passport or ID card (blank, unrelated photo, too blurry to read), set document_type to "unreadable" and confidence to 0.
 - Do not guess a name or date if it is not clearly legible — leave the field empty and lower confidence instead.`
 
-// extractWithClaude calls Anthropic's Messages API directly via net/http —
-// mirrors visual_plan_service.go's parseWithClaude exactly (same endpoint,
-// same headers, same claudeModel constant), extended with an image content
-// block for vision input. Returns the parsed extraction plus the raw
-// response body (for audit) even when parsing ultimately fails.
+// claudeModel stays on Claude (vision) — this pipeline gates auto-approval of
+// teacher identity documents, so accuracy matters more than cost here.
+// visual_plan_service.go's text-only parsing moved to Groq separately.
+const claudeModel = "claude-haiku-4-5-20251001"
+
+// extractWithClaude calls Anthropic's Messages API directly via net/http,
+// with an image content block for vision input. Returns the parsed
+// extraction plus the raw response body (for audit) even when parsing
+// ultimately fails.
 func (s *TeacherVerificationService) extractWithClaude(ctx context.Context, imgBytes []byte, mimeType string) (*docExtraction, string, error) {
 	b64 := base64.StdEncoding.EncodeToString(imgBytes)
 

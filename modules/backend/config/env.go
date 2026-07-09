@@ -16,6 +16,7 @@ type Config struct {
 	JitsiDomain          string
 	SessionMaxAge        time.Duration
 	ClaudeAPIKey         string
+	GroqAPIKey           string
 	VisualServiceURL     string
 	R2Endpoint           string
 	R2AccessKeyID        string
@@ -44,6 +45,7 @@ func Load() *Config {
 		JitsiDomain:       getEnv("JITSI_DOMAIN", "localhost"),
 		SessionMaxAge:     time.Duration(sessionHours) * time.Hour,
 		ClaudeAPIKey:      getEnv("CLAUDE_API_KEY", ""),
+		GroqAPIKey:        getEnv("GROQ_API_KEY", ""),
 		VisualServiceURL:  getEnv("VISUAL_SERVICE_URL", "http://localhost:9000"),
 		R2Endpoint:        getEnv("R2_ENDPOINT", ""),
 		R2AccessKeyID:     getEnv("R2_ACCESS_KEY_ID", ""),

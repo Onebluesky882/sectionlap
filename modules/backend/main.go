@@ -118,7 +118,7 @@ func main() {
 	adminCtrl := controllers.NewAdminController(userRoleRepo, teacherProfileRepo, sectionRepo, sectionSvc, teacherVerificationSvc, r2Presigner, db)
 
 	visualPlanRepo := repositories.NewVisualPlanRepository(db)
-	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.ClaudeAPIKey, cfg.VisualServiceURL, r2Presigner)
+	visualPlanSvc := services.NewVisualPlanService(visualPlanRepo, cfg.GroqAPIKey, cfg.VisualServiceURL, r2Presigner)
 	visualPlanCtrl := controllers.NewVisualPlanController(visualPlanSvc)
 
 	lessonRepo := repositories.NewLessonRepository(db)
