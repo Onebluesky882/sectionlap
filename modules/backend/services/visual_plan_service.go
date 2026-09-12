@@ -17,23 +17,26 @@ import (
 )
 
 type VisualPlanService struct {
-	repo             *repositories.VisualPlanRepository
-	groqAPIKey       string
-	visualServiceURL string
-	presigner        *R2Presigner
+	repo                    *repositories.VisualPlanRepository
+	claudeCodeServiceURL    string
+	claudeCodeServiceSecret string
+	visualServiceURL        string
+	presigner               *R2Presigner
 }
 
 func NewVisualPlanService(
 	repo *repositories.VisualPlanRepository,
-	groqAPIKey string,
+	claudeCodeServiceURL string,
+	claudeCodeServiceSecret string,
 	visualServiceURL string,
 	presigner *R2Presigner,
 ) *VisualPlanService {
 	return &VisualPlanService{
-		repo:             repo,
-		groqAPIKey:       groqAPIKey,
-		visualServiceURL: strings.TrimRight(visualServiceURL, "/"),
-		presigner:        presigner,
+		repo:                    repo,
+		claudeCodeServiceURL:    strings.TrimRight(claudeCodeServiceURL, "/"),
+		claudeCodeServiceSecret: claudeCodeServiceSecret,
+		visualServiceURL:        strings.TrimRight(visualServiceURL, "/"),
+		presigner:               presigner,
 	}
 }
 
@@ -52,7 +55,7 @@ func (s *VisualPlanService) presignURLs(ctx context.Context, plan *models.Visual
 	}
 }
 
-// ── Groq structured plan ──────────────────────────────────────────────────────
+// ── Claude Code structured plan ─────────────────────────────────────────────
 
 type planStep struct {
 	Label        string `json:"label"`
@@ -67,26 +70,9 @@ type structuredPlan struct {
 	TotalDays int        `json:"totalDays"`
 }
 
-// groqModel is a general-purpose, instruction-following model — good fit for
-// this structured-JSON-extraction task. Not the vision model used by
-// teacher_verification_service.go (which stays on Claude for now).
-const groqModel = "openai/gpt-oss-20b"
-
-// stripMarkdownFence removes a ```json / ``` wrapper the model sometimes adds
-// despite being told to return raw JSON.
-func stripMarkdownFence(s string) string {
-	s = strings.TrimSpace(s)
-	if !strings.HasPrefix(s, "```") {
-		return s
-	}
-	s = strings.TrimPrefix(s, "```json")
-	s = strings.TrimPrefix(s, "```")
-	s = strings.TrimSuffix(s, "```")
-	return strings.TrimSpace(s)
-}
-
-// mockParse builds a naive structured plan without calling Groq — used when
-// no GROQ_API_KEY is configured (e.g. local dev before an API subscription exists).
+// mockParse builds a naive structured plan without calling the AI parser —
+// used when no CLAUDE_CODE_SERVICE_URL is reachable (e.g. local dev before
+// the sidecar is running).
 func mockParse(promptText string) *structuredPlan {
 	lines := strings.Split(strings.TrimSpace(promptText), "\n")
 	steps := make([]planStep, 0, len(lines))
@@ -113,92 +99,41 @@ func mockParse(promptText string) *structuredPlan {
 	}
 }
 
-func (s *VisualPlanService) parseWithGroq(ctx context.Context, promptText string) (*structuredPlan, error) {
-	if s.groqAPIKey == "" {
+// parseWithClaudeCode asks the claude-code-service sidecar (a small Node
+// process that shells out to the Claude Code CLI, authenticated via
+// CLAUDE_CODE_OAUTH_TOKEN) to turn promptText into a structuredPlan. The
+// sidecar owns the system prompt and CLI invocation — this is a plain HTTP
+// call, same shape as callVisualService below.
+func (s *VisualPlanService) parseWithClaudeCode(ctx context.Context, promptText string) (*structuredPlan, error) {
+	if s.claudeCodeServiceURL == "" {
 		return mockParse(promptText), nil
 	}
 
-	systemPrompt := `You are an expert educational flow-diagram designer. Given a user's text
-description of a learning plan, roadmap, process, or concept (including a formula or
-equation), break it down into a clear, logical sequence of steps a learner can follow
-visually.
-
-Return ONLY valid JSON with this exact shape (no markdown, no explanation):
-{
-  "title": "short title for the plan (max 40 chars)",
-  "totalDays": <total number of days as integer, 0 if not time-based>,
-  "steps": [
-    {
-      "label": "short step name (max 16 chars, 1-3 words)",
-      "sublabel": "optional detail (max 30 chars, empty string if none)",
-      "milestone": <true if this is a key milestone, false otherwise>,
-      "durationDays": <days for this step as integer, or null if not time-based>
-    }
-  ]
-}
-
-Rules:
-- Maximum 12 steps
-- Steps must flow logically, each one building on the last
-- Keep labels very short and punchy — they render inside a small circle
-- Mark 2-3 steps as milestones
-- If the input is a formula or equation, break it into the concepts/terms a learner
-  needs to understand it, in a sensible teaching order — not a literal restatement of
-  the symbols`
-
-	// Groq serves an OpenAI-compatible Chat Completions API — different
-	// request/response shape than Anthropic's Messages API (messages array
-	// carries the system role instead of a top-level "system" field, and the
-	// response is choices[0].message.content instead of content[0].text).
-	body, _ := json.Marshal(map[string]any{
-		"model":                 groqModel,
-		"max_completion_tokens": 1024,
-		"temperature":           0.2,
-		"response_format":       map[string]string{"type": "json_object"},
-		"messages": []map[string]any{
-			{"role": "system", "content": systemPrompt},
-			{"role": "user", "content": promptText},
-		},
-	})
+	body, _ := json.Marshal(map[string]string{"promptText": promptText})
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		"https://api.groq.com/openai/v1/chat/completions", bytes.NewReader(body))
+		s.claudeCodeServiceURL+"/v1/parse-plan", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+s.groqAPIKey)
+	req.Header.Set("X-Internal-Secret", s.claudeCodeServiceSecret)
 
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 60 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("groq request failed: %w", err)
+		return nil, fmt.Errorf("claude-code-service request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		b, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("groq error %d: %s", resp.StatusCode, b)
-	}
-
-	var groqResp struct {
-		Choices []struct {
-			Message struct {
-				Content string `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&groqResp); err != nil {
-		return nil, fmt.Errorf("decode groq response: %w", err)
-	}
-
-	if len(groqResp.Choices) == 0 {
-		return nil, fmt.Errorf("groq returned no choices")
+		return nil, fmt.Errorf("claude-code-service error %d: %s", resp.StatusCode, b)
 	}
 
 	var plan structuredPlan
-	if err := json.Unmarshal([]byte(stripMarkdownFence(groqResp.Choices[0].Message.Content)), &plan); err != nil {
-		return nil, fmt.Errorf("parse structured plan JSON: %w", err)
+	if err := json.NewDecoder(resp.Body).Decode(&plan); err != nil {
+		return nil, fmt.Errorf("decode claude-code-service response: %w", err)
 	}
 	return &plan, nil
 }
@@ -258,7 +193,7 @@ func (s *VisualPlanService) callVisualService(ctx context.Context, planID, userI
 // ── Public API ────────────────────────────────────────────────────────────────
 
 func (s *VisualPlanService) Generate(ctx context.Context, userID, promptText string) (*models.VisualPlan, error) {
-	plan, err := s.parseWithGroq(ctx, promptText)
+	plan, err := s.parseWithClaudeCode(ctx, promptText)
 	if err != nil {
 		return nil, fmt.Errorf("AI parse failed: %w", err)
 	}

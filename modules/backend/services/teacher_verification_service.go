@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"sectionlap/backend/models"
@@ -214,15 +215,29 @@ Rules:
 - If the image is not a passport or ID card (blank, unrelated photo, too blurry to read), set document_type to "unreadable" and confidence to 0.
 - Do not guess a name or date if it is not clearly legible — leave the field empty and lower confidence instead.`
 
-// claudeModel stays on Claude (vision) — this pipeline gates auto-approval of
-// teacher identity documents, so accuracy matters more than cost here.
-// visual_plan_service.go's text-only parsing moved to Groq separately.
+// claudeModel stays on the Anthropic Messages API directly (vision) — this
+// pipeline gates auto-approval of teacher identity documents, so a plain
+// HTTPS call is the right fit. visual_plan_service.go's text-only parsing
+// goes through claude-code-service (CLAUDE_CODE_OAUTH_TOKEN) instead.
 const claudeModel = "claude-haiku-4-5-20251001"
 
 // extractWithClaude calls Anthropic's Messages API directly via net/http,
 // with an image content block for vision input. Returns the parsed
 // extraction plus the raw response body (for audit) even when parsing
 // ultimately fails.
+// stripMarkdownFence removes a ```json / ``` wrapper the model sometimes adds
+// despite being told to return raw JSON.
+func stripMarkdownFence(s string) string {
+	s = strings.TrimSpace(s)
+	if !strings.HasPrefix(s, "```") {
+		return s
+	}
+	s = strings.TrimPrefix(s, "```json")
+	s = strings.TrimPrefix(s, "```")
+	s = strings.TrimSuffix(s, "```")
+	return strings.TrimSpace(s)
+}
+
 func (s *TeacherVerificationService) extractWithClaude(ctx context.Context, imgBytes []byte, mimeType string) (*docExtraction, string, error) {
 	b64 := base64.StdEncoding.EncodeToString(imgBytes)
 

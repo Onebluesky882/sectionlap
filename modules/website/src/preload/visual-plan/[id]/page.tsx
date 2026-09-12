@@ -1,19 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { VisualPlan } from "@/store/useVisualPlanStore";
+import { useVisualPlanStore, type VisualPlan } from "@/store/useVisualPlanStore";
 
 export default function VisualPlanDetailPreload({ id }: { id: string }) {
-  const [plan, setPlan] = useState<VisualPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // The standalone visual-plan-worker doesn't persist plans (anonymous-first,
+  // no DB) — a plan just generated in this tab only exists in this in-memory
+  // store, so check there first before asking the (DB-backed) API for it.
+  const cachedPlan = useVisualPlanStore((s) => s.plans.find((p) => p.id === id));
+  const [plan, setPlan] = useState<VisualPlan | null>(cachedPlan ?? null);
+  const [isLoading, setIsLoading] = useState(!cachedPlan);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (cachedPlan) return;
     fetch(`/api/visual-plans/${id}`)
       .then((r) => r.json() as Promise<{ data: VisualPlan }>)
       .then(({ data }) => setPlan(data))
       .finally(() => setIsLoading(false));
-  }, [id]);
+  }, [id, cachedPlan]);
 
   function copyEmbed() {
     if (!plan) return;
@@ -47,7 +52,7 @@ export default function VisualPlanDetailPreload({ id }: { id: string }) {
       <h1 className="text-2xl font-bold text-[#1A2332] mb-6">{plan.title}</h1>
 
       {/* ── GIF preview ── */}
-      <div className="rounded-2xl overflow-hidden border border-[#DDE8E6] mb-8 bg-[#1A2332]">
+      <div className="rounded-2xl overflow-hidden border border-[#DDE8E6] mb-8 bg-[#F7FAFA]">
         <img src={plan.gifUrl} alt={plan.title} className="w-full" />
       </div>
 
@@ -61,14 +66,16 @@ export default function VisualPlanDetailPreload({ id }: { id: string }) {
         </button>
         <a
           href={plan.gifUrl}
-          download={`${plan.title}.gif`}
+          target="_blank"
+          rel="noopener noreferrer"
           className="px-5 py-2.5 border border-[#DDE8E6] text-[#1A2332] text-sm font-semibold rounded-xl hover:border-[#6AA098] hover:text-[#6AA098] transition-colors"
         >
           Download GIF
         </a>
         <a
           href={plan.mp4Url}
-          download={`${plan.title}.mp4`}
+          target="_blank"
+          rel="noopener noreferrer"
           className="px-5 py-2.5 border border-[#DDE8E6] text-[#1A2332] text-sm font-semibold rounded-xl hover:border-[#6AA098] hover:text-[#6AA098] transition-colors"
         >
           Download MP4

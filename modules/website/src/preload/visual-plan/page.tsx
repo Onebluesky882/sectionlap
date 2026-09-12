@@ -17,7 +17,10 @@ function PlanCard({ plan, onDelete }: { plan: VisualPlan; onDelete: (id: string)
 
   return (
     <div className="border border-[#DDE8E6] rounded-2xl overflow-hidden bg-white shadow-sm">
-      <img src={plan.gifUrl} alt={plan.title} className="w-full h-40 object-cover bg-[#1A2332]" />
+      {/* object-contain, not object-cover — plans render at different aspect
+          ratios (900x320 linear roadmap vs 500x500 cycle diagram), so fit
+          the whole image rather than cropping either shape. */}
+      <img src={plan.gifUrl} alt={plan.title} className="w-full h-40 object-contain bg-[#F7FAFA]" />
       <div className="p-4">
         <p className="font-semibold text-[#1A2332] text-sm mb-3 truncate">{plan.title}</p>
         <div className="flex gap-2 flex-wrap">
@@ -35,14 +38,16 @@ function PlanCard({ plan, onDelete }: { plan: VisualPlan; onDelete: (id: string)
           </button>
           <a
             href={plan.gifUrl}
-            download
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-xs px-3 py-1.5 border border-[#DDE8E6] rounded-lg text-[#64748B] hover:border-[#6AA098] hover:text-[#6AA098] transition-colors"
           >
             GIF
           </a>
           <a
             href={plan.mp4Url}
-            download
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-xs px-3 py-1.5 border border-[#DDE8E6] rounded-lg text-[#64748B] hover:border-[#6AA098] hover:text-[#6AA098] transition-colors"
           >
             MP4

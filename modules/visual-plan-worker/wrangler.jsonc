@@ -1,0 +1,36 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sectionlap-visual-plan",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-06-16",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true
+	},
+	"ai": {
+		// Generates one illustration per step for cycle-type plans (flux-1-schnell) —
+		// free up to 10,000 neurons/day, fractions of a cent per image after that.
+		"binding": "AI"
+	},
+	"vars": {
+		// claude-code-service and visual-plan-service are normal long-running
+		// processes (see modules/claude-code-service, modules/visual-plan-service)
+		// — Workers can't run either one (no subprocess support, no Python/video
+		// encoding). Reached via a named Cloudflare Tunnel ("sectionlap-visual-plan",
+		// id dd62b3e4-a3bd-4f53-a7a3-7d1e01417446 — config in
+		// ~/.cloudflared/config-sectionlap-visual-plan.yml on the host machine),
+		// which is stable across restarts, unlike a trycloudflare.com quick tunnel.
+		"CLAUDE_CODE_SERVICE_URL": "https://claude-code.sectionlap.com",
+		"VISUAL_SERVICE_URL": "https://visual-render.sectionlap.com",
+		"R2_BUCKET_NAME": "sectionlap-bucket"
+	}
+	// Secrets (set via `wrangler secret put <NAME>`):
+	//   CLAUDE_CODE_SERVICE_SECRET  — sent as X-Internal-Secret to claude-code-service
+	//   R2_ACCOUNT_ID               — Cloudflare Account ID
+	//   R2_ACCESS_KEY_ID            — R2 API token Access Key ID
+	//   R2_SECRET_ACCESS_KEY        — R2 API token Secret Access Key
+}
