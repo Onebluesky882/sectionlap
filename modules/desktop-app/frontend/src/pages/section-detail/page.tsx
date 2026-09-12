@@ -53,9 +53,9 @@ export function SectionDetailPage() {
           <div className="mt-4 p-4 rounded-md bg-accent text-accent-foreground flex flex-col gap-3">
             ✅ Enrolled — content unlock coming in a later stage.
             <div>
-              <Button onClick={() => navigate(`/sections/${section.id}/live-class`)}>
-                Join Live Class
-              </Button>
+              {/* Disabled while switching video providers away from Jitsi
+                  (modules/live-class) — route/screen still exist, just unlinked. */}
+              <Button disabled>Live Class (upgrading)</Button>
             </div>
           </div>
         ) : isFull ? (

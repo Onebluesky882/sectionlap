@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, useState } from "react";
 import { useSection } from "@/hooks/useSection";
 import { useBooking } from "@/hooks/useBooking";
@@ -124,12 +123,14 @@ export default function SectionDetailPreload({ id }: { id: string }) {
             </p>
           </div>
           {isEnrolled || user?.role === "teacher" ? (
-            <Link
-              href={`/sections/${id}/live`}
-              className="rounded-full bg-[#1A2332] text-white px-8 py-3 text-sm font-semibold hover:bg-[#2d3a4f] transition-colors"
+            // Live-class join disabled while switching video providers away from
+            // Jitsi (modules/live-class) — route/page still exist, just unlinked.
+            <span
+              title="ระบบห้องเรียนสดกำลังปรับปรุง"
+              className="rounded-full bg-[#DDE8E6] text-[#64748B] px-8 py-3 text-sm font-semibold cursor-not-allowed"
             >
-              เข้าห้องเรียน
-            </Link>
+              ห้องเรียนสด (ปรับปรุงระบบ)
+            </span>
           ) : myBooking ? (
             <span className="rounded-full bg-[#EBF2F7] text-[#4A7294] px-6 py-3 text-sm font-semibold">
               รอชำระเงิน

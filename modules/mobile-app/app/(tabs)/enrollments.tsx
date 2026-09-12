@@ -1,5 +1,4 @@
 import { FlatList, Text, View } from "react-native";
-import { useRouter } from "expo-router";
 import { useAppStore } from "../../src/store/useAppStore";
 import { SectionCard } from "../../src/components/SectionCard";
 
@@ -7,7 +6,6 @@ export default function MyEnrollmentsPage() {
   const currentUser = useAppStore((s) => s.currentUser);
   const sections = useAppStore((s) => s.sections);
   const bookings = useAppStore((s) => s.bookings);
-  const router = useRouter();
 
   const enrolled = currentUser
     ? sections.filter((section) =>
@@ -37,10 +35,13 @@ export default function MyEnrollmentsPage() {
         </Text>
       }
       renderItem={({ item }) => (
+        // Disabled while switching video providers away from Jitsi
+        // (modules/live-class) — route/screen still exist, just unlinked.
         <SectionCard
           section={item}
-          actionLabel="Join Live Class"
-          onAction={() => router.push(`/sections/${item.id}/live-class`)}
+          actionLabel="Live Class (upgrading)"
+          actionDisabled
+          onAction={() => {}}
         />
       )}
     />

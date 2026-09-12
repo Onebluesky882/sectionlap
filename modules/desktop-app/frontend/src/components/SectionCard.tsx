@@ -6,9 +6,10 @@ interface Props {
   actionLabel: string;
   onAction: () => void;
   enrolledCount?: number;
+  actionDisabled?: boolean;
 }
 
-export function SectionCard({ section, actionLabel, onAction, enrolledCount }: Props) {
+export function SectionCard({ section, actionLabel, onAction, enrolledCount, actionDisabled }: Props) {
   return (
     <div className="bg-card border border-border rounded-lg p-5 flex flex-col gap-2 text-left">
       <div className="text-xs uppercase tracking-wide text-primary">{section.category}</div>
@@ -23,7 +24,7 @@ export function SectionCard({ section, actionLabel, onAction, enrolledCount }: P
           {enrolledCount}/{section.capacity} seats booked
         </div>
       )}
-      <Button onClick={onAction}>{actionLabel}</Button>
+      <Button disabled={actionDisabled} onClick={onAction}>{actionLabel}</Button>
     </div>
   );
 }

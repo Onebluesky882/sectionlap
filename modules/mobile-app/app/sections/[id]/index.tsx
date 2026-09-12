@@ -46,8 +46,10 @@ export default function SectionDetailPage() {
         {booking?.status === "paid" ? (
           <View className="bg-secondary rounded-xl p-4 gap-3">
             <Text className="text-foreground">✅ Enrolled — content unlock coming in a later stage.</Text>
-            <Button onPress={() => router.push(`/sections/${section.id}/live-class`)}>
-              Join Live Class
+            {/* Disabled while switching video providers away from Jitsi
+                (modules/live-class) — route/screen still exist, just unlinked. */}
+            <Button disabled onPress={() => {}}>
+              Live Class (upgrading)
             </Button>
           </View>
         ) : isFull ? (
